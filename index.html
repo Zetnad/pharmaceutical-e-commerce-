@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediHub — Your Pharmaceutical Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --emerald: #0d9e6e;
+    --emerald-dark: #076b4a;
+    --emerald-light: #d1fae5;
+    --mint: #a7f3d0;
+    --navy: #0b1120;
+    --navy-mid: #132135;
+    --navy-soft: #1e3a5f;
+    --cream: #fdfaf5;
+    --cream-warm: #f5f0e8;
+    --gold: #e8a838;
+    --red: #e05252;
+    --text-primary: #0b1120;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    --border: #e2e8f0;
+    --white: #ffffff;
+    --shadow-md: 0 8px 30px rgba(11,17,32,0.12);
+    --radius: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-primary); overflow-x: hidden; }
+
+  /* NAVBAR */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    background: rgba(253,250,245,0.93); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2.5rem; height: 70px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900;
+    color: var(--navy); display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer;
+  }
+  .nav-logo em { color: var(--emerald); font-style: normal; }
+  .pill { width: 26px; height: 14px; background: linear-gradient(135deg, var(--emerald), var(--emerald-dark)); border-radius: 20px; position: relative; }
+  .pill::after { content:''; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:1px; height:10px; background:rgba(255,255,255,0.5); }
+  .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--emerald); }
+  .nav-actions { display: flex; gap: 12px; align-items: center; }
+  .btn-ghost { background: none; border: 1.5px solid var(--border); color: var(--text-primary); padding: 8px 20px; border-radius: 50px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500; transition: all 0.2s; }
+  .btn-ghost:hover { border-color: var(--emerald); color: var(--emerald); }
+  .btn-primary { background: var(--emerald); color: white; border: none; padding: 9px 22px; border-radius: 50px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; transition: all 0.2s; }
+  .btn-primary:hover { background: var(--emerald-dark); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(13,158,110,0.35); }
+
+  /* PAGES */
+  .page { display: none; padding-top: 70px; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* HERO */
+  .hero {
+    min-height: calc(100vh - 70px); background: var(--navy);
+    position: relative; overflow: hidden;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; padding: 4rem 6rem; gap: 4rem;
+  }
+  .hero::before { content:''; position:absolute; top:-200px; right:-200px; width:700px; height:700px; border-radius:50%; background:radial-gradient(circle, rgba(13,158,110,0.18) 0%, transparent 70%); }
+  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(13,158,110,0.15); border:1px solid rgba(13,158,110,0.3); color:var(--mint); padding:6px 16px; border-radius:50px; font-size:0.8rem; font-weight:500; margin-bottom:1.5rem; }
+  .dot { width:6px; height:6px; background:var(--emerald); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+  .hero h1 { font-family:'Playfair Display',serif; font-size:clamp(2.4rem,4.5vw,3.8rem); font-weight:900; color:white; line-height:1.1; margin-bottom:1.5rem; }
+  .hero h1 em { color:var(--mint); font-style:normal; }
+  .hero p { color:#94a3b8; font-size:1.05rem; line-height:1.7; margin-bottom:2.5rem; max-width:480px; }
+  .hero-buttons { display:flex; gap:1rem; flex-wrap:wrap; }
+  .btn-hero { background:var(--emerald); color:white; border:none; padding:14px 32px; border-radius:50px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:600; transition:all 0.25s; }
+  .btn-hero:hover { background:var(--emerald-dark); transform:translateY(-2px); box-shadow:0 8px 30px rgba(13,158,110,0.4); }
+  .btn-hero-outline { background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.25); padding:14px 32px; border-radius:50px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:500; transition:all 0.25s; }
+  .btn-hero-outline:hover { border-color:white; }
+  .hero-stats { display:flex; gap:2.5rem; margin-top:3rem; }
+  .stat h3 { font-size:1.8rem; font-weight:700; color:white; }
+  .stat p { font-size:0.82rem; color:#64748b; }
+  .hero-visual { position:relative; z-index:2; }
+  .floating-card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(20px); border-radius:var(--radius); padding:1.5rem; color:white; margin-bottom:1rem; }
+  .rx-card { background:rgba(13,158,110,0.1); border:1px solid rgba(13,158,110,0.3); border-radius:12px; padding:1rem; margin-top:10px; }
+  .rx-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.82rem; }
+  .rx-row:last-child { border-bottom:none; }
+  .rx-row span { color:#94a3b8; }
+  .rx-row strong { color:white; }
+  .mini-cards { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .mini-card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:1rem; }
+  .mini-lbl { font-size:0.7rem; color:#64748b; text-transform:uppercase; letter-spacing:0.08em; }
+  .mini-val { font-family:'DM Mono',monospace; font-size:1.1rem; color:var(--mint); margin-top:4px; }
+  .mini-sub { font-size:0.72rem; color:var(--emerald); margin-top:3px; }
+
+  /* FEATURES */
+  .section { padding: 5rem 6rem; }
+  .section.alt { background: var(--cream-warm); }
+  .section.dark { background: var(--navy); }
+  .section.white { background: white; }
+  .section-label { font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--emerald); margin-bottom:0.8rem; }
+  .section-label.light { color:var(--mint); }
+  .section-title { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:700; color:var(--navy); max-width:580px; line-height:1.2; }
+  .section-title.light { color:white; }
+  .section-sub { color:var(--text-muted); margin-top:0.8rem; font-size:0.95rem; line-height:1.65; max-width:540px; }
+  .section-sub.light { color:#64748b; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1.4rem; margin-top:3rem; }
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:1.2rem; }
+  .card { background:white; border:1px solid var(--border); border-radius:var(--radius); padding:2rem; transition:all 0.3s; position:relative; overflow:hidden; }
+  .card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--emerald); opacity:0; transition:opacity 0.3s; }
+  .card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+  .card:hover::before { opacity:1; }
+  .card-icon { width:50px; height:50px; background:var(--emerald-light); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:1rem; }
+  .card h3 { font-size:1rem; font-weight:600; margin-bottom:0.5rem; color:var(--navy); }
+  .card p { font-size:0.86rem; color:var(--text-muted); line-height:1.6; }
+
+  /* AI CHAT */
+  .chat-box { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius); overflow:hidden; }
+  .chat-header { padding:1rem 1.2rem; background:rgba(13,158,110,0.12); border-bottom:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; gap:10px; }
+  .chat-dot { width:8px; height:8px; background:var(--emerald); border-radius:50%; }
+  .chat-header span { color:white; font-size:0.88rem; font-weight:500; }
+  .chat-header small { color:#475569; font-size:0.75rem; margin-left:auto; }
+  .chat-msgs { padding:1.2rem; display:flex; flex-direction:column; gap:1rem; max-height:420px; overflow-y:auto; }
+  .chat-msgs::-webkit-scrollbar { width:4px; }
+  .chat-msgs::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:10px; }
+  .msg { max-width:86%; }
+  .msg-ai { align-self:flex-start; }
+  .msg-user { align-self:flex-end; }
+  .bubble { padding:0.75rem 1rem; border-radius:14px; font-size:0.85rem; line-height:1.55; }
+  .msg-ai .bubble { background:rgba(255,255,255,0.08); color:#e2e8f0; border-bottom-left-radius:4px; }
+  .msg-user .bubble { background:var(--emerald); color:white; border-bottom-right-radius:4px; }
+  .msg-time { font-size:0.7rem; color:#475569; margin-top:3px; }
+  .msg-ai .msg-time { text-align:left; }
+  .msg-user .msg-time { text-align:right; }
+  .chat-rx { background:rgba(13,158,110,0.1); border:1px solid rgba(13,158,110,0.3); border-radius:10px; padding:10px; margin-top:8px; }
+  .chat-rx-title { font-size:0.78rem; color:var(--mint); font-weight:600; margin-bottom:8px; }
+  .chat-rx-item { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.8rem; }
+  .chat-rx-item:last-child { border-bottom:none; }
+  .chat-rx-item span { color:#94a3b8; }
+  .chat-rx-item b { color:white; }
+  .chat-input-row { padding:1rem; border-top:1px solid rgba(255,255,255,0.08); display:flex; gap:10px; }
+  .chat-in { flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:white; padding:10px 14px; border-radius:50px; font-family:'DM Sans',sans-serif; font-size:0.85rem; outline:none; }
+  .chat-in:focus { border-color:var(--emerald); }
+  .chat-in::placeholder { color:#475569; }
+  .send-btn { width:38px; height:38px; background:var(--emerald); border:none; border-radius:50%; cursor:pointer; color:white; font-size:1rem; transition:all 0.2s; flex-shrink:0; }
+  .send-btn:hover { background:var(--emerald-dark); }
+  .typing { display:flex; gap:4px; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.08); border-radius:14px; border-bottom-left-radius:4px; width:fit-content; }
+  .tdot { width:6px; height:6px; background:#64748b; border-radius:50%; animation:td 1.2s infinite; }
+  .tdot:nth-child(2){ animation-delay:0.2s; } .tdot:nth-child(3){ animation-delay:0.4s; }
+  @keyframes td { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+  .symptom-chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:1.2rem; }
+  .chip { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#94a3b8; padding:7px 14px; border-radius:50px; cursor:pointer; font-size:0.8rem; font-family:inherit; transition:all 0.2s; }
+  .chip:hover { border-color:var(--emerald); color:var(--mint); }
+
+  /* MARKETPLACE */
+  .product-card { background:white; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; transition:all 0.3s; cursor:pointer; }
+  .product-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+  .prod-img { height:130px; background:var(--emerald-light); display:flex; align-items:center; justify-content:center; font-size:2.8rem; position:relative; }
+  .prod-badge { position:absolute; top:10px; right:10px; font-size:0.68rem; padding:3px 9px; border-radius:20px; font-weight:700; color:white; }
+  .badge-otc { background:var(--emerald); }
+  .badge-rx { background:var(--red); }
+  .prod-info { padding:1rem; }
+  .prod-pharm { font-size:0.72rem; color:var(--text-light); margin-bottom:3px; }
+  .prod-name { font-size:0.9rem; font-weight:600; color:var(--navy); margin-bottom:4px; }
+  .prod-desc { font-size:0.79rem; color:var(--text-muted); line-height:1.4; margin-bottom:10px; }
+  .prod-foot { display:flex; justify-content:space-between; align-items:center; }
+  .prod-price { font-family:'DM Mono',monospace; font-size:0.98rem; font-weight:700; color:var(--emerald); }
+  .add-btn { width:30px; height:30px; background:var(--emerald-light); border:none; border-radius:8px; cursor:pointer; color:var(--emerald); font-size:1.2rem; transition:all 0.2s; }
+  .add-btn:hover { background:var(--emerald); color:white; }
+  .search-row { display:flex; align-items:center; gap:10px; background:white; border:1px solid var(--border); border-radius:50px; padding:10px 20px; max-width:420px; margin-top:1.5rem; }
+  .search-row input { border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:0.88rem; flex:1; color:var(--text-primary); background:transparent; }
+  .filter-tabs { display:flex; gap:8px; margin:1.5rem 0; flex-wrap:wrap; }
+  .ftab { padding:6px 15px; border-radius:50px; font-size:0.8rem; font-weight:500; cursor:pointer; border:1.5px solid var(--border); background:white; color:var(--text-muted); transition:all 0.2s; font-family:inherit; }
+  .ftab.on, .ftab:hover { background:var(--emerald); color:white; border-color:var(--emerald); }
+
+  /* PHARMACIST JOIN */
+  .dash-box { background:linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%); border-radius:var(--radius); padding:2.5rem; position:relative; overflow:hidden; }
+  .dash-box::before { content:''; position:absolute; bottom:-50px; right:-50px; width:200px; height:200px; border-radius:50%; background:rgba(13,158,110,0.15); }
+  .dash-stat-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+  .dash-stat { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:1rem; }
+  .dash-val { font-family:'DM Mono',monospace; font-size:1.3rem; color:white; font-weight:600; }
+  .dash-lbl { font-size:0.7rem; color:#64748b; margin-top:2px; }
+  .bars { display:flex; gap:6px; align-items:flex-end; height:60px; margin:10px 0; }
+  .bar { flex:1; background:rgba(13,158,110,0.3); border-radius:4px 4px 0 0; }
+  .bar.hi { background:var(--emerald); }
+  .order-row { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .order-row span { color:#94a3b8; font-size:0.82rem; }
+  .order-row b { color:var(--mint); font-size:0.82rem; font-family:'DM Mono',monospace; }
+  .steps { display:flex; flex-direction:column; gap:1.2rem; margin:2rem 0; }
+  .step { display:flex; gap:1rem; align-items:flex-start; }
+  .step-n { width:32px; height:32px; background:var(--emerald-light); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.82rem; font-weight:700; color:var(--emerald); flex-shrink:0; }
+  .step h4 { font-size:0.95rem; font-weight:600; color:var(--navy); margin-bottom:3px; }
+  .step p { font-size:0.84rem; color:var(--text-muted); line-height:1.5; }
+
+  /* PRICING */
+  .price-card { border:1.5px solid var(--border); border-radius:var(--radius); padding:2.5rem; position:relative; }
+  .price-card.pop { border-color:var(--emerald); background:linear-gradient(180deg,rgba(13,158,110,0.04) 0%,white 100%); }
+  .pop-badge { position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:var(--emerald); color:white; font-size:0.75rem; font-weight:700; padding:5px 16px; border-radius:20px; white-space:nowrap; }
+  .price-tier { font-size:0.76rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:0.8rem; }
+  .price-amount { font-family:'DM Mono',monospace; font-size:2.3rem; font-weight:600; color:var(--navy); }
+  .price-amount small { font-size:1rem; color:var(--text-muted); }
+  .price-desc { font-size:0.84rem; color:var(--text-muted); margin:0.5rem 0 1.5rem; }
+  .price-feats { list-style:none; display:flex; flex-direction:column; gap:0.75rem; margin-bottom:2rem; }
+  .price-feats li { font-size:0.86rem; color:var(--text-muted); display:flex; gap:8px; }
+  .price-feats li::before { content:'✓'; color:var(--emerald); font-weight:700; flex-shrink:0; }
+  .price-feats li.no::before { content:'✕'; color:var(--text-light); }
+  .price-feats li.no { color:var(--text-light); }
+  .price-btn { width:100%; padding:12px; border-radius:50px; font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:all 0.2s; border:1.5px solid var(--border); background:white; color:var(--text-primary); }
+  .price-card.pop .price-btn { background:var(--emerald); color:white; border-color:var(--emerald); }
+  .price-btn:hover { background:var(--emerald); color:white; border-color:var(--emerald); }
+
+  /* TESTIMONIALS */
+  .tcard { background:white; border:1px solid var(--border); border-radius:var(--radius); padding:2rem; }
+  .stars { color:var(--gold); font-size:0.85rem; margin-bottom:0.8rem; }
+  .tcard blockquote { font-size:0.9rem; line-height:1.7; color:var(--text-primary); font-style:italic; margin-bottom:1.2rem; }
+  .t-author { display:flex; gap:10px; align-items:center; }
+  .avatar { width:40px; height:40px; border-radius:50%; background:var(--emerald-light); display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+  .t-name { font-size:0.88rem; font-weight:600; color:var(--navy); }
+  .t-role { font-size:0.77rem; color:var(--text-light); }
+
+  /* FOOTER */
+  footer { background:var(--navy); padding:5rem 6rem 2.5rem; color:white; }
+  .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:3rem; margin-bottom:4rem; }
+  .f-logo { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900; color:white; display:flex; align-items:center; gap:8px; margin-bottom:1rem; cursor:pointer; }
+  .f-logo em { color:var(--mint); font-style:normal; }
+  .f-desc { font-size:0.87rem; color:#64748b; line-height:1.7; max-width:280px; margin-bottom:1.5rem; }
+  .socials { display:flex; gap:10px; }
+  .s-btn { width:36px; height:36px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; color:#64748b; text-decoration:none; font-size:0.9rem; transition:all 0.2s; cursor:pointer; }
+  .s-btn:hover { background:var(--emerald); color:white; border-color:var(--emerald); }
+  .f-col h5 { font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:#94a3b8; margin-bottom:1.2rem; }
+  .f-col ul { list-style:none; display:flex; flex-direction:column; gap:0.65rem; }
+  .f-col ul li a { font-size:0.86rem; color:#475569; text-decoration:none; transition:color 0.2s; cursor:pointer; }
+  .f-col ul li a:hover { color:var(--mint); }
+  .f-newsletter p { font-size:0.82rem; color:#64748b; margin:1.5rem 0 0.6rem; }
+  .nl-row { display:flex; gap:8px; }
+  .nl-row input { flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:white; padding:9px 14px; border-radius:50px; font-family:'DM Sans',sans-serif; font-size:0.82rem; outline:none; }
+  .nl-row input:focus { border-color:var(--emerald); }
+  .nl-row input::placeholder { color:#334155; }
+  .nl-row button { background:var(--emerald); border:none; color:white; padding:9px 18px; border-radius:50px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:600; transition:all 0.2s; }
+  .nl-row button:hover { background:var(--emerald-dark); }
+  .certs { display:flex; gap:10px; margin-top:1.2rem; flex-wrap:wrap; }
+  .cert { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:5px 10px; font-size:0.74rem; color:#64748b; }
+  .f-hr { border:none; border-top:1px solid rgba(255,255,255,0.07); margin-bottom:2rem; }
+  .f-bottom { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+  .f-bottom p { font-size:0.8rem; color:#334155; }
+  .f-bottom-links { display:flex; gap:1.5rem; }
+  .f-bottom-links a { font-size:0.8rem; color:#334155; text-decoration:none; cursor:pointer; }
+  .f-bottom-links a:hover { color:var(--mint); }
+
+  /* RESPONSIVE */
+  @media(max-width:1100px) { .hero,.section { padding:4rem; } footer { padding:4rem 4rem 2rem; } .grid-4 { grid-template-columns:repeat(2,1fr); } .footer-top { grid-template-columns:1fr 1fr; } }
+  @media(max-width:768px) { .hero { grid-template-columns:1fr; padding:3rem 2rem; } .hero-visual{display:none;} .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } .nav-links{display:none;} .section { padding:3rem 2rem; } footer { padding:3rem 2rem 2rem; } .footer-top { grid-template-columns:1fr; } .f-bottom { flex-direction:column; align-items:flex-start; } }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo" onclick="go('home')"><div class="pill"></div>Medi<em>Hub</em></div>
+  <ul class="nav-links">
+    <li><a onclick="go('home')">Home</a></li>
+    <li><a onclick="go('market')">Marketplace</a></li>
+    <li><a onclick="go('ai')">AI Checker</a></li>
+    <li><a onclick="go('pharm')">For Pharmacists</a></li>
+    <li><a onclick="go('price')">Pricing</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-ghost" onclick="go('pharm')">Join as Pharmacist</button>
+    <button class="btn-primary" onclick="go('market')">Shop Now</button>
+  </div>
+</nav>
+
+<!-- ══════════ HOME ══════════ -->
+<section class="page active" id="home">
+
+  <div class="hero">
+    <div>
+      <div class="hero-badge"><div class="dot"></div> AI-Powered Pharmaceutical Platform</div>
+      <h1>Your Health, <em>Smarter</em> &amp; More Accessible</h1>
+      <p>Connect with licensed pharmacists, get AI-driven symptom analysis, and order genuine medications — all in one trusted platform built for Africa.</p>
+      <div class="hero-buttons">
+        <button class="btn-hero" onclick="go('ai')">🩺 Check Symptoms Free</button>
+        <button class="btn-hero-outline" onclick="go('market')">Browse Pharmacy →</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><h3>12k+</h3><p>Licensed Pharmacists</p></div>
+        <div class="stat"><h3>500k+</h3><p>Patients Served</p></div>
+        <div class="stat"><h3>98%</h3><p>Satisfaction Rate</p></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-card">
+        <div style="font-size:0.7rem;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">🤖 AI Diagnosis Result</div>
+        <div style="color:#e2e8f0;font-size:0.87rem;line-height:1.6;">Symptoms: <strong style="color:var(--mint)">fever, sore throat, fatigue</strong> → Likely <strong style="color:var(--mint)">viral pharyngitis</strong> (87% confidence)</div>
+        <div class="rx-card">
+          <div style="font-size:0.78rem;color:var(--mint);font-weight:600;margin-bottom:8px;">💊 Suggested Medications</div>
+          <div class="rx-row"><span>Paracetamol 500mg</span><strong>2×/day</strong></div>
+          <div class="rx-row"><span>Strepsils Lozenges</span><strong>As needed</strong></div>
+          <div class="rx-row"><span>Amoxicillin 250mg</span><strong>3×/day — Rx</strong></div>
+        </div>
+      </div>
+      <div class="mini-cards">
+        <div class="mini-card"><div class="mini-lbl">Orders Today</div><div class="mini-val">2,847</div><div class="mini-sub">↑ +12%</div></div>
+        <div class="mini-card"><div class="mini-lbl">User Rating</div><div class="mini-val">4.9★</div><div class="mini-sub">Based on 50k+ reviews</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="section">
+    <div class="section-label">Why MediHub</div>
+    <h2 class="section-title">Everything for Modern Healthcare Access</h2>
+    <p class="section-sub">From AI-powered diagnostics to a vast marketplace of verified pharmacies — MediHub bridges the gap between patients and quality care.</p>
+    <div class="grid-3">
+      <div class="card"><div class="card-icon">🧠</div><h3>AI Symptom Checker</h3><p>Describe your symptoms in plain language. Get instant AI-powered analysis, possible diagnoses, and safe medication suggestions reviewed by our medical board.</p></div>
+      <div class="card"><div class="card-icon">🏪</div><h3>Verified Marketplace</h3><p>Browse thousands of products from licensed, verified pharmacists. Compare prices, check real-time stock, and order for delivery or pickup at your convenience.</p></div>
+      <div class="card"><div class="card-icon">🔒</div><h3>Secure Prescriptions</h3><p>Upload and manage prescriptions securely. Pharmacists verify them digitally — ensuring safe, legally compliant dispensing every time.</p></div>
+      <div class="card"><div class="card-icon">🚀</div><h3>Fast Delivery</h3><p>Same-day delivery available in major cities. Real-time tracking from the pharmacy straight to your door. Schedule or urgent options available.</p></div>
+      <div class="card"><div class="card-icon">💬</div><h3>Pharmacist Chat</h3><p>Chat directly with licensed pharmacists for medication advice, dosage guidance, and drug interaction checks before you buy — free of charge.</p></div>
+      <div class="card"><div class="card-icon">📊</div><h3>Health Records</h3><p>Keep a complete history of your medications and prescriptions — easily shareable with your doctor. Your full health picture in one place.</p></div>
+    </div>
+  </div>
+
+  <!-- AI SECTION -->
+  <div class="section dark">
+    <div class="grid-2">
+      <div>
+        <div class="section-label light">AI-Powered</div>
+        <h2 class="section-title light">Describe How You Feel. Get Smart Answers.</h2>
+        <p class="section-sub light">Our AI engine understands natural language — just tell it your symptoms and receive instant clinical guidance.</p>
+        <div style="margin-top:2rem;display:flex;flex-direction:column;gap:0.9rem;">
+          <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:22px;height:22px;background:rgba(13,158,110,0.2);border:1px solid var(--emerald);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--mint);flex-shrink:0;margin-top:1px;">✓</div><p style="font-size:0.88rem;color:#94a3b8;line-height:1.5;">Supports 200+ common conditions and OTC medication suggestions</p></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:22px;height:22px;background:rgba(13,158,110,0.2);border:1px solid var(--emerald);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--mint);flex-shrink:0;margin-top:1px;">✓</div><p style="font-size:0.88rem;color:#94a3b8;line-height:1.5;">Integrated with Claude AI for real-time medical reasoning</p></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:22px;height:22px;background:rgba(13,158,110,0.2);border:1px solid var(--emerald);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--mint);flex-shrink:0;margin-top:1px;">✓</div><p style="font-size:0.88rem;color:#94a3b8;line-height:1.5;">Always recommends professional consultation when needed</p></div>
+        </div>
+        <button class="btn-hero" style="margin-top:2rem;" onclick="go('ai')">Try AI Checker Now →</button>
+      </div>
+      <div class="chat-box">
+        <div class="chat-header"><div class="chat-dot"></div><span>MediHub AI Assistant</span><small>Claude AI</small></div>
+        <div class="chat-msgs">
+          <div class="msg msg-ai"><div class="bubble">👋 Hello! Tell me your symptoms and I'll help analyze them and suggest appropriate medications.</div><div class="msg-time">Now</div></div>
+          <div class="msg msg-user"><div class="bubble">I've had a headache for 2 days, slight fever, and neck feels stiff.</div><div class="msg-time">Now</div></div>
+          <div class="msg msg-ai"><div class="bubble">Those symptoms warrant careful attention. I recommend seeing a doctor soon to rule out serious causes. For immediate relief:<div class="chat-rx"><div class="chat-rx-title">💊 OTC Relief</div><div class="chat-rx-item"><span>Ibuprofen 400mg</span><b>Every 6hrs</b></div><div class="chat-rx-item"><span>Paracetamol 1g</span><b>Every 8hrs</b></div></div><p style="color:#64748b;font-size:0.77rem;margin-top:8px;">⚕️ Not a diagnosis. Please consult a licensed doctor.</p></div><div class="msg-time">Now</div></div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-in" placeholder="Describe your symptoms..." onclick="go('ai')">
+          <button class="send-btn" onclick="go('ai')">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <div class="section alt">
+    <div class="section-label">Testimonials</div>
+    <h2 class="section-title">Trusted by Patients &amp; Pharmacists</h2>
+    <div class="grid-3" style="margin-top:2.5rem;">
+      <div class="tcard"><div class="stars">★★★★★</div><blockquote>"The AI symptom checker caught that my child might have a UTI and recommended we see a doctor. It was spot on — and the medication arrived in 2 hours."</blockquote><div class="t-author"><div class="avatar">👩</div><div><div class="t-name">Amina Khalid</div><div class="t-role">Parent, Nairobi</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★★</div><blockquote>"As a pharmacist, MediHub has tripled my customer reach. The dashboard is intuitive, order management is seamless. I'd recommend it to every independent pharmacist."</blockquote><div class="t-author"><div class="avatar">👨‍⚕️</div><div><div class="t-name">Dr. James Ochieng</div><div class="t-role">Licensed Pharmacist, Mombasa</div></div></div></div>
+      <div class="tcard"><div class="stars">★★★★☆</div><blockquote>"Finally a platform that takes medication safety seriously. Prescription verification, licensed sellers only, and a real pharmacist chat — this is how healthcare should work."</blockquote><div class="t-author"><div class="avatar">👨</div><div><div class="t-name">Samuel Waweru</div><div class="t-role">Patient, Kampala</div></div></div></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="f-logo" onclick="go('home')"><div class="pill"></div>Medi<em>Hub</em></div>
+        <p class="f-desc">Africa's most trusted pharmaceutical SaaS — connecting patients with licensed pharmacists and AI-powered health insights.</p>
+        <div class="socials"><div class="s-btn">𝕏</div><div class="s-btn">f</div><div class="s-btn">◻</div><div class="s-btn">in</div><div class="s-btn">▶</div></div>
+        <div class="f-newsletter"><p>Health tips &amp; pharmacy deals in your inbox:</p><div class="nl-row"><input type="email" placeholder="your@email.com"><button>Subscribe</button></div></div>
+        <div class="certs"><div class="cert">🔒 SSL Secured</div><div class="cert">✅ FDA Compliant</div><div class="cert">🏥 WHO Standards</div></div>
+      </div>
+      <div class="f-col"><h5>Platform</h5><ul><li><a onclick="go('market')">Marketplace</a></li><li><a onclick="go('ai')">AI Checker</a></li><li><a>Prescriptions</a></li><li><a onclick="go('pharm')">Pharmacist Portal</a></li><li><a>Mobile App</a></li></ul></div>
+      <div class="f-col"><h5>Pharmacists</h5><ul><li><a onclick="go('pharm')">Join MediHub</a></li><li><a>Dashboard</a></li><li><a onclick="go('price')">Pricing Plans</a></li><li><a>Training</a></li><li><a>Partners</a></li></ul></div>
+      <div class="f-col"><h5>Company</h5><ul><li><a>About Us</a></li><li><a>Medical Board</a></li><li><a>Blog</a></li><li><a>Press</a></li><li><a>Careers</a></li></ul></div>
+      <div class="f-col"><h5>Legal &amp; Support</h5><ul><li><a>Help Center</a></li><li><a>Safety &amp; Compliance</a></li><li><a>Terms of Service</a></li><li><a>Privacy Policy</a></li><li><a>Cookie Policy</a></li><li><a>Report Issue</a></li></ul></div>
+    </div>
+    <hr class="f-hr">
+    <div class="f-bottom">
+      <p>© 2026 MediHub Technologies Ltd. All rights reserved. Registered in Kenya. Not a substitute for professional medical advice.</p>
+      <div class="f-bottom-links"><a>Privacy</a><a>Terms</a><a>Cookies</a><a>Sitemap</a></div>
+    </div>
+  </footer>
+</section>
+
+<!-- ══════════ MARKETPLACE ══════════ -->
+<section class="page" id="market">
+  <div class="section alt" style="min-height:calc(100vh - 70px);">
+    <div class="section-label">Pharmacy Marketplace</div>
+    <h2 class="section-title">Browse 500+ Verified Pharmacies</h2>
+    <div class="search-row"><span>🔍</span><input type="text" placeholder="Search medications, brands, pharmacies..."></div>
+    <div class="filter-tabs">
+      <button class="ftab on">All Products</button>
+      <button class="ftab">💊 Pain Relief</button>
+      <button class="ftab">🤧 Cold &amp; Flu</button>
+      <button class="ftab">🫀 Cardiovascular</button>
+      <button class="ftab">🧴 Dermatology</button>
+      <button class="ftab">🍼 Mother &amp; Baby</button>
+      <button class="ftab">💉 Vitamins</button>
+      <button class="ftab">🧠 Mental Health</button>
+    </div>
+    <div class="grid-4">
+      <div class="product-card"><div class="prod-img">💊<div class="prod-badge badge-otc">OTC</div></div><div class="prod-info"><div class="prod-pharm">PharmaCare Nairobi ⭐4.9</div><div class="prod-name">Paracetamol 500mg (100 tabs)</div><div class="prod-desc">Fast-acting pain relief and fever reducer. Suitable for adults and children over 12.</div><div class="prod-foot"><div class="prod-price">KSh 280</div><button class="add-btn">+</button></div></div></div>
+      <div class="product-card"><div class="prod-img">🩺<div class="prod-badge badge-rx">Rx</div></div><div class="prod-info"><div class="prod-pharm">MediPlus Pharmacy ⭐4.8</div><div class="prod-name">Amoxicillin 250mg (21 caps)</div><div class="prod-desc">Broad-spectrum antibiotic for bacterial infections. Prescription required.</div><div class="prod-foot"><div class="prod-price">KSh 650</div><button class="add-btn">+</button></div></div></div>
+      <div class="product-card"><div class="prod-img">🌿<div class="prod-badge badge-otc">OTC</div></div><div class="prod-info"><div class="prod-pharm">WellnessHub ⭐4.7</div><div class="prod-name">Vitamin C 1000mg Effervescent</div><div class="prod-desc">Immune support with high-dose Vitamin C. Lemon flavour. 20 tablets.</div><div class="prod-foot"><div class="prod-price">KSh 420</div><button class="add-btn">+</button></div></div></div>
+      <div class="product-card"><div class="prod-img">😷<div class="prod-badge badge-otc">OTC</div></div><div class="prod-info"><div class="prod-pharm">QuickMeds Kenya ⭐4.9</div><div class="prod-name">Cetirizine 10mg (30 tabs)</div><div class="prod-desc">Non-drowsy antihistamine for allergies, hay fever, and urticaria.</div><div class="prod-foot"><div class="prod-price">KSh 380</div><button class="add-btn">+</button></div></div></div>
+      <div class="product-card"><div class="prod-img">💉<div class="prod-badge badge-rx">Rx</div></div><div class="prod-info"><div class="prod-pharm">AfriMed ⭐4.6</div><div class="prod-name">Metformin 500mg (60 tabs)</div><div class="prod-desc">Type 2 diabetes management. Prescription required. Store below 30°C.</div><div class="prod-foot"><div class="prod-price">KSh 520</div><button class="add-btn">+</button></div></div></div>
+      <div class="product-card"><div class="prod-img">🌙<div class="prod-badge badge-otc">OTC</div></div><div class="prod-info"><div class="prod-pharm">SleepWell Pharmacy ⭐4.8</div><div class="prod-name">Melatonin 5mg (60 tablets)</div><div class="prod-desc">Natural sleep aid to regulate sleep-wake cycles. Drug-free formula.</div><div class="prod-foot"><div class="prod-price">KSh 890</div><button class="add-btn">+</button></div></div></div>
+      <div class="product-card"><div class="prod-img">🫁<div class="prod-badge badge-rx">Rx</div></div><div class="prod-info"><div class="prod-pharm">RespiCare ⭐5.0</div><div class="prod-name">Salbutamol Inhaler 100mcg</div><div class="prod-desc">Relieves bronchospasm in asthma. Fast-acting bronchodilator.</div><div class="prod-foot"><div class="prod-price">KSh 1,200</div><button class="add-btn">+</button></div></div></div>
+      <div class="product-card"><div class="prod-img">🧴<div class="prod-badge badge-otc">OTC</div></div><div class="prod-info"><div class="prod-pharm">DermaCare Kenya ⭐4.7</div><div class="prod-name">Hydrocortisone Cream 1%</div><div class="prod-desc">Relieves itching, redness, and inflammation from eczema and insect bites.</div><div class="prod-foot"><div class="prod-price">KSh 350</div><button class="add-btn">+</button></div></div></div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-top">
+      <div><div class="f-logo" onclick="go('home')"><div class="pill"></div>Medi<em>Hub</em></div><p class="f-desc">Africa's most trusted pharmaceutical marketplace with verified sellers.</p><div class="socials"><div class="s-btn">𝕏</div><div class="s-btn">f</div><div class="s-btn">in</div></div><div class="certs" style="margin-top:1rem;"><div class="cert">🔒 SSL</div><div class="cert">✅ Licensed Sellers</div></div></div>
+      <div class="f-col"><h5>Shop</h5><ul><li><a>All Products</a></li><li><a>By Category</a></li><li><a>Top Rated</a></li><li><a>New Arrivals</a></li><li><a>Deals</a></li></ul></div>
+      <div class="f-col"><h5>My Account</h5><ul><li><a>Orders</a></li><li><a>Prescriptions</a></li><li><a>Saved Items</a></li><li><a>Health History</a></li></ul></div>
+      <div class="f-col"><h5>Help</h5><ul><li><a>FAQ</a></li><li><a>Returns</a></li><li><a>Delivery Info</a></li><li><a>Contact</a></li></ul></div>
+      <div class="f-col"><h5>Legal</h5><ul><li><a>Terms</a></li><li><a>Privacy</a></li><li><a>Safe Use</a></li></ul></div>
+    </div>
+    <hr class="f-hr">
+    <div class="f-bottom"><p>© 2026 MediHub Technologies Ltd. Medications sold by licensed pharmacists only.</p><div class="f-bottom-links"><a>Privacy</a><a>Terms</a></div></div>
+  </footer>
+</section>
+
+<!-- ══════════ AI CHECKER ══════════ -->
+<section class="page" id="ai">
+  <div class="section dark" style="min-height:calc(100vh - 70px); padding: 4rem 6rem;">
+    <div style="max-width:780px; margin:0 auto;">
+      <div class="section-label light">AI-Powered Diagnosis</div>
+      <h2 class="section-title light" style="margin-bottom:0.5rem;">Symptom Checker</h2>
+      <p style="color:#64748b; margin-bottom:2rem; font-size:0.88rem; max-width:600px; line-height:1.6;">Describe your symptoms in natural language. Our AI will analyze them and suggest possible conditions and OTC medications. <strong style="color:#475569">Always consult a licensed doctor for serious conditions.</strong></p>
+      <div class="chat-box">
+        <div class="chat-header"><div class="chat-dot"></div><span>MediHub AI — Symptom Analyzer</span><small>Powered by Claude AI</small></div>
+        <div class="chat-msgs" id="msgs" style="max-height:460px;">
+          <div class="msg msg-ai"><div class="bubble">👋 Hello! I'm MediHub's AI health assistant. Please describe your symptoms — what you're feeling, how long, and any other relevant details.</div><div class="msg-time">Now</div></div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-in" id="symp-in" placeholder="e.g. I have a headache, fever 38°C, and sore throat for 2 days...">
+          <button class="send-btn" onclick="send()">→</button>
+        </div>
+      </div>
+      <div class="symptom-chips">
+        <button class="chip" onclick="fill('Headache, fever 38°C, and body fatigue for 3 days')">💊 Headache + Fever</button>
+        <button class="chip" onclick="fill('Sore throat, runny nose, slight cough for 5 days')">🤧 Cold &amp; Flu</button>
+        <button class="chip" onclick="fill('Stomach pain, nausea, and diarrhea since yesterday')">🤢 Stomach Issues</button>
+        <button class="chip" onclick="fill('Itchy red rash on my arm appeared 2 days ago')">🧴 Skin Rash</button>
+        <button class="chip" onclick="fill('Chest tightness and shortness of breath when walking')">🫁 Breathing Issues</button>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-top">
+      <div><div class="f-logo" onclick="go('home')"><div class="pill"></div>Medi<em>Hub</em></div><p class="f-desc">AI health assistance. Always consult a doctor for serious conditions.</p><div class="certs" style="margin-top:1rem;"><div class="cert">🔒 HIPAA</div><div class="cert">🤖 Claude AI</div></div></div>
+      <div class="f-col"><h5>AI Tools</h5><ul><li><a>Symptom Checker</a></li><li><a>Drug Interactions</a></li><li><a>Dosage Calculator</a></li></ul></div>
+      <div class="f-col"><h5>Safety</h5><ul><li><a>How AI Works</a></li><li><a>Medical Disclaimer</a></li><li><a>Emergency Contacts</a></li></ul></div>
+      <div class="f-col"><h5>Platform</h5><ul><li><a onclick="go('market')">Marketplace</a></li><li><a onclick="go('pharm')">Pharmacists</a></li><li><a onclick="go('price')">Pricing</a></li></ul></div>
+      <div class="f-col"><h5>Legal</h5><ul><li><a>Terms</a></li><li><a>Privacy</a></li></ul></div>
+    </div>
+    <hr class="f-hr">
+    <div class="f-bottom"><p>© 2026 MediHub Technologies Ltd. AI suggestions are not a substitute for professional medical advice.</p><div class="f-bottom-links"><a>Privacy</a><a>Terms</a></div></div>
+  </footer>
+</section>
+
+<!-- ══════════ FOR PHARMACISTS ══════════ -->
+<section class="page" id="pharm">
+  <div class="section white">
+    <div class="section-label">For Pharmacists</div>
+    <h2 class="section-title">Grow Your Pharmacy Online</h2>
+    <p class="section-sub">Join 12,000+ licensed pharmacists already selling on MediHub. Set up in minutes. Reach thousands of patients daily.</p>
+    <div class="grid-2" style="margin-top:3rem;">
+      <div class="dash-box">
+        <div style="font-size:0.78rem;color:var(--mint);font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;position:relative;z-index:2;">📊 Pharmacist Dashboard</div>
+        <div style="position:relative;z-index:2;">
+          <div class="dash-stat-row"><div class="dash-stat"><div class="dash-val">KSh 84,200</div><div class="dash-lbl">Revenue this week</div></div><div class="dash-stat"><div class="dash-val">312</div><div class="dash-lbl">Pending orders</div></div></div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1rem;margin-bottom:10px;">
+            <div style="font-size:0.74rem;color:#64748b;margin-bottom:8px;">Monthly Sales (KSh '000)</div>
+            <div class="bars"><div class="bar" style="height:35%"></div><div class="bar" style="height:55%"></div><div class="bar" style="height:48%"></div><div class="bar" style="height:72%"></div><div class="bar" style="height:60%"></div><div class="bar" style="height:88%"></div><div class="bar hi" style="height:100%"></div></div>
+          </div>
+          <div class="order-row"><span>💊 Paracetamol 500mg</span><b>×48 sold</b></div>
+          <div class="order-row"><span>🩺 Amoxicillin 250mg</span><b>×31 sold</b></div>
+          <div class="order-row"><span>🌿 Vitamin C 1000mg</span><b>×27 sold</b></div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--navy);margin-bottom:0.8rem;">Start Selling in 3 Simple Steps</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem;line-height:1.6;">Our streamlined onboarding gets you from signup to your first sale in less than 48 hours.</p>
+        <div class="steps">
+          <div class="step"><div class="step-n">1</div><div><h4>Register &amp; Get Verified</h4><p>Submit your pharmacy license. Our compliance team verifies you within 24–48 hours — fully secure.</p></div></div>
+          <div class="step"><div class="step-n">2</div><div><h4>List Your Products</h4><p>Upload your inventory via our bulk CSV tool or add products one by one through the intuitive dashboard.</p></div></div>
+          <div class="step"><div class="step-n">3</div><div><h4>Receive Orders &amp; Get Paid</h4><p>Fulfill orders via your logistics partner. Payments released within 48 hours of delivery confirmation.</p></div></div>
+        </div>
+        <button class="btn-primary" style="padding:14px 36px;font-size:1rem;border-radius:50px;">Apply as Pharmacist →</button>
+        <p style="margin-top:1rem;font-size:0.8rem;color:var(--text-muted);">✅ No listing fees for your first 30 days. Cancel anytime.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing for pharmacists -->
+  <div class="section">
+    <div class="section-label">Plans</div>
+    <h2 class="section-title">Transparent Pricing for Every Pharmacy</h2>
+    <p class="section-sub">All plans include verification, dashboard access, and dedicated support.</p>
+    <div class="grid-3" style="margin-top:3rem;">
+      <div class="price-card"><div class="price-tier">Starter</div><div class="price-amount">KSh 0<small>/mo</small></div><div class="price-desc">For independent pharmacists getting started</div><ul class="price-feats"><li>Up to 50 product listings</li><li>Basic analytics dashboard</li><li>Standard support</li><li>3% commission per sale</li><li class="no">Priority search placement</li><li class="no">AI prescription assist</li></ul><button class="price-btn">Get Started Free</button></div>
+      <div class="price-card pop"><div class="pop-badge">Most Popular</div><div class="price-tier">Growth</div><div class="price-amount">KSh 4,500<small>/mo</small></div><div class="price-desc">For pharmacies ready to scale and grow faster</div><ul class="price-feats"><li>Unlimited product listings</li><li>Advanced analytics &amp; reports</li><li>Priority support</li><li>1.5% commission per sale</li><li>Priority search placement</li><li>AI prescription assist</li></ul><button class="price-btn">Start 14-Day Trial</button></div>
+      <div class="price-card"><div class="price-tier">Enterprise</div><div class="price-amount">Custom</div><div class="price-desc">For pharmacy chains and distributors</div><ul class="price-feats"><li>Multi-branch &amp; unlimited listings</li><li>Custom analytics &amp; API</li><li>Dedicated account manager</li><li>Negotiable commission</li><li>Top search placement</li><li>POS &amp; bulk tools</li></ul><button class="price-btn">Contact Sales</button></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div><div class="f-logo" onclick="go('home')"><div class="pill"></div>Medi<em>Hub</em></div><p class="f-desc">Empowering pharmacists across Africa to reach more patients and grow their business.</p><div class="socials"><div class="s-btn">𝕏</div><div class="s-btn">f</div><div class="s-btn">in</div></div><div class="f-newsletter"><p>Pharmacist tips and updates:</p><div class="nl-row"><input type="email" placeholder="pharmacist@example.com"><button>Subscribe</button></div></div></div>
+      <div class="f-col"><h5>Tools</h5><ul><li><a>Dashboard</a></li><li><a>Inventory</a></li><li><a>Orders</a></li><li><a>Analytics</a></li><li><a>Prescriptions</a></li></ul></div>
+      <div class="f-col"><h5>Resources</h5><ul><li><a>Seller Guide</a></li><li><a>Compliance Docs</a></li><li><a>Video Tutorials</a></li><li><a>Community Forum</a></li></ul></div>
+      <div class="f-col"><h5>Support</h5><ul><li><a>Help Desk</a></li><li><a>Report Issue</a></li><li><a>Contact Sales</a></li><li><a>Partner Program</a></li></ul></div>
+      <div class="f-col"><h5>Legal</h5><ul><li><a>Seller Agreement</a></li><li><a>Privacy Policy</a></li><li><a>Terms</a></li><li><a>Compliance</a></li></ul></div>
+    </div>
+    <hr class="f-hr">
+    <div class="f-bottom"><p>© 2026 MediHub Technologies Ltd. All pharmacists are independently licensed and responsible for their products.</p><div class="f-bottom-links"><a>Privacy</a><a>Terms</a><a>Compliance</a></div></div>
+  </footer>
+</section>
+
+<!-- ══════════ PRICING ══════════ -->
+<section class="page" id="price">
+  <div class="section white" style="padding-top:4rem;">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Simple, Transparent Pricing</h2>
+    <p class="section-sub">Whether you're a patient or pharmacist — we have a plan for you. No hidden fees, no surprises.</p>
+
+    <h3 style="margin-top:3rem;margin-bottom:1.5rem;font-size:1rem;font-weight:600;color:var(--navy);">For Patients</h3>
+    <div class="grid-3">
+      <div class="price-card"><div class="price-tier">Free</div><div class="price-amount">KSh 0<small>/mo</small></div><div class="price-desc">Basic access for everyday health needs</div><ul class="price-feats"><li>AI symptom checker (5/month)</li><li>Browse &amp; order from marketplace</li><li>Basic health history</li><li class="no">Priority pharmacist chat</li><li class="no">Family accounts</li></ul><button class="price-btn">Get Started</button></div>
+      <div class="price-card pop"><div class="pop-badge">Best Value</div><div class="price-tier">Premium</div><div class="price-amount">KSh 999<small>/mo</small></div><div class="price-desc">For health-conscious individuals who want the full experience</div><ul class="price-feats"><li>Unlimited AI symptom checks</li><li>Priority pharmacist chat</li><li>Prescription tracking</li><li>Full health history export</li><li>Family accounts (up to 5)</li><li>Member discounts</li></ul><button class="price-btn">Start Free Trial</button></div>
+      <div class="price-card"><div class="price-tier">Family Plus</div><div class="price-amount">KSh 1,899<small>/mo</small></div><div class="price-desc">Complete coverage for the whole family</div><ul class="price-feats"><li>Everything in Premium</li><li>Up to 10 family members</li><li>Dedicated health advisor</li><li>Medication reminders</li><li>Annual health report</li><li>Emergency telehealth</li></ul><button class="price-btn">Get Family Plus</button></div>
+    </div>
+
+    <h3 style="margin-top:4rem;margin-bottom:1.5rem;font-size:1rem;font-weight:600;color:var(--navy);">For Pharmacists</h3>
+    <div class="grid-3">
+      <div class="price-card"><div class="price-tier">Starter</div><div class="price-amount">KSh 0<small>/mo</small></div><div class="price-desc">Just starting out? Begin here for free.</div><ul class="price-feats"><li>50 product listings</li><li>Basic dashboard</li><li>3% transaction fee</li><li class="no">Priority placement</li><li class="no">Analytics reports</li></ul><button class="price-btn">Start Free</button></div>
+      <div class="price-card pop"><div class="pop-badge">Most Popular</div><div class="price-tier">Growth</div><div class="price-amount">KSh 4,500<small>/mo</small></div><div class="price-desc">Scale your pharmacy with powerful tools</div><ul class="price-feats"><li>Unlimited listings</li><li>1.5% transaction fee</li><li>Priority placement</li><li>Advanced analytics</li><li>AI prescription assist</li><li>Priority support</li></ul><button class="price-btn">Try Free 14 Days</button></div>
+      <div class="price-card"><div class="price-tier">Enterprise</div><div class="price-amount">Custom</div><div class="price-desc">Chains, distributors &amp; hospital networks</div><ul class="price-feats"><li>Multi-branch support</li><li>Custom commission</li><li>API &amp; POS integration</li><li>Dedicated manager</li><li>SLA guarantee</li><li>White-label option</li></ul><button class="price-btn">Talk to Sales</button></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div><div class="f-logo" onclick="go('home')"><div class="pill"></div>Medi<em>Hub</em></div><p class="f-desc">Making pharmaceutical access affordable and intelligent for all Africans.</p><div class="socials"><div class="s-btn">𝕏</div><div class="s-btn">f</div><div class="s-btn">in</div></div></div>
+      <div class="f-col"><h5>Platform</h5><ul><li><a onclick="go('market')">Marketplace</a></li><li><a onclick="go('ai')">AI Checker</a></li><li><a onclick="go('pharm')">Pharmacists</a></li><li><a onclick="go('price')">Pricing</a></li></ul></div>
+      <div class="f-col"><h5>Company</h5><ul><li><a>About</a></li><li><a>Blog</a></li><li><a>Press</a></li><li><a>Careers</a></li></ul></div>
+      <div class="f-col"><h5>Support</h5><ul><li><a>Help Center</a></li><li><a>Contact</a></li><li><a>Report Issue</a></li></ul></div>
+      <div class="f-col"><h5>Legal</h5><ul><li><a>Terms</a></li><li><a>Privacy</a></li><li><a>Cookies</a></li></ul></div>
+    </div>
+    <hr class="f-hr">
+    <div class="f-bottom"><p>© 2026 MediHub Technologies Ltd. All rights reserved.</p><div class="f-bottom-links"><a>Privacy</a><a>Terms</a><a>Sitemap</a></div></div>
+  </footer>
+</section>
+
+<script>
+function go(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+
+document.querySelectorAll('.ftab').forEach(t => t.addEventListener('click', () => { document.querySelectorAll('.ftab').forEach(x => x.classList.remove('on')); t.classList.add('on'); }));
+
+function fill(text) { document.getElementById('symp-in').value = text; }
+
+function escape(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function addMsg(cont, html, role) {
+  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const d = document.createElement('div');
+  d.className = `msg msg-${role}`;
+  d.innerHTML = `<div class="bubble">${html}</div><div class="msg-time">${t}</div>`;
+  cont.appendChild(d);
+  cont.scrollTop = cont.scrollHeight;
+}
+
+async function send() {
+  const inp = document.getElementById('symp-in');
+  const text = inp.value.trim();
+  if (!text) return;
+  const cont = document.getElementById('msgs');
+  addMsg(cont, escape(text), 'user');
+  inp.value = '';
+
+  const tid = 'tid' + Date.now();
+  const td = document.createElement('div');
+  td.className = 'msg msg-ai'; td.id = tid;
+  td.innerHTML = '<div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+  cont.appendChild(td); cont.scrollTop = cont.scrollHeight;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514", max_tokens:1000,
+        system:`You are MediHub's AI health assistant on a pharmaceutical SaaS platform in Africa. Analyze patient symptoms and:
+1. Identify 2-3 possible conditions with confidence levels
+2. Suggest appropriate OTC medications if safe
+3. Clearly state when doctor visit is urgently needed
+4. Always include a disclaimer
+
+Format as HTML with inline styles matching a dark theme:
+- Key terms: <strong style="color:#a7f3d0">term</strong>
+- Medication block: <div style="background:rgba(13,158,110,0.1);border:1px solid rgba(13,158,110,0.3);border-radius:10px;padding:12px;margin:8px 0"><div style="font-size:0.78rem;color:#a7f3d0;font-weight:600;margin-bottom:8px;">💊 Suggested Medications:</div>• Drug name – dose – frequency<br>...</div>
+- Disclaimer: <p style="color:#64748b;font-size:0.77rem;margin-top:10px">⚕️ Disclaimer: This is AI-generated guidance, not a medical diagnosis. Consult a licensed doctor or pharmacist.</p>
+
+Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
+        messages:[{role:"user",content:text}]
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || "Unable to analyze. Please consult a pharmacist directly.";
+    document.getElementById(tid)?.remove();
+    addMsg(cont, reply, 'ai');
+  } catch(e) {
+    document.getElementById(tid)?.remove();
+    addMsg(cont, "⚠️ AI connection failed. Please try again or consult a pharmacist.", 'ai');
+  }
+}
+
+document.getElementById('symp-in')?.addEventListener('keypress', e => { if(e.key==='Enter') send(); });
+</script>
+</body>
+</html>
