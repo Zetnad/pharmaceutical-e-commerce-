@@ -621,5 +621,123 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
 
 document.getElementById('symp-in')?.addEventListener('keypress', e => { if(e.key==='Enter') send(); });
 </script>
+<script>
+// ==== backend integration script ====
+const API_URL = 'http://localhost:5000/api';
+
+// override navigation helper so it's available after this block
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// update tab behaviour to trigger product load
+document.querySelectorAll('.ftab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.ftab').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    loadProducts();
+  });
+});
+
+// helper escaping; existing implementation is fine
+function escape(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// chat utilities
+function addMsg(cont, html, role) {
+  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const d = document.createElement('div');
+  d.className = `msg msg-${role}`;
+  d.innerHTML = `<div class="bubble">${html}</div><div class="msg-time">${t}</div>`;
+  cont.appendChild(d);
+  cont.scrollTop = cont.scrollHeight;
+}
+
+async function send() {
+  const inp = document.getElementById('symp-in');
+  const text = inp.value.trim();
+  if (!text) return;
+  const cont = document.getElementById('msgs');
+  addMsg(cont, escape(text), 'user');
+  inp.value = '';
+
+  const tid = 'tid' + Date.now();
+  const td = document.createElement('div');
+  td.className = 'msg msg-ai'; td.id = tid;
+  td.innerHTML = '<div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+  cont.appendChild(td); cont.scrollTop = cont.scrollHeight;
+
+  try {
+    const res = await fetch(`${API_URL}/ai/analyze`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ symptoms: text })
+    });
+    const data = await res.json();
+    const reply = data.html || data.disclaimer || 'Unable to analyze. Please consult a pharmacist directly.';
+    document.getElementById(tid)?.remove();
+    addMsg(cont, reply, 'ai');
+  } catch(err) {
+    document.getElementById(tid)?.remove();
+    addMsg(cont, "⚠️ AI connection failed. Please try again or consult a pharmacist.", 'ai');
+  }
+}
+
+// override keypress listener (rebind in case old one was defined earlier)
+document.getElementById('symp-in')?.addEventListener('keypress', e => { if(e.key==='Enter') send(); });
+
+// marketplace loader
+async function loadProducts() {
+  const grid = document.querySelector('#market .grid-4');
+  if (!grid) return;
+  const searchInput = document.querySelector('#market .search-row input');
+  const query = searchInput?.value.trim() ? `?search=${encodeURIComponent(searchInput.value.trim())}` : '';
+  const activeTab = document.querySelector('.ftab.on');
+  let category = '';
+  if (activeTab && !/All Products/i.test(activeTab.textContent)) {
+    category = activeTab.textContent.replace(/[💊🤧🫀🧴🍼💉🧠]/g,'').trim().toLowerCase();
+  }
+  const catParam = category ? `&category=${encodeURIComponent(category)}` : '';
+  try {
+    const res = await fetch(`${API_URL}/products${query}${catParam}`);
+    const products = await res.json();
+    grid.innerHTML = '';
+    products.forEach(p => {
+      const card = document.createElement('div');
+      card.className='product-card';
+      card.innerHTML = `
+        <div class="prod-img">
+          ${p.type === 'Rx' ? '🩺' : '💊'}
+          <div class="prod-badge ${p.type === 'Rx' ? 'badge-rx' : 'badge-otc'}">${p.type}</div>
+        </div>
+        <div class="prod-info">
+          <div class="prod-pharm">${p.pharmacistName || 'Unknown'} ⭐${p.rating || '0.0'}</div>
+          <div class="prod-name">${p.name}</div>
+          <div class="prod-desc">${p.description}</div>
+          <div class="prod-foot">
+            <div class="prod-price">KSh ${p.price}</div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  } catch(err) {
+    console.error('product fetch failed', err);
+    grid.innerHTML = '<p style="color:red;">Failed to load products</p>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadProducts();
+  const searchInput = document.querySelector('#market .search-row input');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchInput._debounce);
+      searchInput._debounce = setTimeout(loadProducts, 300);
+    });
+  }
+});
+</script>
 </body>
 </html>
