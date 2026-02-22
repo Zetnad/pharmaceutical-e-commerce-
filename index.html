@@ -49,6 +49,8 @@
   .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: color 0.2s; }
   .nav-links a:hover { color: var(--emerald); }
   .nav-actions { display: flex; gap: 12px; align-items: center; }
+  .nav-toggle { display: none; font-size: 1.6rem; cursor: pointer; user-select: none; }
+  .nav-menu { display: flex; align-items: center; gap: 2rem; }
   .btn-ghost { background: none; border: 1.5px solid var(--border); color: var(--text-primary); padding: 8px 20px; border-radius: 50px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500; transition: all 0.2s; }
   .btn-ghost:hover { border-color: var(--emerald); color: var(--emerald); }
   .btn-primary { background: var(--emerald); color: white; border: none; padding: 9px 22px; border-radius: 50px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; transition: all 0.2s; }
@@ -250,7 +252,20 @@
 
   /* RESPONSIVE */
   @media(max-width:1100px) { .hero,.section { padding:4rem; } footer { padding:4rem 4rem 2rem; } .grid-4 { grid-template-columns:repeat(2,1fr); } .footer-top { grid-template-columns:1fr 1fr; } }
-  @media(max-width:768px) { .hero { grid-template-columns:1fr; padding:3rem 2rem; } .hero-visual{display:none;} .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } .nav-links{display:none;} .section { padding:3rem 2rem; } footer { padding:3rem 2rem 2rem; } .footer-top { grid-template-columns:1fr; } .f-bottom { flex-direction:column; align-items:flex-start; } }
+  @media(max-width:768px) { .hero { grid-template-columns:1fr; padding:3rem 2rem; } .hero-visual{display:none;} .hero p { max-width:none; }
+    .hero-buttons { flex-direction:column; align-items:stretch; }
+    .hero-buttons .btn-hero,
+    .hero-buttons .btn-hero-outline { width:100%; justify-content:center; }
+    .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; }
+    .nav-toggle { display:block; }
+    /* hide original menu; we'll toggle via .nav-menu.open */
+    .nav-menu { display:none; flex-direction:column; position:absolute; top:70px; left:0; right:0; background:var(--cream); padding:1rem 1.5rem; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:998; }
+    .nav-menu.open { display:flex; }
+    .nav-menu .nav-links { flex-direction:column; gap:1rem; }
+    .nav-menu .nav-actions { flex-direction:column; gap:0.6rem; margin-top:1rem; }
+    .nav-menu .btn-ghost, .nav-menu .btn-primary { width:100%; text-align:center; }
+    .search-row { max-width:100%; }
+    .section { padding:3rem 2rem; } footer { padding:3rem 2rem 2rem; } .footer-top { grid-template-columns:1fr; } .f-bottom { flex-direction:column; align-items:flex-start; } }
 </style>
 </head>
 <body>
@@ -258,16 +273,21 @@
 <!-- NAVBAR -->
 <nav>
   <div class="nav-logo" onclick="go('home')"><div class="pill"></div>Medi<em>Hub</em></div>
-  <ul class="nav-links">
-    <li><a onclick="go('home')">Home</a></li>
-    <li><a onclick="go('market')">Marketplace</a></li>
-    <li><a onclick="go('ai')">AI Checker</a></li>
-    <li><a onclick="go('pharm')">For Pharmacists</a></li>
-    <li><a onclick="go('price')">Pricing</a></li>
-  </ul>
-  <div class="nav-actions">
-    <button class="btn-ghost" onclick="go('pharm')">Join as Pharmacist</button>
-    <button class="btn-primary" onclick="go('market')">Shop Now</button>
+  <!-- hamburger toggle shown on mobile -->
+  <div class="nav-toggle" onclick="toggleNav()">☰</div>
+  <!-- wrap links/actions so they can be collapsed on small screens -->
+  <div class="nav-menu">
+    <ul class="nav-links">
+      <li><a onclick="go('home')">Home</a></li>
+      <li><a onclick="go('market')">Marketplace</a></li>
+      <li><a onclick="go('ai')">AI Checker</a></li>
+      <li><a onclick="go('pharm')">For Pharmacists</a></li>
+      <li><a onclick="go('price')">Pricing</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn-ghost" onclick="go('pharm')">Join as Pharmacist</button>
+      <button class="btn-primary" onclick="go('market')">Shop Now</button>
+    </div>
   </div>
 </nav>
 
@@ -558,7 +578,9 @@
 </section>
 
 <script>
-function go(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+function toggleNav() { document.querySelector('.nav-menu')?.classList.toggle('open'); }
+function closeNav() { document.querySelector('.nav-menu.open')?.classList.remove('open'); }
+function go(id) { closeNav(); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
 
 document.querySelectorAll('.ftab').forEach(t => t.addEventListener('click', () => { document.querySelectorAll('.ftab').forEach(x => x.classList.remove('on')); t.classList.add('on'); }));
 
@@ -626,7 +648,10 @@ document.getElementById('symp-in')?.addEventListener('keypress', e => { if(e.key
 const API_URL = 'http://localhost:5000/api';
 
 // override navigation helper so it's available after this block
+function toggleNav() { document.querySelector('.nav-menu')?.classList.toggle('open'); }
+function closeNav() { document.querySelector('.nav-menu.open')?.classList.remove('open'); }
 function go(id) {
+  closeNav();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
