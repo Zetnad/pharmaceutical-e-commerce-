@@ -12,161 +12,107 @@
   </head>
   <body>
     <!-- NAVBAR -->
-    <nav>
-      <div class="nav-logo" onclick="go('home')">
-        <div class="pill"></div>
-        Medi<em>Hub</em>
-      </div>
-      <!-- hamburger toggle shown on mobile -->
-      <div class="nav-toggle" onclick="toggleNav()">☰</div>
-      <!-- wrap links/actions so they can be collapsed on small screens -->
-      <div class="nav-menu">
-        <ul class="nav-links">
-          <li><a onclick="go('home')">Home</a></li>
-          <li><a onclick="go('market')">Marketplace</a></li>
-          <li><a onclick="go('ai')">AI Checker</a></li>
-          <li><a onclick="go('pharm')">For Pharmacists</a></li>
-          </section>
+<nav>
+  <div class="nav-logo" onclick="go('home')"><div class="pill"></div>Medi<em>Hub</em></div>
+  <!-- hamburger toggle shown on mobile -->
+  <div class="nav-toggle" onclick="toggleNav()">☰</div>
+  <!-- wrap links/actions so they can be collapsed on small screens -->
+  <div class="nav-menu">
+    <ul class="nav-links">
+      <li><a onclick="go('home')">Home</a></li>
+      <li><a onclick="go('market')">Marketplace</a></li>
+      <li><a onclick="go('ai')">AI Checker</a></li>
+      <li><a onclick="go('pharm')">For Pharmacists</a></li>
+      <li><a onclick="go('price')">Pricing</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn-ghost" onclick="go('pharm')">Join as Pharmacist</button>
+      <button class="btn-primary" onclick="go('market')">Shop Now</button>
+    </div>
+  </div>
+</nav>
 
-          <script src="js/scripts.js"></script>
-                display: flex;
-                flex-direction: column;
-                gap: 0.9rem;
-              "
-            >
-              <div style="display: flex; gap: 12px; align-items: flex-start">
-                <div
-                  style="
-                    width: 22px;
-                    height: 22px;
-                    background: rgba(13, 158, 110, 0.2);
-                    border: 1px solid var(--emerald);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 0.7rem;
-                    color: var(--mint);
-                    flex-shrink: 0;
-                    margin-top: 1px;
-                  "
-                >
-                  ✓
-                </div>
-                <p style="font-size: 0.88rem; color: #94a3b8; line-height: 1.5">
-                  Supports 200+ common conditions and OTC medication suggestions
-                </p>
-              </div>
-              <div style="display: flex; gap: 12px; align-items: flex-start">
-                <div
-                  style="
-                    width: 22px;
-                    height: 22px;
-                    background: rgba(13, 158, 110, 0.2);
-                    border: 1px solid var(--emerald);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 0.7rem;
-                    color: var(--mint);
-                    flex-shrink: 0;
-                    margin-top: 1px;
-                  "
-                >
-                  ✓
-                </div>
-                <p style="font-size: 0.88rem; color: #94a3b8; line-height: 1.5">
-                  Integrated with Claude AI for real-time medical reasoning
-                </p>
-              </div>
-              <div style="display: flex; gap: 12px; align-items: flex-start">
-                <div
-                  style="
-                    width: 22px;
-                    height: 22px;
-                    background: rgba(13, 158, 110, 0.2);
-                    border: 1px solid var(--emerald);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 0.7rem;
-                    color: var(--mint);
-                    flex-shrink: 0;
-                    margin-top: 1px;
-                  "
-                >
-                  ✓
-                </div>
-                <p style="font-size: 0.88rem; color: #94a3b8; line-height: 1.5">
-                  Always recommends professional consultation when needed
-                </p>
-              </div>
-            </div>
-            <button
-              class="btn-hero"
-              style="margin-top: 2rem"
-              onclick="go('ai')"
-            >
-              Try AI Checker Now →
-            </button>
-          </div>
-          <div class="chat-box">
-            <div class="chat-header">
-              <div class="chat-dot"></div>
-              <span>MediHub AI Assistant</span><small>Claude AI</small>
-            </div>
-            <div class="chat-msgs">
-              <div class="msg msg-ai">
-                <div class="bubble">
-                  👋 Hello! Tell me your symptoms and I'll help analyze them and
-                  suggest appropriate medications.
-                </div>
-                <div class="msg-time">Now</div>
-              </div>
-              <div class="msg msg-user">
-                <div class="bubble">
-                  I've had a headache for 2 days, slight fever, and neck feels
-                  stiff.
-                </div>
-                <div class="msg-time">Now</div>
-              </div>
-              <div class="msg msg-ai">
-                <div class="bubble">
-                  Those symptoms warrant careful attention. I recommend seeing a
-                  doctor soon to rule out serious causes. For immediate relief:
-                  <div class="chat-rx">
-                    <div class="chat-rx-title">💊 OTC Relief</div>
-                    <div class="chat-rx-item">
-                      <span>Ibuprofen 400mg</span><b>Every 6hrs</b>
-                    </div>
-                    <div class="chat-rx-item">
-                      <span>Paracetamol 1g</span><b>Every 8hrs</b>
-                    </div>
-                  </div>
-                  <p
-                    style="color: #64748b; font-size: 0.77rem; margin-top: 8px"
-                  >
-                    ⚕️ Not a diagnosis. Please consult a licensed doctor.
-                  </p>
-                </div>
-                <div class="msg-time">Now</div>
-              </div>
-            </div>
-            <div class="chat-input-row">
-              <input
-                class="chat-in"
-                placeholder="Describe your symptoms..."
-                onclick="go('ai')"
-              />
-              <button class="send-btn" onclick="go('ai')">→</button>
-            </div>
-          </div>
+<!-- ══════════ HOME ══════════ -->
+<section class="page active" id="home">
+
+  <div class="hero">
+    <div>
+      <div class="hero-badge"><div class="dot"></div> AI-Powered Pharmaceutical Platform</div>
+      <h1>Your Health, <em>Smarter</em> &amp; More Accessible</h1>
+      <p>Connect with licensed pharmacists, get AI-driven symptom analysis, and order genuine medications — all in one trusted platform built for Africa.</p>
+      <div class="hero-buttons">
+        <button class="btn-hero" onclick="go('ai')">🩺 Check Symptoms Free</button>
+        <button class="btn-hero-outline" onclick="go('market')">Browse Pharmacy →</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><h3>12k+</h3><p>Licensed Pharmacists</p></div>
+        <div class="stat"><h3>500k+</h3><p>Patients Served</p></div>
+        <div class="stat"><h3>98%</h3><p>Satisfaction Rate</p></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-card">
+        <div style="font-size:0.7rem;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">🤖 AI Diagnosis Result</div>
+        <div style="color:#e2e8f0;font-size:0.87rem;line-height:1.6;">Symptoms: <strong style="color:var(--mint)">fever, sore throat, fatigue</strong> → Likely <strong style="color:var(--mint)">viral pharyngitis</strong> (87% confidence)</div>
+        <div class="rx-card">
+          <div style="font-size:0.78rem;color:var(--mint);font-weight:600;margin-bottom:8px;">💊 Suggested Medications</div>
+          <div class="rx-row"><span>Paracetamol 500mg</span><strong>2×/day</strong></div>
+          <div class="rx-row"><span>Strepsils Lozenges</span><strong>As needed</strong></div>
+          <div class="rx-row"><span>Amoxicillin 250mg</span><strong>3×/day — Rx</strong></div>
         </div>
       </div>
+      <div class="mini-cards">
+        <div class="mini-card"><div class="mini-lbl">Orders Today</div><div class="mini-val">2,847</div><div class="mini-sub">↑ +12%</div></div>
+        <div class="mini-card"><div class="mini-lbl">User Rating</div><div class="mini-val">4.9★</div><div class="mini-sub">Based on 50k+ reviews</div></div>
+      </div>
+    </div>
+  </div>
 
-      <!-- TESTIMONIALS -->
+  <!-- FEATURES -->
+  <div class="section">
+    <div class="section-label">Why MediHub</div>
+    <h2 class="section-title">Everything for Modern Healthcare Access</h2>
+    <p class="section-sub">From AI-powered diagnostics to a vast marketplace of verified pharmacies — MediHub bridges the gap between patients and quality care.</p>
+    <div class="grid-3">
+      <div class="card"><div class="card-icon">🧠</div><h3>AI Symptom Checker</h3><p>Describe your symptoms in plain language. Get instant AI-powered analysis, possible diagnoses, and safe medication suggestions reviewed by our medical board.</p></div>
+      <div class="card"><div class="card-icon">🏪</div><h3>Verified Marketplace</h3><p>Browse thousands of products from licensed, verified pharmacists. Compare prices, check real-time stock, and order for delivery or pickup at your convenience.</p></div>
+      <div class="card"><div class="card-icon">🔒</div><h3>Secure Prescriptions</h3><p>Upload and manage prescriptions securely. Pharmacists verify them digitally — ensuring safe, legally compliant dispensing every time.</p></div>
+      <div class="card"><div class="card-icon">🚀</div><h3>Fast Delivery</h3><p>Same-day delivery available in major cities. Real-time tracking from the pharmacy straight to your door. Schedule or urgent options available.</p></div>
+      <div class="card"><div class="card-icon">💬</div><h3>Pharmacist Chat</h3><p>Chat directly with licensed pharmacists for medication advice, dosage guidance, and drug interaction checks before you buy — free of charge.</p></div>
+      <div class="card"><div class="card-icon">📊</div><h3>Health Records</h3><p>Keep a complete history of your medications and prescriptions — easily shareable with your doctor. Your full health picture in one place.</p></div>
+    </div>
+  </div>
+
+  <!-- AI SECTION -->
+  <div class="section dark">
+    <div class="grid-2">
+      <div>
+        <div class="section-label light">AI-Powered</div>
+        <h2 class="section-title light">Describe How You Feel. Get Smart Answers.</h2>
+        <p class="section-sub light">Our AI engine understands natural language — just tell it your symptoms and receive instant clinical guidance.</p>
+        <div style="margin-top:2rem;display:flex;flex-direction:column;gap:0.9rem;">
+          <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:22px;height:22px;background:rgba(13,158,110,0.2);border:1px solid var(--emerald);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--mint);flex-shrink:0;margin-top:1px;">✓</div><p style="font-size:0.88rem;color:#94a3b8;line-height:1.5;">Supports 200+ common conditions and OTC medication suggestions</p></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:22px;height:22px;background:rgba(13,158,110,0.2);border:1px solid var(--emerald);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--mint);flex-shrink:0;margin-top:1px;">✓</div><p style="font-size:0.88rem;color:#94a3b8;line-height:1.5;">Integrated with Claude AI for real-time medical reasoning</p></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><div style="width:22px;height:22px;background:rgba(13,158,110,0.2);border:1px solid var(--emerald);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--mint);flex-shrink:0;margin-top:1px;">✓</div><p style="font-size:0.88rem;color:#94a3b8;line-height:1.5;">Always recommends professional consultation when needed</p></div>
+        </div>
+        <button class="btn-hero" style="margin-top:2rem;" onclick="go('ai')">Try AI Checker Now →</button>
+      </div>
+      <div class="chat-box">
+        <div class="chat-header"><div class="chat-dot"></div><span>MediHub AI Assistant</span><small>Claude AI</small></div>
+        <div class="chat-msgs">
+          <div class="msg msg-ai"><div class="bubble">👋 Hello! Tell me your symptoms and I'll help analyze them and suggest appropriate medications.</div><div class="msg-time">Now</div></div>
+          <div class="msg msg-user"><div class="bubble">I've had a headache for 2 days, slight fever, and neck feels stiff.</div><div class="msg-time">Now</div></div>
+          <div class="msg msg-ai"><div class="bubble">Those symptoms warrant careful attention. I recommend seeing a doctor soon to rule out serious causes. For immediate relief:<div class="chat-rx"><div class="chat-rx-title">💊 OTC Relief</div><div class="chat-rx-item"><span>Ibuprofen 400mg</span><b>Every 6hrs</b></div><div class="chat-rx-item"><span>Paracetamol 1g</span><b>Every 8hrs</b></div></div><p style="color:#64748b;font-size:0.77rem;margin-top:8px;">⚕️ Not a diagnosis. Please consult a licensed doctor.</p></div><div class="msg-time">Now</div></div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-in" placeholder="Describe your symptoms..." onclick="go('ai')">
+          <button class="send-btn" onclick="go('ai')">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
       <div class="section alt">
         <div class="section-label">Testimonials</div>
         <h2 class="section-title">Trusted by Patients &amp; Pharmacists</h2>
@@ -546,8 +492,8 @@
     <!-- ══════════ AI CHECKER ══════════ -->
     <section class="page" id="ai">
       <div
-        class="section dark"
-        style="min-height: calc(100vh - 70px); padding: 4rem 6rem"
+        class="section dark ai-page-section"
+        style="min-height: calc(100vh - 70px)"
       >
         <div style="max-width: 780px; margin: 0 auto">
           <div class="section-label light">AI-Powered Diagnosis</div>
@@ -1374,9 +1320,11 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
         const grid = document.querySelector("#market .grid-4");
         if (!grid) return;
         const searchInput = document.querySelector("#market .search-row input");
-        const query = searchInput?.value.trim()
-          ? `?search=${encodeURIComponent(searchInput.value.trim())}`
-          : "";
+        const params = new URLSearchParams();
+        if (searchInput?.value.trim()) {
+          params.set("search", searchInput.value.trim());
+        }
+
         const activeTab = document.querySelector(".ftab.on");
         let category = "";
         if (activeTab && !/All Products/i.test(activeTab.textContent)) {
@@ -1385,11 +1333,13 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
             .trim()
             .toLowerCase();
         }
-        const catParam = category
-          ? `&category=${encodeURIComponent(category)}`
-          : "";
+        if (category) {
+          params.set("category", category);
+        }
+
+        const suffix = params.toString() ? `?${params.toString()}` : "";
         try {
-          const res = await fetch(`${API_URL}/products${query}${catParam}`);
+          const res = await fetch(`${API_URL}/products${suffix}`);
           const products = await res.json();
           grid.innerHTML = "";
           products.forEach((p) => {

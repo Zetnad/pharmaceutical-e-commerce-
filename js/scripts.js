@@ -285,15 +285,21 @@ async function loadProducts() {
   const grid = document.querySelector('#market .grid-4');
   if (!grid) return;
   const searchInput = document.querySelector('#market .search-row input');
-  const query = searchInput?.value.trim() ? `?search=${encodeURIComponent(searchInput.value.trim())}` : '';
+  const params = new URLSearchParams();
+  if (searchInput?.value.trim()) {
+    params.set('search', searchInput.value.trim());
+  }
   const activeTab = document.querySelector('.ftab.on');
   let category = '';
   if (activeTab && !/All Products/i.test(activeTab.textContent)) {
     category = activeTab.textContent.replace(/[💊🤧🫀🧴🍼💉🧠]/g,'').trim().toLowerCase();
   }
-  const catParam = category ? `&category=${encodeURIComponent(category)}` : '';
+  if (category) {
+    params.set('category', category);
+  }
+  const suffix = params.toString() ? `?${params.toString()}` : '';
   try {
-    const res = await fetch(`${API_URL}/products${query}${catParam}`);
+    const res = await fetch(`${API_URL}/products${suffix}`);
     const products = await res.json();
     grid.innerHTML = '';
     products.forEach(p => {
@@ -392,7 +398,7 @@ function renderPharmacistList(pharms) {
           <div style="font-size:0.82rem;color:var(--text-muted);">${p.patientsCount || p.totalPatients || 0} patients</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <button class="btn-ghost" data-id="${p._id}">View</button>
+          <button class="btn-ghost" data-id="${p._id || p.id || ''}">View</button>
         </div>
       </div>
     `;
@@ -405,9 +411,11 @@ async function selectPharmacist(p) {
   const details = document.getElementById('pharm-details');
   const table = document.getElementById('pharm-patients');
   if (!details || !table) return;
+  const pharmacistId = p._id || p.id;
+  const pharmacistName = p.name || p.pharmacyName || (p.user && (p.user.name || p.user.email)) || 'Pharmacist';
   // store selected pharmacist globally for edit actions
   window._selectedPharmacist = p;
-  details.innerHTML = '<h4 style="margin-top:0">' + (p.name || 'Pharmacist') + '</h4>';
+  details.innerHTML = '<h4 style="margin-top:0">' + pharmacistName + '</h4>';
   // show plans
   const currentPlan = p.plan || (p.plans && p.plans[0] && p.plans[0].name) || 'starter';
   const planHtml = `
@@ -431,18 +439,25 @@ async function selectPharmacist(p) {
   if (sel) sel.value = currentPlan;
   document.getElementById('admin-plan-save')?.addEventListener('click', async () => {
     const newPlan = document.getElementById('admin-plan-select').value;
-    await savePharmacistPlan(p._id, newPlan);
+    await savePharmacistPlan(pharmacistId, newPlan);
   });
   // demo admin login hook
   // demo admin login button behavior will open modal or logout depending on state
-  document.getElementById('btn-demo-login')?.addEventListener('click', (e) => {
-    if (window._demoAdminToken) return demoLogout();
-    showDemoLoginModal();
-  });
+  const demoLoginBtn = document.getElementById('btn-demo-login');
+  if (demoLoginBtn) {
+    demoLoginBtn.onclick = () => {
+      if (window._demoAdminToken) return demoLogout();
+      showDemoLoginModal();
+    };
+  }
   // load patients
   table.innerHTML = '<tr><th style="text-align:left;padding:8px">Patient</th><th style="text-align:left;padding:8px">Contact</th><th style="padding:8px">Actions</th></tr>';
+  if (!pharmacistId) {
+    console.warn('Cannot load patients: pharmacist id missing');
+    return;
+  }
   try {
-    const res = await fetch(`${API_URL}/pharmacists/${p._id}/patients`);
+    const res = await fetch(`${API_URL}/pharmacists/${pharmacistId}/patients`);
     if (!res.ok) throw new Error('No patients endpoint');
     const pdata = await res.json();
     // backend returns { success, message, patients }
