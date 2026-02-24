@@ -77,7 +77,8 @@ app.get('/api/health', (req, res) => {
     message: 'MediHub API is running',
     version: '1.0.0',
     environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    demo: !process.env.MONGODB_URI
   });
 });
 

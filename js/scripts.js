@@ -62,11 +62,12 @@ function createAdminPage() {
         </div>
         <div>
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;">
-            <h3 style="margin:0;font-size:1.05rem">Selected Pharmacist</h3>
-            <div style="display:flex;gap:8px">
-              <button id="btn-edit-plan" class="btn-ghost">Edit Plan</button>
-              <button id="btn-save-plan" class="btn-primary">Save</button>
-            </div>
+                    <h3 style="margin:0;font-size:1.05rem">Selected Pharmacist</h3>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <button id="btn-demo-login" class="btn-ghost">Demo Admin Login</button>
+                      <button id="btn-edit-plan" class="btn-ghost">Edit Plan</button>
+                      <button id="btn-save-plan" class="btn-primary">Save</button>
+                    </div>
           </div>
           <div id="pharm-details" style="background:white;border:1px solid var(--border);padding:12px;border-radius:12px;">
             <div id="pharm-empty" style="color:var(--text-muted);">No pharmacist selected. Click a pharmacist to view details.</div>
@@ -253,6 +254,24 @@ document.addEventListener('DOMContentLoaded', () => {
       searchInput._debounce = setTimeout(loadProducts, 300);
     });
   }
+  // detect demo mode from backend health and show banner in admin if demo
+  (async function checkDemo() {
+    try {
+      const res = await fetch(`${API_URL}/health`);
+      if (!res.ok) return;
+      const h = await res.json();
+      if (h && h.demo) {
+        // create a small banner element
+        const b = document.createElement('div');
+        b.id = 'demo-banner';
+        b.style = 'position:fixed;top:64px;right:16px;background:#fffbeb;color:#92400e;border:1px solid #f59e0b;padding:8px 12px;border-radius:8px;z-index:1200;font-weight:600;font-size:0.9rem;box-shadow:0 4px 10px rgba(0,0,0,0.06)';
+        b.textContent = 'Demo mode: data is local and for testing only';
+        document.body.appendChild(b);
+        // remove after 12s
+        setTimeout(() => b.remove(), 12000);
+      }
+    } catch (e) {}
+  })();
 });
 
 /* ---------------- Admin dashboard data & rendering ---------------- */
@@ -337,6 +356,19 @@ async function selectPharmacist(p) {
     const newPlan = document.getElementById('admin-plan-select').value;
     await savePharmacistPlan(p._id, newPlan);
   });
+  // demo admin login hook
+  document.getElementById('btn-demo-login')?.addEventListener('click', async () => {
+    try {
+      const pass = prompt('Enter demo admin password (default: demo123)');
+      const res = await fetch(`${API_URL}/auth/demo-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'demo@local', password: pass }) });
+      const d = await res.json();
+      if (!res.ok) return alert(d.message || 'Demo login failed');
+      window._demoAdminToken = d.token;
+      alert('Demo admin login successful — token stored for this session.');
+    } catch (e) {
+      console.error(e); alert('Demo login failed');
+    }
+  });
   // load patients
   table.innerHTML = '<tr><th style="text-align:left;padding:8px">Patient</th><th style="text-align:left;padding:8px">Contact</th><th style="padding:8px">Actions</th></tr>';
   try {
@@ -385,9 +417,10 @@ ensureAdminNavLink();
 async function savePharmacistPlan(id, newPlan) {
   if (!id) return alert('No pharmacist selected.');
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (window._demoAdminToken) headers['Authorization'] = 'Bearer ' + window._demoAdminToken;
     const res = await fetch(`${API_URL}/pharmacists/${id}/plan`, {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: newPlan })
+      method: 'PUT', headers, body: JSON.stringify({ plan: newPlan })
     });
     if (!res.ok) {
       const txt = await res.text();

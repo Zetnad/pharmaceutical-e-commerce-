@@ -36,8 +36,13 @@ router.get('/:id/patients', (req, res) => {
   res.json({ success: true, message: 'Demo patients', patients: list });
 });
 
+const demoAuth = require('../config/demoAuth');
+
 // PUT /api/pharmacists/:id/plan (admin) — in demo mode we just update memory
 router.put('/:id/plan', (req, res) => {
+  const auth = req.headers['authorization'] || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : auth;
+  if (!demoAuth.verify(token)) return res.status(401).json({ success: false, message: 'Unauthorized (demo)' });
   const id = req.params.id;
   const p = demoPharmacists.find(x => x._id === id);
   if (!p) return res.status(404).json({ success: false, message: 'Not found' });
