@@ -264,8 +264,9 @@ async function loadPharmacists() {
     const res = await fetch(`${API_URL}/pharmacists`);
     if (!res.ok) throw new Error('Network response not ok');
     const data = await res.json();
-    // assume data is array
-    renderPharmacistList(data);
+    // backend returns { success, message, pharmacists, total }
+    const pharms = Array.isArray(data) ? data : (data.pharmacists || []);
+    renderPharmacistList(pharms);
   } catch (err) {
     // fallback demo data
     console.warn('pharmacists fetch failed, using demo data', err);
@@ -285,12 +286,14 @@ function renderPharmacistList(pharms) {
     const row = document.createElement('div');
     row.className = 'pharm-row';
     row.dataset.id = p._id || p.id || '';
-    row.dataset.name = p.name || 'Unknown';
+    // normalize display name (backend uses pharmacyName)
+    const displayName = p.name || p.pharmacyName || (p.user && (p.user.name || p.user.email)) || 'Unknown';
+    row.dataset.name = displayName;
     row.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;">
         <div>
-          <div style="font-weight:600;color:var(--navy);">${p.name}</div>
-          <div style="font-size:0.82rem;color:var(--text-muted);">${p.patientsCount || 0} patients</div>
+          <div style="font-weight:600;color:var(--navy);">${displayName}</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);">${p.patientsCount || p.totalPatients || 0} patients</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
           <button class="btn-ghost" data-id="${p._id}">View</button>
@@ -306,17 +309,43 @@ async function selectPharmacist(p) {
   const details = document.getElementById('pharm-details');
   const table = document.getElementById('pharm-patients');
   if (!details || !table) return;
+  // store selected pharmacist globally for edit actions
+  window._selectedPharmacist = p;
   details.innerHTML = '<h4 style="margin-top:0">' + (p.name || 'Pharmacist') + '</h4>';
   // show plans
-  const planHtml = (p.plans || []).map(pl => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><div>${pl.name}</div><div>KSh ${pl.price}</div></div>`).join('') || '<div style="color:var(--text-muted)">No plans available.</div>';
-  details.innerHTML += `<div style="margin-top:8px">${planHtml}</div>`;
+  const currentPlan = p.plan || (p.plans && p.plans[0] && p.plans[0].name) || 'starter';
+  const planHtml = `
+    <div style="margin-top:8px">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <div style="font-weight:600">Current plan:</div>
+        <div style="padding:6px 10px;border-radius:8px;background:var(--muted);font-weight:600">${currentPlan}</div>
+      </div>
+      <div id="plan-edit-row" style="display:flex;gap:8px;align-items:center;">
+        <select id="admin-plan-select" style="padding:8px;border-radius:8px;border:1px solid var(--border);">
+          <option value="starter">starter</option>
+          <option value="growth">growth</option>
+          <option value="enterprise">enterprise</option>
+        </select>
+        <button id="admin-plan-save" class="btn-primary">Save plan</button>
+      </div>
+    </div>`;
+  details.innerHTML += planHtml;
+  // pre-select current plan if available
+  const sel = document.getElementById('admin-plan-select');
+  if (sel) sel.value = currentPlan;
+  document.getElementById('admin-plan-save')?.addEventListener('click', async () => {
+    const newPlan = document.getElementById('admin-plan-select').value;
+    await savePharmacistPlan(p._id, newPlan);
+  });
   // load patients
   table.innerHTML = '<tr><th style="text-align:left;padding:8px">Patient</th><th style="text-align:left;padding:8px">Contact</th><th style="padding:8px">Actions</th></tr>';
   try {
     const res = await fetch(`${API_URL}/pharmacists/${p._id}/patients`);
     if (!res.ok) throw new Error('No patients endpoint');
     const pdata = await res.json();
-    renderPatients(pdata, table);
+    // backend returns { success, message, patients }
+    const patients = Array.isArray(pdata) ? pdata : (pdata.patients || []);
+    renderPatients(patients, table);
   } catch (err) {
     console.warn('patients fetch failed, using demo patients', err);
     const demoPatients = [
@@ -352,3 +381,25 @@ function ensureAdminNavLink() {
 }
 
 ensureAdminNavLink();
+
+async function savePharmacistPlan(id, newPlan) {
+  if (!id) return alert('No pharmacist selected.');
+  try {
+    const res = await fetch(`${API_URL}/pharmacists/${id}/plan`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: newPlan })
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      console.error('Plan update failed', txt);
+      return alert('Plan update failed. Check console for details.');
+    }
+    const data = await res.json();
+    alert('Plan updated successfully');
+    // re-render with updated data
+    if (data.pharmacist) selectPharmacist(data.pharmacist);
+  } catch (e) {
+    console.error(e);
+    alert('Plan update failed (network).');
+  }
+}

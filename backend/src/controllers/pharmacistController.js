@@ -106,3 +106,27 @@ exports.getPharmacist = asyncHandler(async (req, res) => {
   const products = await Product.find({ pharmacist: pharmacist._id, isActive: true }).limit(20);
   sendSuccess(res, 200, 'Pharmacy fetched.', { pharmacist, products });
 });
+
+// @route GET /api/pharmacists/:id/patients
+exports.getPharmacistPatients = asyncHandler(async (req, res) => {
+  const pharmacist = await Pharmacist.findById(req.params.id);
+  if (!pharmacist) return sendError(res, 404, 'Pharmacist not found.');
+
+  // Find users who placed orders with this pharmacist
+  const userIds = await Order.distinct('user', { 'items.pharmacist': pharmacist._id });
+  const patients = await User.find({ _id: { $in: userIds } }).select('name email phone address createdAt');
+  sendSuccess(res, 200, 'Patients fetched.', { patients });
+});
+
+// @route PUT /api/pharmacists/:id/plan  (admin)
+exports.updatePharmacistPlan = asyncHandler(async (req, res) => {
+  const { plan } = req.body;
+  if (!plan || !['starter', 'growth', 'enterprise'].includes(plan)) return sendError(res, 400, 'Invalid plan.');
+  const pharmacist = await Pharmacist.findById(req.params.id);
+  if (!pharmacist) return sendError(res, 404, 'Pharmacist not found.');
+
+  pharmacist.plan = plan;
+  await pharmacist.save();
+
+  sendSuccess(res, 200, 'Pharmacist plan updated.', { pharmacist });
+});
