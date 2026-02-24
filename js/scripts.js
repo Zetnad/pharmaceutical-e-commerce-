@@ -25,6 +25,9 @@ function normalizeId(text) {
 function createPlaceholderPage(id) {
   if (!id) return null;
   if (document.getElementById(id)) return document.getElementById(id);
+  // Special-case admin page: build a richer dashboard layout
+  if (id === 'admin') return createAdminPage();
+
   const sec = document.createElement('section');
   sec.className = 'page';
   sec.id = id;
@@ -36,6 +39,59 @@ function createPlaceholderPage(id) {
     </div>
   `;
   document.body.appendChild(sec);
+  return sec;
+}
+
+// Create an admin dashboard DOM programmatically (pharmacist admin)
+function createAdminPage() {
+  if (document.getElementById('admin')) return document.getElementById('admin');
+  const sec = document.createElement('section');
+  sec.className = 'page';
+  sec.id = 'admin';
+  sec.innerHTML = `
+    <div class="section" style="min-height:calc(100vh - 70px);">
+      <div class="section-label">Admin</div>
+      <h2 class="section-title">Pharmacist Admin Dashboard</h2>
+      <p class="section-sub">Manage pharmacists, their plans & pricing, patient lists, and settings.</p>
+      <div class="grid-2" style="margin-top:1.6rem;">
+        <div style="min-width:260px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <input id="admin-search-pharm" placeholder="Search pharmacists..." style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);" />
+          </div>
+          <div id="pharm-list" style="display:flex;flex-direction:column;gap:8px;max-height:520px;overflow:auto;padding-right:6px;margin-top:8px;"></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;">
+            <h3 style="margin:0;font-size:1.05rem">Selected Pharmacist</h3>
+            <div style="display:flex;gap:8px">
+              <button id="btn-edit-plan" class="btn-ghost">Edit Plan</button>
+              <button id="btn-save-plan" class="btn-primary">Save</button>
+            </div>
+          </div>
+          <div id="pharm-details" style="background:white;border:1px solid var(--border);padding:12px;border-radius:12px;">
+            <div id="pharm-empty" style="color:var(--text-muted);">No pharmacist selected. Click a pharmacist to view details.</div>
+          </div>
+          <h4 style="margin-top:16px;margin-bottom:8px">Patients</h4>
+          <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:8px;max-height:320px;overflow:auto;">
+            <table id="pharm-patients" style="width:100%;border-collapse:collapse;font-size:0.9rem;"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(sec);
+
+  // Wire up search and interactions
+  document.getElementById('admin-search-pharm').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('#pharm-list .pharm-row').forEach(r => {
+      const name = r.dataset.name || '';
+      r.style.display = name.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+
+  // Load pharmacists list
+  loadPharmacists();
   return sec;
 }
 
@@ -198,3 +254,101 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+/* ---------------- Admin dashboard data & rendering ---------------- */
+async function loadPharmacists() {
+  const list = document.getElementById('pharm-list');
+  if (!list) return;
+  list.innerHTML = '<p style="color:var(--text-muted)">Loading pharmacists…</p>';
+  try {
+    const res = await fetch(`${API_URL}/pharmacists`);
+    if (!res.ok) throw new Error('Network response not ok');
+    const data = await res.json();
+    // assume data is array
+    renderPharmacistList(data);
+  } catch (err) {
+    // fallback demo data
+    console.warn('pharmacists fetch failed, using demo data', err);
+    const demo = [
+      { _id: 'p1', name: 'PharmaCare Nairobi', plans: [{name:'Starter', price:0},{name:'Growth', price:4500}], patientsCount:312 },
+      { _id: 'p2', name: 'MediPlus Pharmacy', plans: [{name:'Starter', price:0},{name:'Growth', price:4500}], patientsCount:128 }
+    ];
+    renderPharmacistList(demo);
+  }
+}
+
+function renderPharmacistList(pharms) {
+  const list = document.getElementById('pharm-list');
+  if (!list) return;
+  list.innerHTML = '';
+  pharms.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'pharm-row';
+    row.dataset.id = p._id || p.id || '';
+    row.dataset.name = p.name || 'Unknown';
+    row.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;">
+        <div>
+          <div style="font-weight:600;color:var(--navy);">${p.name}</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);">${p.patientsCount || 0} patients</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-ghost" data-id="${p._id}">View</button>
+        </div>
+      </div>
+    `;
+    row.querySelector('button')?.addEventListener('click', () => selectPharmacist(p));
+    list.appendChild(row);
+  });
+}
+
+async function selectPharmacist(p) {
+  const details = document.getElementById('pharm-details');
+  const table = document.getElementById('pharm-patients');
+  if (!details || !table) return;
+  details.innerHTML = '<h4 style="margin-top:0">' + (p.name || 'Pharmacist') + '</h4>';
+  // show plans
+  const planHtml = (p.plans || []).map(pl => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><div>${pl.name}</div><div>KSh ${pl.price}</div></div>`).join('') || '<div style="color:var(--text-muted)">No plans available.</div>';
+  details.innerHTML += `<div style="margin-top:8px">${planHtml}</div>`;
+  // load patients
+  table.innerHTML = '<tr><th style="text-align:left;padding:8px">Patient</th><th style="text-align:left;padding:8px">Contact</th><th style="padding:8px">Actions</th></tr>';
+  try {
+    const res = await fetch(`${API_URL}/pharmacists/${p._id}/patients`);
+    if (!res.ok) throw new Error('No patients endpoint');
+    const pdata = await res.json();
+    renderPatients(pdata, table);
+  } catch (err) {
+    console.warn('patients fetch failed, using demo patients', err);
+    const demoPatients = [
+      { id: 'u1', name: 'Amina Khalid', phone: '+254700111222', lastVisit: '2026-02-20' },
+      { id: 'u2', name: 'Samuel Waweru', phone: '+254700333444', lastVisit: '2026-02-10' }
+    ];
+    renderPatients(demoPatients, table);
+  }
+}
+
+function renderPatients(patients, table) {
+  patients.forEach(pt => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="padding:8px">${pt.name}</td>
+      <td style="padding:8px">${pt.phone || '—'}</td>
+      <td style="padding:8px;text-align:center"><button class="btn-ghost">View</button> <button class="btn-primary">Message</button></td>
+    `;
+    table.appendChild(tr);
+  });
+}
+
+// Inject Admin link into nav if missing (helps on corrupted HTML)
+function ensureAdminNavLink() {
+  const nav = document.querySelector('.nav-links');
+  if (!nav) return;
+  const has = Array.from(nav.querySelectorAll('a')).some(a => (a.textContent||'').toLowerCase().includes('admin'));
+  if (!has) {
+    const li = document.createElement('li');
+    li.innerHTML = `<a onclick="go('admin')">Admin Dashboard</a>`;
+    nav.appendChild(li);
+  }
+}
+
+ensureAdminNavLink();
