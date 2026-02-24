@@ -357,17 +357,10 @@ async function selectPharmacist(p) {
     await savePharmacistPlan(p._id, newPlan);
   });
   // demo admin login hook
-  document.getElementById('btn-demo-login')?.addEventListener('click', async () => {
-    try {
-      const pass = prompt('Enter demo admin password (default: demo123)');
-      const res = await fetch(`${API_URL}/auth/demo-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'demo@local', password: pass }) });
-      const d = await res.json();
-      if (!res.ok) return alert(d.message || 'Demo login failed');
-      window._demoAdminToken = d.token;
-      alert('Demo admin login successful — token stored for this session.');
-    } catch (e) {
-      console.error(e); alert('Demo login failed');
-    }
+  // demo admin login button behavior will open modal or logout depending on state
+  document.getElementById('btn-demo-login')?.addEventListener('click', (e) => {
+    if (window._demoAdminToken) return demoLogout();
+    showDemoLoginModal();
   });
   // load patients
   table.innerHTML = '<tr><th style="text-align:left;padding:8px">Patient</th><th style="text-align:left;padding:8px">Contact</th><th style="padding:8px">Actions</th></tr>';
@@ -413,6 +406,106 @@ function ensureAdminNavLink() {
 }
 
 ensureAdminNavLink();
+
+// ---- Demo auth helpers (frontend) ----
+function loadDemoTokenFromStorage() {
+  try {
+    const t = localStorage.getItem('demoAdminToken');
+    const exp = localStorage.getItem('demoAdminExpiresAt');
+    if (t && exp && Number(exp) > Date.now()) {
+      window._demoAdminToken = t;
+      window._demoAdminExpiresAt = Number(exp);
+    } else {
+      window._demoAdminToken = null;
+      window._demoAdminExpiresAt = null;
+      localStorage.removeItem('demoAdminToken');
+      localStorage.removeItem('demoAdminExpiresAt');
+    }
+  } catch (e) {
+    window._demoAdminToken = null; window._demoAdminExpiresAt = null;
+  }
+  updateDemoAuthUI();
+}
+
+function updateDemoAuthUI() {
+  const btn = document.getElementById('btn-demo-login');
+  if (!btn) return;
+  if (window._demoAdminToken) {
+    btn.textContent = 'Logout';
+    btn.classList.add('btn-danger');
+    // show expiry
+    let info = document.getElementById('demo-token-info');
+    if (!info) {
+      info = document.createElement('div');
+      info.id = 'demo-token-info';
+      info.style = 'font-size:0.85rem;color:var(--text-muted);margin-left:8px';
+      btn.parentNode.insertBefore(info, btn.nextSibling);
+    }
+    const until = new Date(window._demoAdminExpiresAt).toLocaleString();
+    info.textContent = `Token expires: ${until}`;
+  } else {
+    btn.textContent = 'Demo Admin Login';
+    btn.classList.remove('btn-danger');
+    const info = document.getElementById('demo-token-info');
+    if (info) info.remove();
+  }
+}
+
+function showDemoLoginModal() {
+  // create modal elements
+  if (document.getElementById('demo-login-modal')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'demo-login-modal';
+  overlay.style = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:2000';
+  const box = document.createElement('div');
+  box.style = 'background:white;padding:16px;border-radius:10px;min-width:320px;max-width:90%;box-shadow:0 8px 30px rgba(0,0,0,0.2)';
+  box.innerHTML = `
+    <h3 style="margin:0 0 8px 0">Demo Admin Login</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <input id="demo-email" placeholder="Email" style="padding:8px;border:1px solid var(--border);border-radius:8px" value="demo@local" />
+      <input id="demo-pass" placeholder="Password" type="password" style="padding:8px;border:1px solid var(--border);border-radius:8px" />
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+        <button id="demo-cancel" class="btn-ghost">Cancel</button>
+        <button id="demo-submit" class="btn-primary">Login</button>
+      </div>
+    </div>
+  `;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  document.getElementById('demo-cancel').addEventListener('click', () => overlay.remove());
+  document.getElementById('demo-submit').addEventListener('click', async () => {
+    const email = document.getElementById('demo-email').value || 'demo@local';
+    const password = document.getElementById('demo-pass').value;
+    try {
+      const res = await fetch(`${API_URL}/auth/demo-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+      const d = await res.json();
+      if (!res.ok) return alert(d.message || 'Demo login failed');
+      // store token and expiry
+      window._demoAdminToken = d.token || d.token;
+      window._demoAdminExpiresAt = d.expiresAt || d.expiresAt;
+      localStorage.setItem('demoAdminToken', window._demoAdminToken);
+      localStorage.setItem('demoAdminExpiresAt', window._demoAdminExpiresAt);
+      overlay.remove();
+      updateDemoAuthUI();
+      alert('Demo admin login successful');
+    } catch (e) { console.error(e); alert('Demo login failed'); }
+  });
+}
+
+async function demoLogout() {
+  if (!window._demoAdminToken) return;
+  try {
+    await fetch(`${API_URL}/auth/demo-revoke`, { method: 'POST', headers: { 'Authorization': 'Bearer ' + window._demoAdminToken } });
+  } catch (e) { console.warn('demo revoke failed', e); }
+  window._demoAdminToken = null; window._demoAdminExpiresAt = null;
+  localStorage.removeItem('demoAdminToken'); localStorage.removeItem('demoAdminExpiresAt');
+  updateDemoAuthUI();
+  alert('Logged out of demo admin');
+}
+
+// load any persisted demo token on script load
+loadDemoTokenFromStorage();
 
 async function savePharmacistPlan(id, newPlan) {
   if (!id) return alert('No pharmacist selected.');
