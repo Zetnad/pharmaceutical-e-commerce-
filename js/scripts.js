@@ -93,7 +93,61 @@ function createAdminPage() {
 
   // Load pharmacists list
   loadPharmacists();
+  // insert inline admin login panel
+  insertAdminLoginPanel();
   return sec;
+}
+
+// Insert an inline admin login panel into the admin page (replaces modal)
+function insertAdminLoginPanel() {
+  const admin = document.getElementById('admin');
+  if (!admin) return;
+  if (document.getElementById('admin-login-panel')) return;
+  // left column is the first child inside .grid-2
+  const leftCol = admin.querySelector('.grid-2 > div');
+  if (!leftCol) return;
+  const panel = document.createElement('div');
+  panel.id = 'admin-login-panel';
+  panel.className = 'admin-login-panel';
+  panel.innerHTML = `
+    <div style="font-weight:700;color:var(--navy);margin-bottom:6px">Admin Login (Demo)</div>
+    <div class="admin-login-row">
+      <input id="panel-demo-email" type="text" placeholder="email@demo.local" value="demo@local" />
+      <input id="panel-demo-pass" type="password" placeholder="password" />
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+      <label style="display:flex;align-items:center;gap:8px"><input id="panel-demo-remember" type="checkbox" /> Remember me</label>
+      <div style="display:flex;gap:8px">
+        <button id="panel-demo-login" class="btn-primary">Login</button>
+        <button id="panel-demo-logout" class="btn-ghost" style="display:none">Logout</button>
+      </div>
+    </div>
+  `;
+  leftCol.insertBefore(panel, leftCol.querySelector('#pharm-list'));
+
+  document.getElementById('panel-demo-login').addEventListener('click', async () => {
+    const email = document.getElementById('panel-demo-email').value || 'demo@local';
+    const password = document.getElementById('panel-demo-pass').value;
+    const remember = document.getElementById('panel-demo-remember').checked === true;
+    try {
+      const res = await fetch(`${API_URL}/auth/demo-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, remember }) });
+      const d = await res.json();
+      if (!res.ok) { showToast('error','Login failed', d.message || 'Invalid demo credentials'); return; }
+      window._demoAdminToken = d.token; window._demoAdminExpiresAt = d.expiresAt;
+      localStorage.setItem('demoAdminToken', window._demoAdminToken); localStorage.setItem('demoAdminExpiresAt', window._demoAdminExpiresAt);
+      updateDemoAuthUI();
+      showToast('info','Logged in','Demo admin login successful');
+      document.getElementById('panel-demo-pass').value = '';
+      document.getElementById('panel-demo-logout').style.display = '';
+      document.getElementById('panel-demo-login').style.display = 'none';
+    } catch (e) { console.error(e); showToast('error','Login failed','Network error'); }
+  });
+
+  document.getElementById('panel-demo-logout').addEventListener('click', async () => {
+    await demoLogout();
+    document.getElementById('panel-demo-logout').style.display = 'none';
+    document.getElementById('panel-demo-login').style.display = '';
+  });
 }
 
 // Robust navigation: if target id doesn't exist, create a placeholder instead of throwing
@@ -125,6 +179,29 @@ function addMsg(cont, html, role) {
   d.innerHTML = `<div class="bubble">${html}</div><div class="msg-time">${t}</div>`;
   cont.appendChild(d);
   cont.scrollTop = cont.scrollHeight;
+}
+
+// Toast utilities
+function _ensureToastWrap() {
+  let w = document.getElementById('toast-wrap');
+  if (!w) {
+    w = document.createElement('div');
+    w.id = 'toast-wrap';
+    w.className = 'toast-wrap';
+    document.body.appendChild(w);
+  }
+  return w;
+}
+
+function showToast(type = 'info', title = '', msg = '') {
+  const wrap = _ensureToastWrap();
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<div style="flex:1"><div class="t-title">${title}</div><div class="t-msg">${msg}</div></div><button aria-label="close" style="background:none;border:none;font-weight:700;cursor:pointer;color:#64748b">×</button>`;
+  const btn = t.querySelector('button');
+  btn.addEventListener('click', () => t.remove());
+  wrap.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 6000);
 }
 
 async function send() {
@@ -443,16 +520,50 @@ function updateDemoAuthUI() {
     }
     const until = new Date(window._demoAdminExpiresAt).toLocaleString();
     info.textContent = `Token expires: ${until}`;
+    // start countdown display
+    startDemoCountdown(info);
   } else {
     btn.textContent = 'Demo Admin Login';
     btn.classList.remove('btn-danger');
     const info = document.getElementById('demo-token-info');
     if (info) info.remove();
   }
+  // sync inline admin panel controls if present
+  const panelLogin = document.getElementById('panel-demo-login');
+  const panelLogout = document.getElementById('panel-demo-logout');
+  if (panelLogin && panelLogout) {
+    if (window._demoAdminToken) {
+      panelLogin.style.display = 'none'; panelLogout.style.display = '';
+    } else {
+      panelLogin.style.display = ''; panelLogout.style.display = 'none';
+    }
+  }
+}
+
+let _demoCountdownTimer = null;
+function startDemoCountdown(container) {
+  if (_demoCountdownTimer) clearInterval(_demoCountdownTimer);
+  function tick() {
+    if (!window._demoAdminExpiresAt) { container.textContent = ''; clearInterval(_demoCountdownTimer); return; }
+    const remaining = window._demoAdminExpiresAt - Date.now();
+    if (remaining <= 0) { container.textContent = 'Token expired'; clearInterval(_demoCountdownTimer); window._demoAdminToken = null; localStorage.removeItem('demoAdminToken'); localStorage.removeItem('demoAdminExpiresAt'); updateDemoAuthUI(); return; }
+    const sec = Math.floor(remaining / 1000) % 60;
+    const min = Math.floor(remaining / 60000) % 60;
+    const hrs = Math.floor(remaining / 3600000);
+    container.textContent = `Token expires in ${hrs}h ${min}m ${sec}s`;
+  }
+  tick();
+  _demoCountdownTimer = setInterval(tick, 1000);
 }
 
 function showDemoLoginModal() {
-  // create modal elements
+  // Focus the embedded admin login panel if present
+  const panel = document.getElementById('admin-login-panel');
+  if (panel) {
+    panel.querySelector('input[type="password"]')?.focus();
+    return;
+  }
+  // fallback: open the modal if panel isn't available (legacy)
   if (document.getElementById('demo-login-modal')) return;
   const overlay = document.createElement('div');
   overlay.id = 'demo-login-modal';
@@ -464,6 +575,7 @@ function showDemoLoginModal() {
     <div style="display:flex;flex-direction:column;gap:8px">
       <input id="demo-email" placeholder="Email" style="padding:8px;border:1px solid var(--border);border-radius:8px" value="demo@local" />
       <input id="demo-pass" placeholder="Password" type="password" style="padding:8px;border:1px solid var(--border);border-radius:8px" />
+      <label style="display:flex;align-items:center;gap:8px"><input id="demo-remember" type="checkbox" /> Remember me</label>
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
         <button id="demo-cancel" class="btn-ghost">Cancel</button>
         <button id="demo-submit" class="btn-primary">Login</button>
@@ -478,18 +590,15 @@ function showDemoLoginModal() {
     const email = document.getElementById('demo-email').value || 'demo@local';
     const password = document.getElementById('demo-pass').value;
     try {
-      const res = await fetch(`${API_URL}/auth/demo-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+      const remember = document.getElementById('demo-remember')?.checked === true;
+      const res = await fetch(`${API_URL}/auth/demo-login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, remember }) });
       const d = await res.json();
-      if (!res.ok) return alert(d.message || 'Demo login failed');
+      if (!res.ok) { showToast('error','Login failed', d.message || 'Invalid demo credentials'); return; }
       // store token and expiry
-      window._demoAdminToken = d.token || d.token;
-      window._demoAdminExpiresAt = d.expiresAt || d.expiresAt;
-      localStorage.setItem('demoAdminToken', window._demoAdminToken);
-      localStorage.setItem('demoAdminExpiresAt', window._demoAdminExpiresAt);
-      overlay.remove();
-      updateDemoAuthUI();
-      alert('Demo admin login successful');
-    } catch (e) { console.error(e); alert('Demo login failed'); }
+      window._demoAdminToken = d.token; window._demoAdminExpiresAt = d.expiresAt;
+      localStorage.setItem('demoAdminToken', window._demoAdminToken); localStorage.setItem('demoAdminExpiresAt', window._demoAdminExpiresAt);
+      overlay.remove(); updateDemoAuthUI(); showToast('info','Logged in','Demo admin login successful');
+    } catch (e) { console.error(e); showToast('error','Login failed','Network error'); }
   });
 }
 
@@ -501,14 +610,14 @@ async function demoLogout() {
   window._demoAdminToken = null; window._demoAdminExpiresAt = null;
   localStorage.removeItem('demoAdminToken'); localStorage.removeItem('demoAdminExpiresAt');
   updateDemoAuthUI();
-  alert('Logged out of demo admin');
+  showToast('info','Logged out','You have been logged out of demo admin');
 }
 
 // load any persisted demo token on script load
 loadDemoTokenFromStorage();
 
 async function savePharmacistPlan(id, newPlan) {
-  if (!id) return alert('No pharmacist selected.');
+  if (!id) { showToast('warn','No selection','No pharmacist selected.'); return; }
   try {
     const headers = { 'Content-Type': 'application/json' };
     if (window._demoAdminToken) headers['Authorization'] = 'Bearer ' + window._demoAdminToken;
@@ -518,14 +627,15 @@ async function savePharmacistPlan(id, newPlan) {
     if (!res.ok) {
       const txt = await res.text();
       console.error('Plan update failed', txt);
-      return alert('Plan update failed. Check console for details.');
+      showToast('error','Update failed','Plan update failed. Check console for details.');
+      return;
     }
     const data = await res.json();
-    alert('Plan updated successfully');
+    showToast('info','Saved','Plan updated successfully');
     // re-render with updated data
     if (data.pharmacist) selectPharmacist(data.pharmacist);
   } catch (e) {
     console.error(e);
-    alert('Plan update failed (network).');
+    showToast('error','Network','Plan update failed (network).');
   }
 }

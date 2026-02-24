@@ -10,7 +10,9 @@ router.post('/demo-login', (req, res) => {
 	const demoPassword = process.env.DEMO_ADMIN_PASSWORD || 'demo123';
 	// basic check — accept any email but require demo password
 	if (!password || password !== demoPassword) return res.status(401).json({ success: false, message: 'Invalid demo credentials' });
-	const issued = demoAuth.issue(email || 'demo@local');
+	const remember = req.body.remember === true || req.body.remember === 'true';
+	const ttl = remember ? 7 * 24 * 3600 : 3600; // 7 days vs 1 hour
+	const issued = demoAuth.issue(email || 'demo@local', ttl);
 	return res.json({ success: true, message: 'Demo admin token issued', token: issued.token, issuedAt: issued.issuedAt, expiresAt: issued.expiresAt });
 });
 
