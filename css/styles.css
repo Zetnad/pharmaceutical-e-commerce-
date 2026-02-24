@@ -92,6 +92,7 @@ nav {
 .section.alt { background: var(--cream-warm); }
 .section.dark { background: var(--navy); }
 .section.white { background: white; }
+.ai-page-section { padding: 4rem 6rem; }
 .section-label { font-size:0.78rem; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:var(--emerald); margin-bottom:0.8rem; }
 .section-label.light { color:var(--mint); }
 .section-title { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:700; color:var(--navy); max-width:580px; line-height:1.2; }
@@ -243,8 +244,21 @@ footer { background:var(--navy); padding:5rem 6rem 2.5rem; color:white; }
 .f-bottom-links a:hover { color:var(--mint); }
 
 /* RESPONSIVE */
-@media(max-width:1100px) { .hero,.section { padding:4rem; } footer { padding:4rem 4rem 2rem; } .grid-4 { grid-template-columns:repeat(2,1fr); } .footer-top { grid-template-columns:1fr 1fr; } }
-@media(max-width:768px) { .hero { grid-template-columns:1fr; padding:3rem 2rem; } .hero-visual{display:none;} .hero p { max-width:none; }
+@media(max-width:1100px) {
+  .hero,.section { padding:4rem; }
+  .ai-page-section { padding:4rem; }
+  footer { padding:4rem 4rem 2rem; }
+  .grid-4 { grid-template-columns:repeat(2,1fr); }
+  .footer-top { grid-template-columns:1fr 1fr; }
+}
+
+@media(max-width:768px) {
+  nav { padding:0 1rem; }
+  .hero { grid-template-columns:1fr; padding:3rem 2rem; }
+  .hero-visual{display:none;}
+  .hero p { max-width:none; }
+  .hero-stats { flex-wrap:wrap; gap:1rem 1.4rem; margin-top:2rem; }
+  .hero-stats .stat { min-width:96px; }
   .hero-buttons { flex-direction:column; align-items:stretch; }
   .hero-buttons .btn-hero,
   .hero-buttons .btn-hero-outline { width:100%; justify-content:center; }
@@ -258,20 +272,30 @@ footer { background:var(--navy); padding:5rem 6rem 2.5rem; color:white; }
   .nav-menu .btn-ghost, .nav-menu .btn-primary { width:100%; text-align:center; }
   .search-row { max-width:100%; }
   /* AI checker adjustments */
-  #ai .section { padding:2rem 1.5rem; }
+  .ai-page-section { padding:2rem 1.5rem; }
   #ai .section p { max-width:100%; }
   #ai .chat-box { width:100%; }
   #ai .chat-msgs { max-height:340px; }
-  #ai .chat-input-row { flex-wrap:wrap; gap:6px; }
+  #ai .chat-input-row { flex-wrap:nowrap; gap:8px; }
+  .chat-header { flex-wrap:wrap; row-gap:4px; }
+  .chat-header small { margin-left:0; }
   #ai .symptom-chips { justify-content:center; }
-  #ai .chip { flex:1 1 auto; text-align:center; }
-  .section { padding:3rem 2rem; } footer { padding:3rem 2rem 2rem; } .footer-top { grid-template-columns:1fr; } .f-bottom { flex-direction:column; align-items:flex-start; } }
+  #ai .chip { flex:1 1 calc(50% - 8px); text-align:center; }
+  .section { padding:3rem 2rem; }
+  footer { padding:3rem 2rem 2rem; }
+  .footer-top { grid-template-columns:1fr; }
+  .f-bottom { flex-direction:column; align-items:flex-start; }
+}
 
 /* Small phones (narrow) tweaks */
 @media (max-width:480px) {
+  nav { padding:0 0.75rem; }
+  .nav-logo { font-size:1.35rem; }
   .hero { padding:2rem 1rem; gap:1.2rem; }
   .hero h1 { font-size: clamp(1.6rem,6vw,2.4rem); }
   .hero p { font-size:0.95rem; }
+  .hero-stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.9rem; }
+  .hero-stats .stat:last-child { grid-column:1 / -1; }
 
   /* Make product cards more compact */
   .prod-img { height:90px; font-size:2.2rem; }
@@ -284,6 +308,8 @@ footer { background:var(--navy); padding:5rem 6rem 2.5rem; color:white; }
   .chat-input-row { padding:0.6rem; gap:8px; flex-direction:column; }
   .chat-in { padding:10px; border-radius:12px; }
   .send-btn { width:100%; height:42px; border-radius:10px; }
+  .ai-page-section { padding:1.5rem 1rem; }
+  .search-row input { min-width:0; }
 
   /* Buttons and inputs full width */
   .btn-ghost, .btn-primary, .btn-hero, .btn-hero-outline, .price-btn { width:100%; }
@@ -293,6 +319,9 @@ footer { background:var(--navy); padding:5rem 6rem 2.5rem; color:white; }
   footer { padding:2rem 1rem 1.5rem; }
   .f-desc { max-width:100%; }
   .f-logo { font-size:1.25rem; }
+  .nl-row { flex-direction:column; }
+  .nl-row button { width:100%; }
+  .f-bottom-links { gap:0.8rem; flex-wrap:wrap; }
 }
 
 /* Toasts */
