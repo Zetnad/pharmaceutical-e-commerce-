@@ -2273,7 +2273,8 @@
         <h2 class="section-title light" style="margin-bottom:0.5rem;">Symptom Checker</h2>
         <p style="color:#64748b; margin-bottom:2rem; font-size:0.88rem; max-width:600px; line-height:1.6;">Describe your
           symptoms in natural language. Our AI will analyze them and suggest possible conditions and OTC medications.
-          <strong style="color:#475569">Always consult a licensed doctor for serious conditions.</strong></p>
+          <strong style="color:#475569">Always consult a licensed doctor for serious conditions.</strong>
+        </p>
         <div class="chat-box">
           <div class="chat-header">
             <div class="chat-dot"></div><span>MediHub AI — Symptom Analyzer</span><small>Powered by Claude AI</small>
@@ -2800,6 +2801,8 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
   <script>
     // ==== backend integration script ====
     const API_URL = 'http://localhost:5000/api';
+    const tenantDomain = window.location.hostname; // e.g. johnspharmacy.medihub.com or localhost
+    const apiHeaders = { 'Content-Type': 'application/json', 'x-tenant-domain': tenantDomain };
 
     // override navigation helper so it's available after this block
     function toggleNav() { document.querySelector('.nav-menu')?.classList.toggle('open'); }
@@ -2849,7 +2852,7 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
 
       try {
         const res = await fetch(`${API_URL}/ai/analyze`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: apiHeaders,
           body: JSON.stringify({ symptoms: text })
         });
         const data = await res.json();
@@ -2878,7 +2881,7 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
       }
       const catParam = category ? `&category=${encodeURIComponent(category)}` : '';
       try {
-        const res = await fetch(`${API_URL}/products${query}${catParam}`);
+        const res = await fetch(`${API_URL}/products${query}${catParam}`, { headers: apiHeaders });
         const products = await res.json();
         grid.innerHTML = '';
         products.forEach(p => {
@@ -2907,7 +2910,27 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Fetch Tenant Theme and Brand Name
+        const storeRes = await fetch(`${API_URL}/store`, { headers: apiHeaders });
+        const storeData = await storeRes.json();
+        if (storeData.success && storeData.data) {
+          // Change colors
+          const th = storeData.data.theme;
+          if (th && th.primaryColor) {
+            document.documentElement.style.setProperty('--emerald', th.primaryColor);
+            document.documentElement.style.setProperty('--emerald-dark', th.primaryColor); // a bit simplified
+          }
+          if (th && th.secondaryColor) {
+            document.documentElement.style.setProperty('--navy', th.secondaryColor);
+          }
+          // Change Brand Header
+          const logo = document.querySelector('.nav-logo');
+          if (logo) logo.innerHTML = `<div class="pill"></div>${storeData.data.name}`;
+        }
+      } catch (e) { console.error("Could not fetch tenant config", e); }
+
       loadProducts();
       const searchInput = document.querySelector('#market .search-row input');
       if (searchInput) {

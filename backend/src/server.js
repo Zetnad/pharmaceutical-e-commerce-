@@ -19,6 +19,7 @@ const aiRoutes = require('./routes/ai');
 const prescriptionRoutes = require('./routes/prescriptions');
 const paymentRoutes = require('./routes/payments');
 const adminRoutes = require('./routes/admin');
+const { resolveTenant } = require('./middleware/tenantResolver');
 
 const app = express();
 
@@ -80,6 +81,17 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     demo: !process.env.MONGODB_URI
   });
+});
+
+// ─── Tenant Resolver Middleware ───
+app.use('/api', resolveTenant);
+
+// ─── Public Store Info Endpoint ───
+app.get('/api/store', (req, res) => {
+  if (req.tenant) {
+    return res.json({ success: true, data: { name: req.tenant.pharmacyName, theme: req.tenant.theme, subdomain: req.tenant.subdomain } });
+  }
+  return res.json({ success: false, message: 'Not a tenant domain' });
 });
 
 // ─── API Routes ───

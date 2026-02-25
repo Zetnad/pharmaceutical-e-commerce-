@@ -20,6 +20,11 @@ exports.placeOrder = asyncHandler(async (req, res) => {
     if (product.requiresPrescription && !prescriptionId)
       return sendError(res, 400, `${product.name} requires a valid prescription.`);
 
+    // Tenant Isolation: Ensure the product belongs to the store the user is currently visiting
+    if (req.tenant && product.pharmacist._id.toString() !== req.tenant._id.toString()) {
+      return sendError(res, 400, `${product.name} is not available at this pharmacy.`);
+    }
+
     orderItems.push({
       product: product._id, name: product.name,
       quantity: item.quantity, price: product.price,
@@ -44,7 +49,7 @@ exports.placeOrder = asyncHandler(async (req, res) => {
   });
 
   // Email confirmation
-  try { await emailService.sendOrderConfirmation(req.user.email, req.user.name, order); } catch (e) {}
+  try { await emailService.sendOrderConfirmation(req.user.email, req.user.name, order); } catch (e) { }
 
   // Update pharmacist revenue
   for (const item of orderItems) {
@@ -61,6 +66,11 @@ exports.getMyOrders = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, status } = req.query;
   const query = { user: req.user._id };
   if (status) query.orderStatus = status;
+
+  // Tenant Isolation: Only show orders placed at the current tenant's pharmacy
+  if (req.tenant) {
+    query['items.pharmacist'] = req.tenant._id;
+  }
 
   const [orders, total] = await Promise.all([
     Order.find(query).populate('items.product', 'name images').sort('-createdAt')
@@ -95,7 +105,7 @@ exports.updateOrderStatus = asyncHandler(async (req, res) => {
   if (status === 'delivered') { order.deliveredAt = Date.now(); order.paymentStatus = 'paid'; }
   await order.save();
 
-  try { await emailService.sendOrderStatusUpdate(order.user.email, order.user.name, order); } catch(e) {}
+  try { await emailService.sendOrderStatusUpdate(order.user.email, order.user.name, order); } catch (e) { }
   sendSuccess(res, 200, 'Order status updated.', { order });
 });
 

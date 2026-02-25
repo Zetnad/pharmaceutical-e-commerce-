@@ -8,6 +8,12 @@ const pharmacistSchema = new mongoose.Schema({
   businessRegistration: { type: String },
   plan: { type: String, enum: ['starter', 'growth', 'enterprise'], default: 'starter' },
   status: { type: String, enum: ['pending', 'verified', 'suspended', 'rejected'], default: 'pending' },
+  subdomain: { type: String, unique: true, sparse: true, trim: true, lowercase: true }, // e.g., 'johnspharmacy'
+  customDomain: { type: String, unique: true, sparse: true, trim: true, lowercase: true }, // e.g., 'www.johnspharmacy.com'
+  theme: {
+    primaryColor: { type: String, default: '#0d9e6e' },
+    secondaryColor: { type: String, default: '#0b1120' }
+  },
   location: {
     address: String, city: String, county: String,
     country: { type: String, default: 'Kenya' },

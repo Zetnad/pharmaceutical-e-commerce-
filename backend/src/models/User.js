@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: [true, 'Password is required'], minlength: 6, select: false },
   phone: { type: String, trim: true },
   role: { type: String, enum: ['patient', 'pharmacist', 'admin'], default: 'patient' },
+  tenant: { type: mongoose.Schema.Types.ObjectId, ref: 'Pharmacist' }, // Links a patient to a specific B2B2C pharmacy
   plan: { type: String, enum: ['free', 'premium', 'family'], default: 'free' },
   avatar: { type: String, default: null },
   isVerified: { type: Boolean, default: false },

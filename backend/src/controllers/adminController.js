@@ -44,6 +44,60 @@ exports.getPendingPharmacists = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Pending pharmacists fetched.', { pharmacists });
 });
 
+// @route  GET /api/admin/pharmacists
+exports.getAllPharmacists = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 20, status } = req.query;
+  const query = {};
+  if (status) query.status = status;
+
+  const [pharmacists, total] = await Promise.all([
+    Pharmacist.find(query).populate('user', 'name email phone createdAt').sort('-createdAt')
+      .skip((page - 1) * limit).limit(Number(limit)),
+    Pharmacist.countDocuments(query)
+  ]);
+  sendSuccess(res, 200, 'All pharmacists fetched.', { pharmacists, total });
+});
+
+// @route  PUT /api/admin/pharmacists/:id/domain
+exports.updatePharmacistDomain = asyncHandler(async (req, res) => {
+  const { subdomain, customDomain } = req.body;
+  const pharmacist = await Pharmacist.findById(req.params.id);
+  if (!pharmacist) return sendError(res, 404, 'Pharmacist not found.');
+
+  // Check uniqueness if provided
+  if (subdomain) {
+    const existing = await Pharmacist.findOne({ subdomain, _id: { $ne: pharmacist._id } });
+    if (existing) return sendError(res, 400, 'Subdomain is already taken by another pharmacy.');
+    pharmacist.subdomain = subdomain.toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
+
+  if (customDomain) {
+    const existing = await Pharmacist.findOne({ customDomain, _id: { $ne: pharmacist._id } });
+    if (existing) return sendError(res, 400, 'Custom domain is already registered to another pharmacy.');
+    pharmacist.customDomain = customDomain.toLowerCase();
+  }
+
+  await pharmacist.save();
+  sendSuccess(res, 200, 'Pharmacist domains updated successfully.', { pharmacist });
+});
+
+// @route  PUT /api/admin/pharmacists/:id/subscription
+exports.updatePharmacistSubscription = asyncHandler(async (req, res) => {
+  const { plan, status } = req.body;
+  const pharmacist = await Pharmacist.findById(req.params.id);
+  if (!pharmacist) return sendError(res, 404, 'Pharmacist not found.');
+
+  if (plan) pharmacist.plan = plan;
+  if (status) {
+    // Cannot force pending via this route easily, mostly activate/suspend
+    const allowedStatuses = ['verified', 'suspended'];
+    if (allowedStatuses.includes(status)) pharmacist.status = status;
+  }
+
+  await pharmacist.save();
+  sendSuccess(res, 200, 'Pharmacist subscription updated.', { pharmacist });
+});
+
 // @route  PUT /api/admin/pharmacists/:id/verify
 exports.verifyPharmacist = asyncHandler(async (req, res) => {
   const { action, reason } = req.body; // action: 'approve' | 'reject'
@@ -60,7 +114,7 @@ exports.verifyPharmacist = asyncHandler(async (req, res) => {
     } else {
       await emailService.sendPharmacistRejected(pharmacist.user.email, pharmacist.user.name, reason);
     }
-  } catch (e) {}
+  } catch (e) { }
 
   sendSuccess(res, 200, `Pharmacist ${action === 'approve' ? 'approved' : 'rejected'}.`, { pharmacist });
 });

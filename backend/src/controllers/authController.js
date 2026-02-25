@@ -21,7 +21,10 @@ exports.register = asyncHandler(async (req, res) => {
   const allowedRoles = ['patient', 'pharmacist'];
   const userRole = allowedRoles.includes(role) ? role : 'patient';
 
-  const user = await User.create({ name, email, password, phone, role: userRole });
+  // If registering on a specific tenant's domain, automatically link them
+  const tenantData = (req.tenant && userRole === 'patient') ? req.tenant._id : undefined;
+
+  const user = await User.create({ name, email, password, phone, role: userRole, tenant: tenantData });
 
   // Send welcome email
   try { await emailService.sendWelcome(user.email, user.name); } catch (e) { /* non-blocking */ }
@@ -43,6 +46,13 @@ exports.login = asyncHandler(async (req, res) => {
     return sendError(res, 401, 'Invalid email or password.');
 
   if (!user.isActive) return sendError(res, 401, 'Your account has been deactivated. Contact support.');
+
+  // Tenant Isolation Check: If logging in as a patient on a specific tenant's domain, they must belong to that tenant.
+  if (req.tenant && user.role === 'patient') {
+    if (!user.tenant || user.tenant.toString() !== req.tenant._id.toString()) {
+      return sendError(res, 401, 'Invalid credentials for this pharmacy.');
+    }
+  }
 
   const token = generateToken(user._id);
   sendSuccess(res, 200, 'Login successful.', {

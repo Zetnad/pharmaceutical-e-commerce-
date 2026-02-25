@@ -10,6 +10,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
   } = req.query;
 
   const query = { isActive: true, stock: { $gt: 0 } };
+  if (req.tenant) query.pharmacist = req.tenant._id;
 
   if (category) query.category = category;
   if (type) query.type = type;
@@ -35,7 +36,10 @@ exports.getProducts = asyncHandler(async (req, res) => {
 
 // @route  GET /api/products/:id
 exports.getProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id)
+  const query = { _id: req.params.id };
+  if (req.tenant) query.pharmacist = req.tenant._id;
+
+  const product = await Product.findOne(query)
     .populate('pharmacist', 'pharmacyName rating location phone deliveryAvailable');
   if (!product) return sendError(res, 404, 'Product not found.');
   sendSuccess(res, 200, 'Product fetched.', { product });
@@ -88,6 +92,9 @@ exports.addReview = asyncHandler(async (req, res) => {
 
 // @route  GET /api/products/categories
 exports.getCategories = asyncHandler(async (req, res) => {
-  const categories = await Product.distinct('category', { isActive: true });
+  const query = { isActive: true };
+  if (req.tenant) query.pharmacist = req.tenant._id;
+
+  const categories = await Product.distinct('category', query);
   sendSuccess(res, 200, 'Categories fetched.', { categories });
 });
