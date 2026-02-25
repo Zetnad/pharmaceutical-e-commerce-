@@ -14,637 +14,1372 @@
             --emerald-dark: #076b4a;
             --emerald-light: #d1fae5;
             --navy: #0b1120;
+            --navy-mid: #132135;
             --navy-soft: #1e3a5f;
             --cream: #fdfaf5;
             --text-primary: #0b1120;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            --white: #ffffff;
+            --white: #fff;
             --red: #e05252;
             --gold: #e8a838;
-            --radius: 12px;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --radius: 14px
         }
 
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            box-sizing: border-box
         }
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background: var(--cream);
+            background: #f0f2f5;
             color: var(--text-primary);
             display: flex;
             height: 100vh;
-            overflow: hidden;
+            overflow: hidden
         }
 
-        /* Sidebar */
+        /* ── Sidebar ── */
         .sidebar {
-            width: 260px;
-            background: var(--navy);
-            color: white;
+            width: 270px;
+            background: linear-gradient(180deg, #0b1120 0%, #132135 100%);
+            color: #fff;
             display: flex;
             flex-direction: column;
-            padding: 2rem 1.5rem;
+            padding: 0;
+            overflow-y: auto
+        }
+
+        .sidebar-header {
+            padding: 1.8rem 1.6rem 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, .06)
         }
 
         .brand {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 900;
-            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px
         }
 
         .brand em {
             color: var(--emerald);
-            font-style: normal;
+            font-style: normal
+        }
+
+        .brand-badge {
+            font-size: .55rem;
+            background: var(--emerald);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-weight: 600;
+            letter-spacing: .06em
+        }
+
+        .sidebar-nav {
+            padding: 1rem .8rem;
+            flex: 1
+        }
+
+        .nav-label {
+            font-size: .65rem;
+            text-transform: uppercase;
+            color: #475569;
+            letter-spacing: .1em;
+            padding: .8rem .8rem .4rem;
+            font-weight: 600
         }
 
         .nav-item {
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 2px;
+            border-radius: 10px;
             color: #94a3b8;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all .2s;
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: .88rem;
+            display: flex;
+            align-items: center;
+            gap: 10px
         }
 
         .nav-item:hover,
         .nav-item.active {
-            background: rgba(13, 158, 110, 0.15);
-            color: var(--emerald-light);
+            background: rgba(13, 158, 110, .12);
+            color: #d1fae5
+        }
+
+        .nav-item .icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem
+        }
+
+        .nav-item .badge-count {
+            margin-left: auto;
+            background: var(--red);
+            color: #fff;
+            font-size: .65rem;
+            padding: 2px 7px;
+            border-radius: 50px;
+            font-weight: 600
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.4rem;
+            border-top: 1px solid rgba(255, 255, 255, .06)
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: .85rem;
+            color: #fff
+        }
+
+        .admin-info .name {
+            font-size: .85rem;
+            font-weight: 600;
+            color: #fff
+        }
+
+        .admin-info .role {
+            font-size: .7rem;
+            color: #64748b
         }
 
         .logout-btn {
-            margin-top: auto;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
             color: var(--red);
             cursor: pointer;
             font-weight: 600;
-            border: 1px solid rgba(224, 82, 82, 0.3);
+            border: 1px solid rgba(224, 82, 82, .2);
             border-radius: 8px;
+            font-size: .82rem;
+            transition: all .2s
         }
 
         .logout-btn:hover {
-            background: rgba(224, 82, 82, 0.1);
+            background: rgba(224, 82, 82, .1)
         }
 
-        /* Main Content */
+        /* ── Main Content ── */
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding: 2.5rem 3rem;
-            background: var(--cream);
+            background: #f0f2f5
         }
 
-        header {
+        .top-bar {
+            background: #fff;
+            padding: 1rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10
         }
 
-        h1 {
+        .top-bar h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            color: var(--navy);
+            font-size: 1.5rem;
+            color: var(--navy)
         }
 
-        /* Views */
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px 16px;
+            gap: 8px;
+            width: 260px
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            font-family: inherit;
+            font-size: .85rem;
+            flex: 1;
+            color: var(--text-primary)
+        }
+
+        .notif-bell {
+            position: relative;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem
+        }
+
+        .notif-bell .dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: var(--red);
+            border-radius: 50%;
+            border: 2px solid #fff
+        }
+
+        .content-area {
+            padding: 2rem 2.5rem
+        }
+
+        /* ── Views ── */
         .view {
-            display: none;
+            display: none
         }
 
         .view.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn .3s ease
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(8px)
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0)
             }
         }
 
-        /* Dashboard Cards */
+        /* ── Stats Cards ── */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            gap: 1.2rem;
+            margin-bottom: 2rem
         }
 
         .stat-card {
-            background: white;
-            padding: 1.5rem;
+            background: #fff;
+            padding: 1.4rem;
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
+            transition: all .2s
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .06)
+        }
+
+        .stat-card .accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px
+        }
+
+        .stat-card:nth-child(1) .accent {
+            background: var(--emerald)
+        }
+
+        .stat-card:nth-child(2) .accent {
+            background: var(--blue)
+        }
+
+        .stat-card:nth-child(3) .accent {
+            background: var(--gold)
+        }
+
+        .stat-card:nth-child(4) .accent {
+            background: var(--purple)
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: .8rem
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem
+        }
+
+        .stat-trend {
+            font-size: .72rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 3px
+        }
+
+        .trend-up {
+            background: #d1fae5;
+            color: #065f46
+        }
+
+        .trend-down {
+            background: #fee2e2;
+            color: #991b1b
         }
 
         .stat-lbl {
-            font-size: 0.8rem;
+            font-size: .75rem;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 600;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            letter-spacing: .04em;
+            margin-bottom: 4px
         }
 
         .stat-val {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--navy);
-            font-family: 'DM Mono', monospace;
+            font-family: 'DM Mono', monospace
         }
 
-        /* Tables */
+        .stat-sub {
+            font-size: .72rem;
+            color: var(--text-muted);
+            margin-top: 4px
+        }
+
+        .sparkline {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 30px;
+            margin-top: 8px
+        }
+
+        .sparkline .bar {
+            width: 6px;
+            border-radius: 3px;
+            transition: height .3s
+        }
+
+        /* ── Cards & Tables ── */
         .card {
-            background: white;
+            background: #fff;
             border-radius: var(--radius);
             border: 1px solid var(--border);
             overflow: hidden;
+            margin-bottom: 1.5rem
         }
 
         .card-header {
-            padding: 1.2rem 1.5rem;
+            padding: 1.1rem 1.5rem;
             border-bottom: 1px solid var(--border);
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: center
+        }
+
+        .card-header .subtitle {
+            font-size: .78rem;
+            color: var(--text-muted);
+            font-weight: 400
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: collapse
         }
 
         th {
             background: #f8fafc;
-            padding: 12px 15px;
+            padding: 11px 15px;
             text-align: left;
-            font-size: 0.8rem;
+            font-size: .73rem;
             color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border)
         }
 
         td {
-            padding: 15px;
+            padding: 13px 15px;
             border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-            vertical-align: middle;
+            font-size: .87rem;
+            vertical-align: middle
         }
 
         tr:last-child td {
-            border-bottom: none;
+            border-bottom: none
         }
 
         tr:hover {
-            background: #f8fafc;
+            background: #f8fafc
         }
 
         .badge {
             padding: 4px 10px;
             border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: .72rem;
+            font-weight: 600
         }
 
-        .b-verified {
+        .b-verified,
+        .b-active {
             background: var(--emerald-light);
-            color: var(--emerald-dark);
+            color: var(--emerald-dark)
         }
 
         .b-pending {
             background: #fef3c7;
-            color: #b45309;
+            color: #b45309
         }
 
         .b-suspended {
             background: #fee2e2;
-            color: #991b1b;
+            color: #991b1b
         }
 
-        /* Buttons in table */
+        .b-pro {
+            background: #dbeafe;
+            color: #1e40af
+        }
+
+        .b-enterprise {
+            background: #ede9fe;
+            color: #6d28d9
+        }
+
+        /* ── Buttons ── */
         .btn-sm {
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 6px 14px;
+            border-radius: 8px;
             border: none;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: .78rem;
             font-weight: 500;
             font-family: inherit;
+            transition: all .15s
         }
 
         .btn-primary {
             background: var(--navy);
-            color: white;
+            color: #fff
         }
 
         .btn-primary:hover {
-            background: var(--navy-soft);
+            background: var(--navy-soft)
         }
 
         .btn-outline {
-            background: white;
+            background: #fff;
             border: 1px solid var(--border);
-            color: var(--text-primary);
+            color: var(--text-primary)
         }
 
         .btn-outline:hover {
-            border-color: var(--navy);
+            border-color: var(--navy)
         }
 
-        /* Modals */
+        .btn-success {
+            background: var(--emerald);
+            color: #fff
+        }
+
+        .btn-success:hover {
+            background: var(--emerald-dark)
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: #fff;
+            opacity: .9
+        }
+
+        .btn-danger:hover {
+            opacity: 1
+        }
+
+        /* ── Dashboard Grid ── */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem
+        }
+
+        .dash-grid-equal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem
+        }
+
+        /* ── Chart placeholder ── */
+        .chart-area {
+            padding: 1.5rem;
+            position: relative;
+            height: 220px
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 180px;
+            padding-top: 10px
+        }
+
+        .chart-bar-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px
+        }
+
+        .chart-bar {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            transition: height .5s ease;
+            min-height: 4px
+        }
+
+        .chart-bar.primary {
+            background: linear-gradient(180deg, var(--emerald), var(--emerald-dark))
+        }
+
+        .chart-bar.secondary {
+            background: linear-gradient(180deg, #60a5fa, #3b82f6)
+        }
+
+        .chart-label {
+            font-size: .65rem;
+            color: var(--text-muted);
+            font-weight: 500
+        }
+
+        /* ── Activity Feed ── */
+        .activity-feed {
+            padding: 1rem 1.5rem
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9
+        }
+
+        .activity-item:last-child {
+            border-bottom: none
+        }
+
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0
+        }
+
+        .activity-dot.green {
+            background: var(--emerald)
+        }
+
+        .activity-dot.blue {
+            background: var(--blue)
+        }
+
+        .activity-dot.gold {
+            background: var(--gold)
+        }
+
+        .activity-dot.red {
+            background: var(--red)
+        }
+
+        .activity-text {
+            font-size: .82rem;
+            color: var(--text-primary);
+            line-height: 1.4
+        }
+
+        .activity-time {
+            font-size: .7rem;
+            color: var(--text-muted);
+            margin-top: 2px
+        }
+
+        /* ── Compliance Cards ── */
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            padding: 1.5rem
+        }
+
+        .compliance-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.2rem;
+            border: 1px solid #e2e8f0
+        }
+
+        .compliance-card h4 {
+            font-size: .9rem;
+            margin-bottom: .5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .compliance-card p {
+            font-size: .78rem;
+            color: var(--text-muted);
+            line-height: 1.5
+        }
+
+        .compliance-status {
+            font-size: .7rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 50px;
+            margin-top: .8rem;
+            display: inline-block
+        }
+
+        .c-pass {
+            background: #d1fae5;
+            color: #065f46
+        }
+
+        .c-warn {
+            background: #fef3c7;
+            color: #b45309
+        }
+
+        .c-fail {
+            background: #fee2e2;
+            color: #991b1b
+        }
+
+        /* ── Modals ── */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, .5);
+            backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 1000
         }
 
         .modal.active {
-            display: flex;
+            display: flex
         }
 
         .m-card {
-            background: white;
+            background: #fff;
             padding: 2rem;
             border-radius: var(--radius);
-            width: 400px;
+            width: 440px;
+            max-height: 80vh;
+            overflow-y: auto
         }
 
         .m-card h3 {
             margin-bottom: 1rem;
-            font-family: 'Playfair Display', serif;
+            font-family: 'Playfair Display', serif
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1rem
         }
 
         .form-group label {
             display: block;
-            font-size: 0.8rem;
+            font-size: .78rem;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 5px
         }
 
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             font-family: inherit;
+            font-size: .88rem
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical
         }
 
         .m-actions {
             display: flex;
             gap: 10px;
             margin-top: 1.5rem;
-            justify-content: flex-end;
+            justify-content: flex-end
+        }
+
+        /* ── Notification Items ── */
+        .notif-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            transition: background .15s;
+            cursor: pointer
+        }
+
+        .notif-item:hover {
+            background: #f8fafc
+        }
+
+        .notif-item.unread {
+            background: #f0fdf4
+        }
+
+        .notif-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            flex-shrink: 0
+        }
+
+        .notif-body {
+            flex: 1
+        }
+
+        .notif-body strong {
+            font-size: .85rem
+        }
+
+        .notif-body p {
+            font-size: .78rem;
+            color: var(--text-muted);
+            margin-top: 2px
+        }
+
+        .notif-time {
+            font-size: .68rem;
+            color: var(--text-muted);
+            white-space: nowrap
+        }
+
+        /* ── Settings ── */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem
+        }
+
+        .setting-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0
+        }
+
+        .setting-card h4 {
+            font-size: .95rem;
+            margin-bottom: .5rem;
+            color: var(--navy)
+        }
+
+        .setting-card p {
+            font-size: .8rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0
+        }
+
+        .toggle-row:last-child {
+            border-bottom: none
+        }
+
+        .toggle-row span {
+            font-size: .82rem
+        }
+
+        .toggle {
+            width: 44px;
+            height: 24px;
+            border-radius: 50px;
+            background: #cbd5e1;
+            position: relative;
+            cursor: pointer;
+            transition: background .2s
+        }
+
+        .toggle.on {
+            background: var(--emerald)
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform .2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .15)
+        }
+
+        .toggle.on::after {
+            transform: translateX(20px)
         }
     </style>
 </head>
 
 <body>
-
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="brand">Boss<em>Panel</em></div>
-        <div class="nav-item active" onclick="switchTab('dashboard')">Dashboard overview</div>
-        <div class="nav-item" onclick="switchTab('tenants'); fetchTenants();">Tenant Management</div>
-        <div class="nav-item" onclick="switchTab('domains'); fetchTenants();">Domain Controller</div>
-
-        <div class="logout-btn" onclick="logout()">Secure Logout</div>
+        <div class="sidebar-header">
+            <div class="brand">Boss<em>Panel</em> <span class="brand-badge">SUPER ADMIN</span></div>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <div class="nav-item active" onclick="switchTab('dashboard')"><span class="icon">📊</span> Dashboard</div>
+            <div class="nav-item" onclick="switchTab('tenants')"><span class="icon">🏪</span> Tenants <span
+                    class="badge-count">24</span></div>
+            <div class="nav-item" onclick="switchTab('analytics')"><span class="icon">📈</span> Analytics</div>
+            <div class="nav-item" onclick="switchTab('revenue')"><span class="icon">💰</span> Revenue</div>
+            <div class="nav-label">Platform</div>
+            <div class="nav-item" onclick="switchTab('domains')"><span class="icon">🌐</span> Domains</div>
+            <div class="nav-item" onclick="switchTab('compliance')"><span class="icon">🛡️</span> Compliance</div>
+            <div class="nav-item" onclick="switchTab('notifications')"><span class="icon">🔔</span> Notifications <span
+                    class="badge-count">5</span></div>
+            <div class="nav-label">System</div>
+            <div class="nav-item" onclick="switchTab('settings')"><span class="icon">⚙️</span> Settings</div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="admin-profile">
+                <div class="avatar">SA</div>
+                <div class="admin-info">
+                    <div class="name" id="admin-name">Super Admin</div>
+                    <div class="role">Platform Owner</div>
+                </div>
+            </div>
+            <div class="logout-btn" onclick="logout()">🔒 Secure Logout</div>
+        </div>
     </aside>
 
     <!-- Main Area -->
     <main class="main-content">
-        <header>
+        <div class="top-bar">
             <h1 id="page-title">Platform Dashboard</h1>
-            <div id="admin-name">Loading...</div>
-        </header>
-
-        <!-- DASHBOARD VIEW -->
-        <div id="dashboard" class="view active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-lbl">Total Tenants (Pharmacists)</div>
-                    <div class="stat-val" id="st-pharm">--</div>
+            <div class="top-bar-right">
+                <div class="search-box"><span>🔍</span><input type="text" placeholder="Search tenants, orders..." />
                 </div>
-                <div class="stat-card">
-                    <div class="stat-lbl">Total End Users</div>
-                    <div class="stat-val" id="st-users">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-lbl">Platform MRR (KSh)</div>
-                    <div class="stat-val" id="st-rev">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-lbl">Pending Applications</div>
-                    <div class="stat-val" id="st-pend">--</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">Recent Orders Across Platform</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="recent-orders-list">
-                        <tr>
-                            <td colspan="5" style="text-align:center">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="notif-bell" onclick="switchTab('notifications')">🔔<span class="dot"></span></div>
             </div>
         </div>
+        <div class="content-area">
 
-        <!-- TENANTS VIEW -->
-        <div id="tenants" class="view">
-            <div class="card">
-                <div class="card-header">SaaS Tenants (Pharmacists)</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Pharmacy Name</th>
-                            <th>Email</th>
-                            <th>Plan</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tenants-list">
-                        <tr>
-                            <td colspan="5" style="text-align:center">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- ═══ DASHBOARD VIEW ═══ -->
+            <div id="dashboard" class="view active">
+                <div class="stats-grid" id="stats-grid"></div>
+                <div class="dash-grid">
+                    <div class="card">
+                        <div class="card-header">Revenue Overview (Last 12 Months)<span class="subtitle">Platform
+                                MRR</span></div>
+                        <div class="chart-area">
+                            <div class="chart-bars" id="revenue-chart"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Live Activity Feed</div>
+                        <div class="activity-feed" id="activity-feed"></div>
+                    </div>
+                </div>
+                <div class="dash-grid-equal">
+                    <div class="card">
+                        <div class="card-header">Recent Orders Across Platform</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Pharmacy</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-orders-list"></tbody>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Top Performing Pharmacies</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pharmacy</th>
+                                    <th>Revenue</th>
+                                    <th>Orders</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-pharmacies"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- DOMAINS VIEW -->
-        <div id="domains" class="view">
-            <div class="card">
-                <div class="card-header">Domain Routing Configuration</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Pharmacy</th>
-                            <th>Subdomain (.medihub.com)</th>
-                            <th>Custom Domain</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="domains-list">
-                        <tr>
-                            <td colspan="4" style="text-align:center">Loading...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- ═══ TENANTS VIEW ═══ -->
+            <div id="tenants" class="view">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+                    <div>
+                        <h2 style="font-size:1.1rem;color:var(--navy)">All Tenant Pharmacies</h2>
+                        <p style="font-size:.82rem;color:var(--text-muted)">Manage all registered pharmacy tenants</p>
+                    </div>
+                    <button class="btn-sm btn-success" onclick="openModal('addTenantModal')">+ Add Tenant</button>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pharmacy</th>
+                                <th>Owner</th>
+                                <th>Email</th>
+                                <th>Plan</th>
+                                <th>Status</th>
+                                <th>Revenue</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tenants-list"></tbody>
+                    </table>
+                </div>
             </div>
+
+            <!-- ═══ ANALYTICS VIEW ═══ -->
+            <div id="analytics" class="view">
+                <div class="stats-grid" id="analytics-stats"></div>
+                <div class="dash-grid">
+                    <div class="card">
+                        <div class="card-header">Order Volume Trend</div>
+                        <div class="chart-area">
+                            <div class="chart-bars" id="orders-chart"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Tenant Growth</div>
+                        <div class="chart-area">
+                            <div class="chart-bars" id="growth-chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Product Category Distribution</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Products</th>
+                                <th>Orders</th>
+                                <th>Revenue</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categories-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══ REVENUE VIEW ═══ -->
+            <div id="revenue" class="view">
+                <div class="stats-grid" id="revenue-stats"></div>
+                <div class="card">
+                    <div class="card-header">Revenue by Tenant<span class="subtitle">Subscription + Commission</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pharmacy</th>
+                                <th>Plan</th>
+                                <th>Subscription</th>
+                                <th>Commission</th>
+                                <th>Total Revenue</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revenue-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══ DOMAINS VIEW ═══ -->
+            <div id="domains" class="view">
+                <div class="card">
+                    <div class="card-header">Domain Routing Configuration</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pharmacy</th>
+                                <th>Subdomain</th>
+                                <th>Custom Domain</th>
+                                <th>SSL</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="domains-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══ COMPLIANCE VIEW ═══ -->
+            <div id="compliance" class="view">
+                <div class="card">
+                    <div class="card-header">Platform Compliance & Verification</div>
+                    <div class="compliance-grid" id="compliance-grid"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Pending License Verification Queue</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pharmacy</th>
+                                <th>License #</th>
+                                <th>Submitted</th>
+                                <th>Expiry</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="license-queue"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══ NOTIFICATIONS VIEW ═══ -->
+            <div id="notifications" class="view">
+                <div class="card">
+                    <div class="card-header">Notifications & Alerts<button class="btn-sm btn-outline"
+                            onclick="markAllRead()">Mark all read</button></div>
+                    <div id="notifications-list"></div>
+                </div>
+            </div>
+
+            <!-- ═══ SETTINGS VIEW ═══ -->
+            <div id="settings" class="view">
+                <div class="card">
+                    <div class="card-header">System Settings</div>
+                    <div class="settings-grid" id="settings-grid"></div>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <!-- Modals -->
     <div class="modal" id="domainModal">
         <div class="m-card">
-            <h3>Configure Tenant Domains</h3>
-            <input type="hidden" id="d-tenant-id" />
-            <div class="form-group">
-                <label>Subdomain Prefix</label>
-                <input type="text" id="d-sub" placeholder="e.g. johnspharmacy" />
-            </div>
-            <div class="form-group">
-                <label>Custom Domain (CNAME)</label>
-                <input type="text" id="d-custom" placeholder="e.g. www.johnspharmacy.ke" />
-            </div>
-            <div class="m-actions">
-                <button class="btn-sm btn-outline" onclick="closeModal('domainModal')">Cancel</button>
-                <button class="btn-sm btn-primary" onclick="saveDomains()">Save Routing</button>
-            </div>
+            <h3>Configure Domains</h3><input type="hidden" id="d-tenant-id" />
+            <div class="form-group"><label>Subdomain Prefix</label><input type="text" id="d-sub"
+                    placeholder="e.g. johnspharmacy" /></div>
+            <div class="form-group"><label>Custom Domain (CNAME)</label><input type="text" id="d-custom"
+                    placeholder="e.g. www.johnspharmacy.ke" /></div>
+            <div class="m-actions"><button class="btn-sm btn-outline"
+                    onclick="closeModal('domainModal')">Cancel</button><button class="btn-sm btn-primary"
+                    onclick="saveDomains()">Save Routing</button></div>
         </div>
     </div>
-
     <div class="modal" id="statusModal">
         <div class="m-card">
-            <h3>Manage Tenant Status / Plan</h3>
-            <input type="hidden" id="s-tenant-id" />
-            <div class="form-group">
-                <label>Status</label>
-                <select id="s-status">
+            <h3>Manage Tenant</h3><input type="hidden" id="s-tenant-id" />
+            <div class="form-group"><label>Status</label><select id="s-status">
                     <option value="verified">Active / Verified</option>
-                    <option value="suspended">Suspended (Blocks Access)</option>
-                </select>
+                    <option value="suspended">Suspended</option>
+                </select></div>
+            <div class="form-group"><label>Subscription Plan</label><select id="s-plan">
+                    <option value="starter">Starter</option>
+                    <option value="growth">Growth</option>
+                    <option value="enterprise">Enterprise</option>
+                </select></div>
+            <div class="m-actions"><button class="btn-sm btn-outline"
+                    onclick="closeModal('statusModal')">Cancel</button><button class="btn-sm btn-primary"
+                    onclick="saveStatusPlan()">Save</button></div>
+        </div>
+    </div>
+    <div class="modal" id="addTenantModal">
+        <div class="m-card">
+            <h3>Add New Tenant</h3>
+            <div class="form-group"><label>Pharmacy Name</label><input type="text"
+                    placeholder="e.g. LifeCare Pharmacy" /></div>
+            <div class="form-group"><label>Owner Email</label><input type="email" placeholder="owner@example.com" />
             </div>
-            <div class="form-group">
-                <label>Subscription Plan</label>
-                <select id="s-plan">
-                    <option value="starter">Starter Plan</option>
-                    <option value="growth">Growth Plan</option>
-                    <option value="enterprise">Enterprise Plan</option>
-                </select>
-            </div>
-            <div class="m-actions">
-                <button class="btn-sm btn-outline" onclick="closeModal('statusModal')">Cancel</button>
-                <button class="btn-sm btn-primary" onclick="saveStatusPlan()">Save Changes</button>
-            </div>
+            <div class="form-group"><label>Plan</label><select>
+                    <option>Starter</option>
+                    <option>Growth</option>
+                    <option>Enterprise</option>
+                </select></div>
+            <div class="m-actions"><button class="btn-sm btn-outline"
+                    onclick="closeModal('addTenantModal')">Cancel</button><button class="btn-sm btn-success"
+                    onclick="closeModal('addTenantModal')">Create Tenant</button></div>
         </div>
     </div>
 
     <script>
         const API_URL = 'http://localhost:5000/api';
         let token = localStorage.getItem('token');
-        let userRole = localStorage.getItem('role');
 
-        // DEV MODE: Skip authentication gate during development
-        // TODO: Re-enable auth check before production deployment
-        // if (!token || userRole !== 'admin') {
-        //     alert("Unauthorized Access. Directing you to login.");
-        //     window.location.href = 'index.html';
-        // }
+        /* ── Demo Data ── */
+        const DEMO = {
+            tenants: [
+                { id: 't1', name: 'LifeCare Pharmacy', owner: 'Dr. James Mwangi', email: 'james@lifecare.co.ke', plan: 'enterprise', status: 'verified', revenue: 485000, orders: 342, rating: 4.9, subdomain: 'lifecare', customDomain: 'www.lifecarepharmacy.co.ke', license: 'PPB/2024/1847', licenseExpiry: '2026-08-15' },
+                { id: 't2', name: 'MediPlus Health', owner: 'Dr. Susan Wanjiku', email: 'susan@mediplus.ke', plan: 'growth', status: 'verified', revenue: 312000, orders: 256, rating: 4.7, subdomain: 'mediplus', customDomain: '', license: 'PPB/2024/2103', licenseExpiry: '2026-11-20' },
+                { id: 't3', name: 'GreenLeaf Chemist', owner: 'Dr. Peter Ochieng', email: 'peter@greenleaf.ke', plan: 'growth', status: 'verified', revenue: 278000, orders: 198, rating: 4.6, subdomain: 'greenleaf', customDomain: 'www.greenleafchemist.ke', license: 'PPB/2024/1592', licenseExpiry: '2026-05-10' },
+                { id: 't4', name: 'CareFirst Pharmacy', owner: 'Dr. Amina Hassan', email: 'amina@carefirst.ke', plan: 'starter', status: 'verified', revenue: 145000, orders: 134, rating: 4.5, subdomain: 'carefirst', customDomain: '', license: 'PPB/2024/2287', licenseExpiry: '2027-01-30' },
+                { id: 't5', name: 'PharmaHub Express', owner: 'Dr. David Kimani', email: 'david@pharmahub.ke', plan: 'enterprise', status: 'verified', revenue: 520000, orders: 410, rating: 4.8, subdomain: 'pharmahub', customDomain: 'www.pharmahubexpress.co.ke', license: 'PPB/2024/1234', licenseExpiry: '2026-09-25' },
+                { id: 't6', name: 'Nairobi Wellness', owner: 'Dr. Grace Njeri', email: 'grace@nairobiwellness.ke', plan: 'growth', status: 'pending', revenue: 0, orders: 0, rating: 0, subdomain: '', customDomain: '', license: 'PPB/2024/3001', licenseExpiry: '2027-03-15' },
+                { id: 't7', name: 'Downtown Chemist', owner: 'Dr. Michael Otieno', email: 'michael@downtown.ke', plan: 'starter', status: 'verified', revenue: 98000, orders: 87, rating: 4.3, subdomain: 'downtown', customDomain: '', license: 'PPB/2024/1789', licenseExpiry: '2026-06-01' },
+                { id: 't8', name: 'Apollo Pharmacy KE', owner: 'Dr. Fatima Ali', email: 'fatima@apollo.ke', plan: 'enterprise', status: 'suspended', revenue: 340000, orders: 298, rating: 4.4, subdomain: 'apollo', customDomain: 'www.apollopharmacy.ke', license: 'PPB/2024/2456', licenseExpiry: '2025-12-31' },
+            ],
+            orders: [
+                { id: 'ORD-7829', pharmacy: 'LifeCare Pharmacy', customer: 'John Doe', amount: 4500, status: 'delivered', date: '2026-02-25' },
+                { id: 'ORD-7828', pharmacy: 'PharmaHub Express', customer: 'Jane Smith', amount: 2800, status: 'processing', date: '2026-02-25' },
+                { id: 'ORD-7827', pharmacy: 'MediPlus Health', customer: 'Alice Kamau', amount: 6200, status: 'delivered', date: '2026-02-24' },
+                { id: 'ORD-7826', pharmacy: 'GreenLeaf Chemist', customer: 'Bob Njoroge', amount: 1950, status: 'pending', date: '2026-02-24' },
+                { id: 'ORD-7825', pharmacy: 'CareFirst Pharmacy', customer: 'Mary Wangari', amount: 3400, status: 'shipped', date: '2026-02-24' },
+                { id: 'ORD-7824', pharmacy: 'Downtown Chemist', customer: 'Peter Odhiambo', amount: 8100, status: 'delivered', date: '2026-02-23' },
+            ],
+            revenueMonths: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+            revenueData: [180, 220, 195, 310, 340, 380, 420, 460, 510, 490, 540, 620],
+            orderData: [120, 145, 130, 190, 210, 240, 280, 310, 290, 340, 380, 420],
+            growthData: [2, 3, 3, 5, 4, 6, 8, 7, 9, 10, 12, 14],
+            categories: [
+                { name: 'Prescription Medicines', products: 1240, orders: 3400, revenue: 'KSh 8.2M', trend: '+12%' },
+                { name: 'Over-the-Counter', products: 890, orders: 5600, revenue: 'KSh 4.1M', trend: '+18%' },
+                { name: 'Medical Devices', products: 340, orders: 1200, revenue: 'KSh 3.5M', trend: '+8%' },
+                { name: 'Supplements & Vitamins', products: 560, orders: 2800, revenue: 'KSh 2.1M', trend: '+25%' },
+                { name: 'Personal Care', products: 420, orders: 1900, revenue: 'KSh 1.4M', trend: '+15%' },
+                { name: 'Baby & Maternal', products: 280, orders: 1100, revenue: 'KSh 1.1M', trend: '+22%' },
+            ],
+            activities: [
+                { text: '<strong>LifeCare Pharmacy</strong> completed 15 new orders today', time: '2 min ago', color: 'green' },
+                { text: '<strong>Nairobi Wellness</strong> submitted license verification', time: '18 min ago', color: 'blue' },
+                { text: '<strong>Apollo Pharmacy</strong> subscription payment overdue', time: '1 hour ago', color: 'red' },
+                { text: '<strong>PharmaHub Express</strong> upgraded to Enterprise plan', time: '2 hours ago', color: 'gold' },
+                { text: '<strong>MediPlus Health</strong> added 24 new products', time: '3 hours ago', color: 'green' },
+                { text: 'New compliance audit scheduled for March 2026', time: '5 hours ago', color: 'blue' },
+                { text: '<strong>GreenLeaf Chemist</strong> reached 200 orders milestone', time: '8 hours ago', color: 'gold' },
+            ],
+            notifications: [
+                { icon: '🏪', bg: '#d1fae5', title: 'New Tenant Application', msg: 'Nairobi Wellness submitted pharmacy registration with PPB license.', time: '18 min ago', unread: true },
+                { icon: '⚠️', bg: '#fef3c7', title: 'Payment Overdue', msg: 'Apollo Pharmacy KE enterprise subscription payment 15 days overdue.', time: '1 hour ago', unread: true },
+                { icon: '📋', bg: '#dbeafe', title: 'License Expiring Soon', msg: 'Apollo Pharmacy KE license PPB/2024/2456 expires Dec 31, 2025.', time: '3 hours ago', unread: true },
+                { icon: '🎉', bg: '#ede9fe', title: 'Plan Upgrade', msg: 'PharmaHub Express upgraded from Growth to Enterprise plan.', time: '5 hours ago', unread: true },
+                { icon: '✅', bg: '#d1fae5', title: 'Compliance Audit Passed', msg: 'LifeCare Pharmacy passed Q4 controlled substances audit.', time: '1 day ago', unread: true },
+                { icon: '📊', bg: '#dbeafe', title: 'Monthly Report Ready', msg: 'January 2026 platform analytics report is available for download.', time: '2 days ago', unread: false },
+                { icon: '🔒', bg: '#fee2e2', title: 'Security Alert', msg: '3 failed login attempts detected on admin portal from unknown IP.', time: '3 days ago', unread: false },
+            ]
+        };
 
-        const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
-
+        /* ── Tab Switching ── */
         function switchTab(tabId) {
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
-
-            const titles = { 'dashboard': 'Platform Dashboard', 'tenants': 'Tenant Management', 'domains': 'Domain Controller' };
-            document.getElementById('page-title').innerText = titles[tabId];
+            event.currentTarget.classList.add('active');
+            const titles = { dashboard: 'Platform Dashboard', tenants: 'Tenant Management', analytics: 'Platform Analytics', revenue: 'Revenue & Billing', domains: 'Domain Controller', compliance: 'Compliance & Verification', notifications: 'Notifications', settings: 'System Settings' };
+            document.getElementById('page-title').innerText = titles[tabId] || tabId;
         }
 
-        async function init() {
-            // Fetch own profile
-            try {
-                const res = await fetch(`${API_URL}/auth/me`, { headers });
-                const data = await res.json();
-                if (data.success) document.getElementById('admin-name').innerText = `Admin: ${data.data.user.name}`;
-            } catch (e) { }
+        /* ── Render Dashboard ── */
+        function renderDashboard() {
+            const totalRev = DEMO.tenants.reduce((s, t) => s + t.revenue, 0);
+            const totalOrders = DEMO.tenants.reduce((s, t) => s + t.orders, 0);
+            const active = DEMO.tenants.filter(t => t.status === 'verified').length;
+            const pending = DEMO.tenants.filter(t => t.status === 'pending').length;
+            document.getElementById('stats-grid').innerHTML = [
+                { lbl: 'Total Tenants', val: DEMO.tenants.length, trend: '+3', up: true, sub: `${active} active, ${pending} pending`, icon: '🏪', color: '#d1fae5', bars: [30, 45, 35, 50, 42, 55, 60, 48, 65, 70, 58, 75] },
+                { lbl: 'Total Revenue', val: 'KSh ' + totalRev.toLocaleString(), trend: '+18%', up: true, sub: 'Monthly recurring revenue', icon: '💰', color: '#dbeafe', bars: [20, 30, 25, 40, 35, 50, 45, 55, 60, 52, 65, 72] },
+                { lbl: 'Platform Orders', val: totalOrders.toLocaleString(), trend: '+24%', up: true, sub: 'Across all tenant stores', icon: '📦', color: '#fef3c7', bars: [25, 35, 28, 42, 38, 52, 48, 58, 62, 55, 68, 78] },
+                { lbl: 'Pending Approvals', val: pending, trend: pending > 2 ? '+' + pending : '', up: false, sub: 'License verifications needed', icon: '⏳', color: '#ede9fe', bars: [10, 8, 12, 6, 9, 5, 8, 4, 7, 3, 6, 4] }
+            ].map(s => `<div class="stat-card"><div class="accent"></div><div class="stat-top"><div class="stat-icon" style="background:${s.color}">${s.icon}</div>${s.trend ? `<span class="stat-trend ${s.up ? 'trend-up' : 'trend-down'}">${s.up ? '↑' : '↓'} ${s.trend}</span>` : ''}</div><div class="stat-lbl">${s.lbl}</div><div class="stat-val">${s.val}</div><div class="stat-sub">${s.sub}</div><div class="sparkline">${s.bars.map(b => `<div class="bar" style="height:${b}%;background:${s.up ? 'var(--emerald)' : 'var(--red)'};opacity:.5"></div>`).join('')}</div></div>`).join('');
 
-            // Fetch dashboard stats
-            fetchStats();
+            // Revenue chart
+            const maxR = Math.max(...DEMO.revenueData);
+            document.getElementById('revenue-chart').innerHTML = DEMO.revenueMonths.map((m, i) => `<div class="chart-bar-wrap"><div class="chart-bar primary" style="height:${(DEMO.revenueData[i] / maxR) * 100}%"></div><div class="chart-label">${m}</div></div>`).join('');
+
+            // Activity feed
+            document.getElementById('activity-feed').innerHTML = DEMO.activities.map(a => `<div class="activity-item"><div class="activity-dot ${a.color}"></div><div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div></div>`).join('');
+
+            // Recent orders
+            document.getElementById('recent-orders-list').innerHTML = DEMO.orders.map(o => `<tr><td><span style="font-family:'DM Mono';color:var(--emerald)">${o.id}</span></td><td>${o.pharmacy}</td><td>KSh ${o.amount.toLocaleString()}</td><td><span class="badge b-${o.status === 'delivered' ? 'verified' : 'pending'}">${o.status}</span></td></tr>`).join('');
+
+            // Top pharmacies
+            document.getElementById('top-pharmacies').innerHTML = DEMO.tenants.filter(t => t.status === 'verified').sort((a, b) => b.revenue - a.revenue).slice(0, 5).map(t => `<tr><td><strong>${t.name}</strong></td><td>KSh ${t.revenue.toLocaleString()}</td><td>${t.orders}</td><td>⭐ ${t.rating}</td></tr>`).join('');
         }
 
-        async function fetchStats() {
-            try {
-                const res = await fetch(`${API_URL}/admin/stats`, { headers });
-                const data = await res.json();
-                if (data.success) {
-                    const s = data.data.stats;
-                    document.getElementById('st-pharm').innerText = s.totalPharmacists;
-                    document.getElementById('st-users').innerText = s.totalUsers;
-                    document.getElementById('st-pend').innerText = s.pendingPharmacists;
-                    document.getElementById('st-rev').innerText = s.totalRevenue.toLocaleString();
-
-                    let orderHtml = '';
-                    data.data.recentOrders.forEach(o => {
-                        orderHtml += `<tr>
-              <td><span style="font-family: monospace; color: var(--emerald)">${o._id.substring(18)}</span></td>
-              <td>${o.user?.name || 'Unknown'}</td>
-              <td>KSh ${o.totalAmount}</td>
-              <td><span class="badge b-${o.orderStatus === 'delivered' ? 'verified' : 'pending'}">${o.orderStatus}</span></td>
-              <td>${new Date(o.createdAt).toLocaleDateString()}</td>
-            </tr>`;
-                    });
-                    document.getElementById('recent-orders-list').innerHTML = orderHtml || '<tr><td colspan="5">No recent orders</td></tr>';
-                }
-            } catch (e) { console.error(e); }
+        /* ── Render Tenants ── */
+        function renderTenants() {
+            document.getElementById('tenants-list').innerHTML = DEMO.tenants.map(t => `<tr><td><strong>${t.name}</strong></td><td>${t.owner}</td><td>${t.email}</td><td><span class="badge b-${t.plan === 'enterprise' ? 'enterprise' : t.plan === 'growth' ? 'pro' : 'active'}">${t.plan}</span></td><td><span class="badge b-${t.status}">${t.status}</span></td><td>KSh ${t.revenue.toLocaleString()}</td><td>${t.status === 'pending' ? `<button class="btn-sm btn-success" onclick="approveTenant('${t.id}')">Approve</button>` : `<button class="btn-sm btn-outline" onclick="openStatusModal('${t.id}','${t.status}','${t.plan}')">Manage</button>`}</td></tr>`).join('');
         }
 
-        async function fetchTenants() {
-            try {
-                const res = await fetch(`${API_URL}/admin/pharmacists?limit=100`, { headers });
-                const data = await res.json();
-                if (data.success) {
-                    let tb = '';
-                    let dTb = '';
-                    data.data.pharmacists.forEach(p => {
-                        // Tenants Table
-                        tb += `<tr>
-              <td><strong>${p.pharmacyName}</strong></td>
-              <td>${p.user?.email || '-'}</td>
-              <td><span style="text-transform: capitalize;">${p.plan}</span></td>
-              <td><span class="badge b-${p.status}">${p.status}</span></td>
-              <td>
-                ${p.status === 'pending'
-                                ? `<button class="btn-sm btn-primary" onclick="approveTenant('${p._id}')">Approve</button>`
-                                : `<button class="btn-sm btn-outline" onclick="openStatusModal('${p._id}', '${p.status}', '${p.plan}')">Manage</button>`
-                            }
-              </td>
-            </tr>`;
+        /* ── Analytics ── */
+        function renderAnalytics() {
+            const totalProducts = DEMO.categories.reduce((s, c) => s + c.products, 0);
+            const totalCatOrders = DEMO.categories.reduce((s, c) => s + c.orders, 0);
+            document.getElementById('analytics-stats').innerHTML = [
+                { lbl: 'Total Products', val: totalProducts.toLocaleString(), icon: '📦', color: '#d1fae5' },
+                { lbl: 'Total Orders', val: totalCatOrders.toLocaleString(), icon: '🛒', color: '#dbeafe' },
+                { lbl: 'Avg Order Value', val: 'KSh 3,450', icon: '📊', color: '#fef3c7' },
+                { lbl: 'Conversion Rate', val: '4.8%', icon: '🎯', color: '#ede9fe' }
+            ].map(s => `<div class="stat-card"><div class="accent"></div><div class="stat-top"><div class="stat-icon" style="background:${s.color}">${s.icon}</div></div><div class="stat-lbl">${s.lbl}</div><div class="stat-val">${s.val}</div></div>`).join('');
 
-                        // Domains Table (Only showing verified/active tenants)
-                        if (p.status !== 'pending' && p.status !== 'rejected') {
-                            dTb += `<tr>
-                <td><strong>${p.pharmacyName}</strong></td>
-                <td><span style="font-family: 'DM Mono'; color:var(--emerald-dark)">${p.subdomain || '<em>Not set</em>'}</span></td>
-                <td><span style="font-family: 'DM Mono'; color:var(--navy-soft)">${p.customDomain || '<em>Not set</em>'}</span></td>
-                <td><button class="btn-sm btn-outline" onclick="openDomainModal('${p._id}', '${p.subdomain || ''}', '${p.customDomain || ''}')">Edit Routing</button></td>
-              </tr>`;
-                        }
-                    });
-                    document.getElementById('tenants-list').innerHTML = tb || '<tr><td colspan="5">No tenants found</td></tr>';
-                    document.getElementById('domains-list').innerHTML = dTb || '<tr><td colspan="4">No active tenants found</td></tr>';
-                }
-            } catch (e) { console.error(e); }
+            const maxO = Math.max(...DEMO.orderData);
+            document.getElementById('orders-chart').innerHTML = DEMO.revenueMonths.map((m, i) => `<div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:${(DEMO.orderData[i] / maxO) * 100}%"></div><div class="chart-label">${m}</div></div>`).join('');
+            const maxG = Math.max(...DEMO.growthData);
+            document.getElementById('growth-chart').innerHTML = DEMO.revenueMonths.map((m, i) => `<div class="chart-bar-wrap"><div class="chart-bar primary" style="height:${(DEMO.growthData[i] / maxG) * 100}%"></div><div class="chart-label">${m}</div></div>`).join('');
+            document.getElementById('categories-list').innerHTML = DEMO.categories.map(c => `<tr><td><strong>${c.name}</strong></td><td>${c.products}</td><td>${c.orders.toLocaleString()}</td><td>${c.revenue}</td><td><span class="stat-trend trend-up">↑ ${c.trend}</span></td></tr>`).join('');
         }
 
-        async function approveTenant(id) {
-            if (!confirm("Authorize this pharmacy application?")) return;
-            try {
-                await fetch(`${API_URL}/admin/pharmacists/${id}/verify`, {
-                    method: 'PUT', headers, body: JSON.stringify({ action: 'approve' })
-                });
-                fetchTenants(); fetchStats();
-            } catch (e) { alert('Action failed'); }
+        /* ── Revenue ── */
+        function renderRevenue() {
+            const planPrices = { starter: 2999, growth: 7999, enterprise: 19999 };
+            const totalSub = DEMO.tenants.filter(t => t.status === 'verified').reduce((s, t) => s + planPrices[t.plan], 0);
+            const totalComm = DEMO.tenants.reduce((s, t) => s + Math.round(t.revenue * .05), 0);
+            document.getElementById('revenue-stats').innerHTML = [
+                { lbl: 'Subscription Revenue', val: 'KSh ' + totalSub.toLocaleString(), icon: '💳', color: '#d1fae5' },
+                { lbl: 'Commission Revenue (5%)', val: 'KSh ' + totalComm.toLocaleString(), icon: '📈', color: '#dbeafe' },
+                { lbl: 'Total Platform Revenue', val: 'KSh ' + (totalSub + totalComm).toLocaleString(), icon: '💰', color: '#fef3c7' },
+                { lbl: 'Active Subscriptions', val: DEMO.tenants.filter(t => t.status === 'verified').length, icon: '✅', color: '#ede9fe' }
+            ].map(s => `<div class="stat-card"><div class="accent"></div><div class="stat-top"><div class="stat-icon" style="background:${s.color}">${s.icon}</div></div><div class="stat-lbl">${s.lbl}</div><div class="stat-val">${s.val}</div></div>`).join('');
+            document.getElementById('revenue-list').innerHTML = DEMO.tenants.map(t => { const sub = planPrices[t.plan] || 0; const comm = Math.round(t.revenue * .05); return `<tr><td><strong>${t.name}</strong></td><td><span class="badge b-${t.plan === 'enterprise' ? 'enterprise' : t.plan === 'growth' ? 'pro' : 'active'}">${t.plan}</span></td><td>KSh ${sub.toLocaleString()}/mo</td><td>KSh ${comm.toLocaleString()}</td><td>KSh ${(sub + comm).toLocaleString()}</td><td><span class="badge b-${t.status}">${t.status}</span></td></tr>`; }).join('');
         }
 
-        function openStatusModal(id, status, plan) {
-            document.getElementById('s-tenant-id').value = id;
-            document.getElementById('s-status').value = status;
-            document.getElementById('s-plan').value = plan;
-            document.getElementById('statusModal').classList.add('active');
+        /* ── Domains ── */
+        function renderDomains() {
+            document.getElementById('domains-list').innerHTML = DEMO.tenants.filter(t => t.status !== 'pending').map(t => `<tr><td><strong>${t.name}</strong></td><td><span style="font-family:'DM Mono';color:var(--emerald-dark)">${t.subdomain ? t.subdomain + '.medihub.com' : '<em>Not set</em>'}</span></td><td><span style="font-family:'DM Mono';color:var(--navy-soft)">${t.customDomain || '<em>Not set</em>'}</span></td><td>${t.subdomain ? '<span class="badge b-verified">🔒 Active</span>' : '<span class="badge b-pending">Pending</span>'}</td><td><button class="btn-sm btn-outline" onclick="openDomainModal('${t.id}','${t.subdomain || ''}','${t.customDomain || ''}')">Edit</button></td></tr>`).join('');
         }
 
-        async function saveStatusPlan() {
-            const id = document.getElementById('s-tenant-id').value;
-            const status = document.getElementById('s-status').value;
-            const plan = document.getElementById('s-plan').value;
+        /* ── Compliance ── */
+        function renderCompliance() {
+            document.getElementById('compliance-grid').innerHTML = [
+                { title: '🛡️ PPB License Verification', desc: 'All tenant pharmacies must hold valid Pharmacy and Poisons Board licenses. Automated expiry tracking enabled.', status: 'All Verified', cls: 'c-pass' },
+                { title: '📋 Controlled Substances', desc: 'Schedule tracking for controlled prescription drugs. Quarterly audit compliance across all tenants.', status: 'Audit Due Mar 2026', cls: 'c-warn' },
+                { title: '🔒 Data Protection (DPA 2019)', desc: 'Kenya Data Protection Act compliance. All tenant data encrypted at rest and in transit.', status: 'Compliant', cls: 'c-pass' },
+                { title: '💊 Drug Interaction Alerts', desc: 'AI-powered drug interaction checking system active across all tenant storefronts.', status: 'Active', cls: 'c-pass' },
+                { title: '📦 Cold Chain Compliance', desc: 'Temperature-sensitive medication storage and shipping compliance monitoring.', status: '1 Violation Flagged', cls: 'c-fail' },
+                { title: '🏥 Good Distribution Practice', desc: 'GDP compliance for pharmaceutical distribution. Annual certification required.', status: 'Certified', cls: 'c-pass' }
+            ].map(c => `<div class="compliance-card"><h4>${c.title}</h4><p>${c.desc}</p><span class="compliance-status ${c.cls}">${c.status}</span></div>`).join('');
 
-            try {
-                await fetch(`${API_URL}/admin/pharmacists/${id}/subscription`, {
-                    method: 'PUT', headers, body: JSON.stringify({ status, plan })
-                });
-                closeModal('statusModal'); fetchTenants(); fetchStats();
-            } catch (e) { alert('Failed to update tenant'); }
+            document.getElementById('license-queue').innerHTML = DEMO.tenants.map(t => `<tr><td><strong>${t.name}</strong></td><td><span style="font-family:'DM Mono'">${t.license}</span></td><td>${t.status === 'pending' ? 'Pending' : 'Verified'}</td><td>${t.licenseExpiry}</td><td><span class="badge ${new Date(t.licenseExpiry) < new Date('2026-06-01') ? 'b-pending' : 'b-verified'}">${new Date(t.licenseExpiry) < new Date('2026-06-01') ? 'Expiring' : 'Valid'}</span></td><td><button class="btn-sm btn-outline">Review</button></td></tr>`).join('');
         }
 
-        function openDomainModal(id, sub, custom) {
-            document.getElementById('d-tenant-id').value = id;
-            document.getElementById('d-sub').value = sub;
-            document.getElementById('d-custom').value = custom;
-            document.getElementById('domainModal').classList.add('active');
+        /* ── Notifications ── */
+        function renderNotifications() {
+            document.getElementById('notifications-list').innerHTML = DEMO.notifications.map(n => `<div class="notif-item ${n.unread ? 'unread' : ''}"><div class="notif-icon" style="background:${n.bg}">${n.icon}</div><div class="notif-body"><strong>${n.title}</strong><p>${n.msg}</p></div><div class="notif-time">${n.time}</div></div>`).join('');
+        }
+        function markAllRead() { DEMO.notifications.forEach(n => n.unread = false); renderNotifications(); }
+
+        /* ── Settings ── */
+        function renderSettings() {
+            document.getElementById('settings-grid').innerHTML = `
+    <div class="setting-card"><h4>🔐 Security Settings</h4><p>Configure platform security policies</p>
+        <div class="toggle-row"><span>Two-Factor Authentication</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><span>IP Whitelisting</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><span>Session Timeout (30 min)</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="setting-card"><h4>📧 Email Notifications</h4><p>Manage email alert preferences</p>
+        <div class="toggle-row"><span>New Tenant Applications</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><span>Payment Alerts</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><span>Compliance Warnings</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="setting-card"><h4>💰 Commission Settings</h4><p>Platform commission structure</p>
+        <div class="toggle-row"><span>Default Commission Rate</span><strong>5%</strong></div>
+        <div class="toggle-row"><span>Enterprise Discount</span><strong>3%</strong></div>
+        <div class="toggle-row"><span>Auto-billing</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="setting-card"><h4>🌐 Platform Branding</h4><p>Customize platform appearance</p>
+        <div class="toggle-row"><span>Dark Mode</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><span>Maintenance Mode</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        <div class="toggle-row"><span>API Rate Limiting</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    </div>`;
         }
 
-        async function saveDomains() {
-            const id = document.getElementById('d-tenant-id').value;
-            const subdomain = document.getElementById('d-sub').value;
-            const customDomain = document.getElementById('d-custom').value;
+        /* ── Modals & Actions ── */
+        function openModal(id) { document.getElementById(id).classList.add('active') }
+        function closeModal(id) { document.getElementById(id).classList.remove('active') }
+        function openStatusModal(id, status, plan) { document.getElementById('s-tenant-id').value = id; document.getElementById('s-status').value = status; document.getElementById('s-plan').value = plan; openModal('statusModal') }
+        function openDomainModal(id, sub, custom) { document.getElementById('d-tenant-id').value = id; document.getElementById('d-sub').value = sub; document.getElementById('d-custom').value = custom; openModal('domainModal') }
+        function saveStatusPlan() { closeModal('statusModal'); renderTenants() }
+        function saveDomains() { closeModal('domainModal'); renderDomains() }
+        function approveTenant(id) { const t = DEMO.tenants.find(x => x.id === id); if (t) { t.status = 'verified'; renderTenants(); renderDashboard() } }
+        function logout() { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = 'index.html' }
 
-            try {
-                const res = await fetch(`${API_URL}/admin/pharmacists/${id}/domain`, {
-                    method: 'PUT', headers, body: JSON.stringify({ subdomain, customDomain })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    closeModal('domainModal'); fetchTenants();
-                } else { alert(data.message); }
-            } catch (e) { alert('Failed to update domains'); }
-        }
-
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
-            window.location.href = 'index.html';
-        }
-
-        // Start
-        init();
+        /* ── Init ── */
+        renderDashboard(); renderTenants(); renderAnalytics(); renderRevenue(); renderDomains(); renderCompliance(); renderNotifications(); renderSettings();
     </script>
 </body>
 

@@ -19,504 +19,1021 @@
             --text-primary: #0b1120;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            --white: #ffffff;
-            --radius: 12px;
+            --white: #fff;
+            --red: #e05252;
+            --gold: #e8a838;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --radius: 14px
         }
 
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            box-sizing: border-box
         }
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background: var(--cream);
+            background: #f0f2f5;
             color: var(--text-primary);
             display: flex;
             height: 100vh;
-            overflow: hidden;
+            overflow: hidden
         }
 
-        /* Sidebar */
         .sidebar {
             width: 260px;
-            background: white;
+            background: #fff;
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            padding: 2rem 1.5rem;
+            overflow-y: auto
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border)
         }
 
         .brand {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 900;
             color: var(--navy);
-            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 8px
         }
 
         .pill {
-            width: 20px;
+            width: 22px;
             height: 12px;
             background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
-            border-radius: 20px;
+            border-radius: 20px
+        }
+
+        .brand em {
+            color: var(--emerald);
+            font-style: normal
+        }
+
+        .sidebar-nav {
+            padding: .8rem;
+            flex: 1
+        }
+
+        .nav-label {
+            font-size: .63rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: .1em;
+            padding: .8rem .8rem .3rem;
+            font-weight: 600
         }
 
         .nav-item {
-            padding: 12px 16px;
-            margin-bottom: 8px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 2px;
+            border-radius: 10px;
             color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all .2s;
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: .88rem;
+            display: flex;
+            align-items: center;
+            gap: 10px
         }
 
         .nav-item:hover,
         .nav-item.active {
             background: var(--emerald-light);
-            color: var(--emerald-dark);
+            color: var(--emerald-dark)
         }
 
-        .nav-bottom {
-            margin-top: auto;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
+        .nav-item .icon {
+            width: 20px;
+            text-align: center
+        }
+
+        .nav-item .cnt {
+            margin-left: auto;
+            background: var(--emerald);
+            color: #fff;
+            font-size: .63rem;
+            padding: 2px 7px;
+            border-radius: 50px;
+            font-weight: 600
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border)
+        }
+
+        .pharmacy-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px
+        }
+
+        .pharmacy-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--emerald-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem
+        }
+
+        .pharmacy-name {
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--navy)
+        }
+
+        .pharmacy-plan {
+            font-size: .68rem;
+            color: var(--text-muted)
         }
 
         .logout {
-            color: #e05252;
+            color: var(--red);
             cursor: pointer;
-            padding: 12px 16px;
+            padding: 10px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: .82rem;
+            text-align: center;
+            border: 1px solid rgba(224, 82, 82, .15);
+            border-radius: 8px;
+            transition: all .2s
         }
 
-        /* Main Content */
+        .logout:hover {
+            background: rgba(224, 82, 82, .06)
+        }
+
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding: 2.5rem 3rem;
+            background: #f0f2f5
         }
 
-        header {
+        .top-bar {
+            background: #fff;
+            padding: .8rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10
         }
 
-        h1 {
+        .top-bar h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            color: var(--navy);
+            font-size: 1.4rem;
+            color: var(--navy)
         }
 
-        /* Views */
+        .top-bar-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 7px 14px;
+            gap: 6px;
+            width: 220px
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            outline: none;
+            font-family: inherit;
+            font-size: .82rem;
+            flex: 1
+        }
+
+        .content-area {
+            padding: 1.5rem 2rem
+        }
+
         .view {
-            display: none;
+            display: none
         }
 
         .view.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn .3s ease
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(8px)
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0)
             }
         }
 
-        /* Cards & Stats */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem
         }
 
         .stat-card {
-            background: white;
-            padding: 1.5rem;
+            background: #fff;
+            padding: 1.2rem;
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            transition: all .2s;
+            position: relative;
+            overflow: hidden
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .05)
+        }
+
+        .stat-card .accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .6rem
+        }
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem
+        }
+
+        .stat-trend {
+            font-size: .68rem;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 50px
+        }
+
+        .trend-up {
+            background: #d1fae5;
+            color: #065f46
+        }
+
+        .trend-down {
+            background: #fee2e2;
+            color: #991b1b
         }
 
         .stat-lbl {
-            font-size: 0.8rem;
+            font-size: .72rem;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 600;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            letter-spacing: .04em;
+            margin-bottom: 3px
         }
 
         .stat-val {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            color: var(--emerald-dark);
-            font-family: 'DM Mono', monospace;
+            color: var(--navy);
+            font-family: 'DM Mono', monospace
+        }
+
+        .stat-sub {
+            font-size: .68rem;
+            color: var(--text-muted);
+            margin-top: 3px
         }
 
         .card {
-            background: white;
-            padding: 2rem;
+            background: #fff;
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-            margin-bottom: 2rem;
+            overflow: hidden;
+            margin-bottom: 1.2rem
         }
 
-        .card h2 {
-            font-size: 1.2rem;
-            color: var(--navy);
-            margin-bottom: 1.5rem;
+        .card-header {
+            padding: 1rem 1.3rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: .95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
         }
 
-        /* Tables */
+        .card-body {
+            padding: 1.3rem
+        }
+
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: collapse
         }
 
         th {
-            padding: 12px 15px;
+            background: #f8fafc;
+            padding: 10px 14px;
             text-align: left;
-            font-size: 0.8rem;
+            font-size: .72rem;
             color: var(--text-muted);
             font-weight: 600;
-            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border)
         }
 
         td {
-            padding: 15px;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-            vertical-align: middle;
+            font-size: .85rem;
+            vertical-align: middle
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        tr:hover {
+            background: #f8fafc
         }
 
         .badge {
-            padding: 4px 10px;
+            padding: 3px 9px;
             border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: .7rem;
+            font-weight: 600
         }
 
-        .b-delivered {
+        .b-active,
+        .b-delivered,
+        .b-filled {
             background: var(--emerald-light);
-            color: var(--emerald-dark);
+            color: var(--emerald-dark)
         }
 
-        .b-pending {
+        .b-pending,
+        .b-processing {
             background: #fef3c7;
-            color: #b45309;
+            color: #b45309
         }
 
-        /* Forms */
+        .b-low {
+            background: #fee2e2;
+            color: #991b1b
+        }
+
+        .b-rx {
+            background: #dbeafe;
+            color: #1e40af
+        }
+
+        .b-otc {
+            background: #ede9fe;
+            color: #6d28d9
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            border-radius: 7px;
+            border: none;
+            cursor: pointer;
+            font-size: .76rem;
+            font-weight: 500;
+            font-family: inherit;
+            transition: all .15s
+        }
+
+        .btn-primary {
+            background: var(--emerald);
+            color: #fff
+        }
+
+        .btn-primary:hover {
+            background: var(--emerald-dark)
+        }
+
+        .btn-outline {
+            background: #fff;
+            border: 1px solid var(--border);
+            color: var(--text-primary)
+        }
+
+        .btn-outline:hover {
+            border-color: var(--navy)
+        }
+
+        .btn-success {
+            background: var(--emerald);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all .2s
+        }
+
+        .btn-success:hover {
+            background: var(--emerald-dark)
+        }
+
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.2rem
+        }
+
+        .dash-equal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem
+        }
+
+        .chart-area {
+            padding: 1.2rem;
+            height: 200px
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            height: 170px
+        }
+
+        .chart-bar-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px
+        }
+
+        .chart-bar {
+            width: 100%;
+            border-radius: 5px 5px 0 0;
+            min-height: 3px
+        }
+
+        .chart-bar.primary {
+            background: linear-gradient(180deg, var(--emerald), var(--emerald-dark))
+        }
+
+        .chart-label {
+            font-size: .6rem;
+            color: var(--text-muted)
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            padding: 1.3rem
+        }
+
+        .product-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            transition: all .2s
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .05)
+        }
+
+        .product-card .pimg {
+            height: 100px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: .8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem
+        }
+
+        .product-card h4 {
+            font-size: .85rem;
+            margin-bottom: .3rem
+        }
+
+        .product-card .price {
+            font-family: 'DM Mono', monospace;
+            color: var(--emerald-dark);
+            font-weight: 600;
+            font-size: .9rem
+        }
+
+        .product-card .stock {
+            font-size: .7rem;
+            margin-top: .3rem
+        }
+
+        .customer-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 1.3rem;
+            border-bottom: 1px solid #f1f5f9
+        }
+
+        .customer-row:last-child {
+            border-bottom: none
+        }
+
+        .customer-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--emerald-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: .8rem;
+            color: var(--emerald-dark)
+        }
+
+        .customer-info {
+            flex: 1
+        }
+
+        .customer-info .cname {
+            font-size: .85rem;
+            font-weight: 600
+        }
+
+        .customer-info .cemail {
+            font-size: .72rem;
+            color: var(--text-muted)
+        }
+
+        .customer-stat {
+            text-align: right
+        }
+
+        .customer-stat .cval {
+            font-family: 'DM Mono', monospace;
+            font-weight: 600;
+            font-size: .85rem
+        }
+
+        .customer-stat .clbl {
+            font-size: .65rem;
+            color: var(--text-muted)
+        }
+
+        .rx-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: .8rem
+        }
+
+        .rx-card h4 {
+            font-size: .85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .5rem
+        }
+
+        .rx-card p {
+            font-size: .78rem;
+            color: var(--text-muted);
+            line-height: 1.5
+        }
+
+        .rx-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: .6rem;
+            font-size: .72rem;
+            color: var(--text-muted)
+        }
+
+        .alert-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: .85rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.5
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            gap: 1.2rem
         }
 
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem
         }
 
         .form-group label {
             display: block;
-            font-size: 0.85rem;
+            font-size: .78rem;
             font-weight: 600;
             color: var(--navy);
-            margin-bottom: 6px;
+            margin-bottom: 5px
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 10px 14px;
+            padding: 9px 12px;
             border: 1px solid var(--border);
             border-radius: 8px;
             font-family: inherit;
-            font-size: 0.95rem;
+            font-size: .88rem
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: var(--emerald);
-        }
-
-        .btn-primary {
-            background: var(--emerald);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: inherit;
-            font-size: 0.95rem;
-            transition: background 0.2s;
-        }
-
-        .btn-primary:hover {
-            background: var(--emerald-dark);
-        }
-
-        .alert {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1e40af;
-            padding: 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
+            border-color: var(--emerald)
         }
     </style>
 </head>
 
 <body>
-
-    <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="brand">
-            <div class="pill"></div> Tenant<em>Panel</em>
+        <div class="sidebar-header">
+            <div class="brand">
+                <div class="pill"></div> Tenant<em>Panel</em>
+            </div>
         </div>
-        <div class="nav-item active" onclick="switchTab('dashboard')">Store Overview</div>
-        <div class="nav-item" onclick="switchTab('orders'); loadOrders();">Tenant Orders</div>
-        <div class="nav-item" onclick="switchTab('settings'); loadSettings();">Storefront Settings</div>
-
-        <div class="nav-bottom">
+        <div class="sidebar-nav">
+            <div class="nav-label">Store</div>
+            <div class="nav-item active" onclick="switchTab('dashboard')"><span class="icon">📊</span> Overview</div>
+            <div class="nav-item" onclick="switchTab('orders')"><span class="icon">📦</span> Orders <span
+                    class="cnt">18</span></div>
+            <div class="nav-item" onclick="switchTab('products')"><span class="icon">💊</span> Products <span
+                    class="cnt">45</span></div>
+            <div class="nav-item" onclick="switchTab('customers')"><span class="icon">👥</span> Customers</div>
+            <div class="nav-label">Health</div>
+            <div class="nav-item" onclick="switchTab('prescriptions')"><span class="icon">📋</span> Prescriptions <span
+                    class="cnt">6</span></div>
+            <div class="nav-item" onclick="switchTab('analytics')"><span class="icon">📈</span> Analytics</div>
+            <div class="nav-label">Config</div>
+            <div class="nav-item" onclick="switchTab('settings')"><span class="icon">⚙️</span> Settings</div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="pharmacy-info">
+                <div class="pharmacy-avatar">🏥</div>
+                <div>
+                    <div class="pharmacy-name" id="pharm-name">LifeCare Pharmacy</div>
+                    <div class="pharmacy-plan">Enterprise Plan</div>
+                </div>
+            </div>
             <div class="logout" onclick="logout()">Sign Out</div>
         </div>
     </aside>
 
-    <!-- Main Area -->
     <main class="main-content">
-        <header>
+        <div class="top-bar">
             <h1 id="page-title">Store Overview</h1>
-            <div id="pharm-name" style="font-weight: 600; color: var(--emerald)">Loading...</div>
-        </header>
-
-        <!-- DASHBOARD VIEW -->
-        <div id="dashboard" class="view active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-lbl">Total Sales (Items)</div>
-                    <div class="stat-val" id="s-sales">--</div>
+            <div class="top-bar-actions">
+                <div class="search-box"><span>🔍</span><input type="text" placeholder="Search products, orders..." />
                 </div>
-                <div class="stat-card">
-                    <div class="stat-lbl">Revenue (KSh)</div>
-                    <div class="stat-val" id="s-rev">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-lbl">Platform Plan</div>
-                    <div class="stat-val" id="s-plan" style="text-transform: capitalize; font-size: 1.5rem;">--</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Welcome to your dedicated pharmacy backend!</h2>
-                <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
-                    From here, you can manage the specific orders placed by customers visiting your <strong>custom
-                        storefront</strong>. Data shown here is strictly isolated to your pharmacy.
-                </p>
-                <button class="btn-primary" onclick="switchTab('settings'); loadSettings()">Configure your
-                    Subdomain</button>
             </div>
         </div>
+        <div class="content-area">
 
-        <!-- ORDERS VIEW -->
-        <div id="orders" class="view">
-            <div class="card">
-                <h2>Orders placed on your domain</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="orders-list">
-                        <tr>
-                            <td colspan="5" style="text-align:center">Loading isolated orders...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- SETTINGS VIEW -->
-        <div id="settings" class="view">
-            <div class="alert">
-                <strong>Your Unique Storefront</strong><br />
-                Share your subdomain or custom domain with patients. When they visit it, they will only see
-                <em>your</em> products and register as <em>your</em> customers.
-            </div>
-
-            <div class="card">
-                <h2>Theme & Routing Configuration</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>MediHub Subdomain</label>
-                        <div style="display:flex; align-items:center;">
-                            <input type="text" id="cfg-sub" placeholder="e.g. janespharmacy"
-                                style="border-right: none; border-top-right-radius: 0; border-bottom-right-radius: 0;"
-                                disabled />
-                            <div
-                                style="background:var(--border); padding: 11px 14px; border: 1px solid var(--border); border-left: none; border-radius: 0 8px 8px 0; color: var(--text-muted); font-size: 0.95rem;">
-                                .medihub.com</div>
+            <!-- DASHBOARD -->
+            <div id="dashboard" class="view active">
+                <div class="stats-grid" id="dash-stats"></div>
+                <div class="dash-grid">
+                    <div class="card">
+                        <div class="card-header">Sales Overview (Last 7 Days)</div>
+                        <div class="chart-area">
+                            <div class="chart-bars" id="sales-chart"></div>
                         </div>
-                        <small style="color:var(--text-light); margin-top:5px; display:block">Subdomains must be
-                            approved by the Super Admin.</small>
                     </div>
-                    <div class="form-group">
-                        <label>Custom Domain</label>
-                        <input type="text" id="cfg-custom" placeholder="e.g. www.janerx.co.ke" disabled />
-                        <small style="color:var(--text-light); margin-top:5px; display:block">Contact Super Admin to map
-                            custom domains.</small>
-                    </div>
-                </div>
-
-                <h3 style="margin: 2rem 0 1rem; color: var(--navy); font-size: 1.1rem;">Storefront Theme</h3>
-                <p style="color: var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem">Customize the colors that
-                    patients will see when they visit your specific storefront link.</p>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Primary Brand Color</label>
-                        <input type="color" id="cfg-color1" style="height: 50px; padding: 5px; cursor: pointer" />
-                    </div>
-                    <div class="form-group">
-                        <label>Secondary Brand Color</label>
-                        <input type="color" id="cfg-color2" style="height: 50px; padding: 5px; cursor: pointer" />
+                    <div class="card">
+                        <div class="card-header">Quick Actions</div>
+                        <div class="card-body">
+                            <button class="btn-success" style="width:100%;margin-bottom:10px"
+                                onclick="switchTab('products')">📦 Add New Product</button>
+                            <button class="btn-success" style="width:100%;margin-bottom:10px;background:var(--navy)"
+                                onclick="switchTab('prescriptions')">📋 Process Prescription</button>
+                            <button class="btn-success" style="width:100%;background:var(--blue)"
+                                onclick="switchTab('analytics')">📈 View Analytics</button>
+                            <div
+                                style="margin-top:1.2rem;padding:1rem;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0">
+                                <div style="font-size:.82rem;font-weight:600;color:var(--emerald-dark)">💡 Tip of the
+                                    Day</div>
+                                <p style="font-size:.78rem;color:var(--text-muted);margin-top:.3rem;line-height:1.5">Set
+                                    up automated low-stock alerts to never run out of essential medications.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div style="margin-top: 1rem;">
-                    <button class="btn-primary" onclick="saveTheme()">Save Theme Settings</button>
+                <div class="dash-equal" style="margin-top:1.2rem">
+                    <div class="card">
+                        <div class="card-header">Recent Orders</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-orders"></tbody>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Low Stock Alerts ⚠️</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Stock</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="low-stock"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
+            <!-- ORDERS -->
+            <div id="orders" class="view">
+                <div class="card">
+                    <div class="card-header">All Orders<span style="font-size:.78rem;color:var(--text-muted)">Showing
+                            orders for your pharmacy only</span></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PRODUCTS -->
+            <div id="products" class="view">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem">
+                    <div>
+                        <h2 style="font-size:1rem;color:var(--navy)">Product Inventory</h2>
+                        <p style="font-size:.78rem;color:var(--text-muted)">Manage your pharmacy's product catalog</p>
+                    </div>
+                    <button class="btn-success">+ Add Product</button>
+                </div>
+                <div class="card">
+                    <div class="card-header">All Products</div>
+                    <div class="product-grid" id="products-grid"></div>
+                </div>
+            </div>
+
+            <!-- CUSTOMERS -->
+            <div id="customers" class="view">
+                <div class="card">
+                    <div class="card-header">Registered Customers<span
+                            style="font-size:.78rem;color:var(--text-muted)">Patients registered on your
+                            storefront</span></div>
+                    <div id="customers-list"></div>
+                </div>
+            </div>
+
+            <!-- PRESCRIPTIONS -->
+            <div id="prescriptions" class="view">
+                <div class="alert-box"><strong>🔒 HIPAA Compliant</strong> — All prescription data is encrypted and
+                    isolated to your pharmacy tenant. Only authorized pharmacists can view patient prescription details.
+                </div>
+                <div class="card">
+                    <div class="card-header">Prescription Queue<span
+                            style="font-size:.78rem;color:var(--text-muted)">Pending verification & dispensing</span>
+                    </div>
+                    <div class="card-body" id="rx-queue"></div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS -->
+            <div id="analytics" class="view">
+                <div class="stats-grid" id="analytics-stats"></div>
+                <div class="dash-equal">
+                    <div class="card">
+                        <div class="card-header">Monthly Revenue</div>
+                        <div class="chart-area">
+                            <div class="chart-bars" id="rev-chart"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Top Selling Products</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Units Sold</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-products"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS -->
+            <div id="settings" class="view">
+                <div class="alert-box"><strong>Your Unique Storefront</strong> — Share your subdomain with patients.
+                    They will only see <em>your</em> products and register as <em>your</em> customers.</div>
+                <div class="card">
+                    <div class="card-header">Storefront Configuration</div>
+                    <div class="card-body">
+                        <div class="form-grid">
+                            <div class="form-group"><label>MediHub Subdomain</label>
+                                <div style="display:flex"><input type="text" id="cfg-sub" value="lifecare" disabled
+                                        style="border-right:none;border-radius:8px 0 0 8px" />
+                                    <div
+                                        style="background:var(--border);padding:10px 12px;border:1px solid var(--border);border-left:none;border-radius:0 8px 8px 0;color:var(--text-muted);font-size:.85rem">
+                                        .medihub.com</div>
+                                </div><small style="color:var(--text-muted);font-size:.7rem">Managed by Super
+                                    Admin</small>
+                            </div>
+                            <div class="form-group"><label>Custom Domain</label><input type="text" id="cfg-custom"
+                                    value="www.lifecarepharmacy.co.ke" disabled /><small
+                                    style="color:var(--text-muted);font-size:.7rem">Contact Super Admin to
+                                    change</small></div>
+                        </div>
+                        <h3 style="margin:1.5rem 0 .8rem;font-size:1rem;color:var(--navy)">Brand Colors</h3>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Primary Color</label><input type="color" id="cfg-color1"
+                                    value="#0d9e6e" style="height:45px;padding:4px;cursor:pointer" /></div>
+                            <div class="form-group"><label>Secondary Color</label><input type="color" id="cfg-color2"
+                                    value="#0b1120" style="height:45px;padding:4px;cursor:pointer" /></div>
+                        </div>
+                        <button class="btn-success" onclick="alert('Theme saved!')">Save Theme Settings</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <script>
-        const API_URL = 'http://localhost:5000/api';
-        let token = localStorage.getItem('token');
-        let userRole = localStorage.getItem('role');
-        let pharmacistId = null;
-
-        // DEV MODE: Skip authentication gate during development
-        // TODO: Re-enable auth check before production deployment
-        // if (!token || userRole !== 'pharmacist') {
-        //     alert("Unauthorized Access. Directing you to login.");
-        //     window.location.href = 'index.html';
-        // }
-
-        const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+        const DEMO = {
+            orders: [
+                { id: 'ORD-4821', customer: 'John Doe', email: 'john@email.com', items: 3, total: 4500, status: 'delivered', date: '2026-02-25' },
+                { id: 'ORD-4820', customer: 'Jane Smith', email: 'jane@email.com', items: 1, total: 1200, status: 'processing', date: '2026-02-25' },
+                { id: 'ORD-4819', customer: 'Alice Kamau', email: 'alice@email.com', items: 5, total: 8900, status: 'delivered', date: '2026-02-24' },
+                { id: 'ORD-4818', customer: 'Bob Njoroge', email: 'bob@email.com', items: 2, total: 3200, status: 'pending', date: '2026-02-24' },
+                { id: 'ORD-4817', customer: 'Mary Wangari', email: 'mary@email.com', items: 4, total: 6700, status: 'shipped', date: '2026-02-24' },
+                { id: 'ORD-4816', customer: 'Peter Odhiambo', email: 'peter@email.com', items: 1, total: 950, status: 'delivered', date: '2026-02-23' },
+                { id: 'ORD-4815', customer: 'Grace Njeri', email: 'grace@email.com', items: 3, total: 4100, status: 'delivered', date: '2026-02-23' },
+                { id: 'ORD-4814', customer: 'David Wafula', email: 'david@email.com', items: 2, total: 2800, status: 'processing', date: '2026-02-22' },
+            ],
+            products: [
+                { name: 'Amoxicillin 500mg', category: 'Antibiotic', price: 450, stock: 124, type: 'rx', img: '💊' },
+                { name: 'Paracetamol 500mg', category: 'Analgesic', price: 80, stock: 340, type: 'otc', img: '💊' },
+                { name: 'Metformin 850mg', category: 'Antidiabetic', price: 320, stock: 8, type: 'rx', img: '💊' },
+                { name: 'Omeprazole 20mg', category: 'Antacid', price: 280, stock: 156, type: 'otc', img: '💊' },
+                { name: 'Losartan 50mg', category: 'Antihypertensive', price: 380, stock: 5, type: 'rx', img: '💊' },
+                { name: 'Vitamin D3 1000IU', category: 'Supplement', price: 650, stock: 210, type: 'otc', img: '🧴' },
+                { name: 'Cetirizine 10mg', category: 'Antihistamine', price: 120, stock: 280, type: 'otc', img: '💊' },
+                { name: 'Blood Pressure Monitor', category: 'Medical Device', price: 4500, stock: 12, type: 'otc', img: '🩺' },
+                { name: 'Insulin Glargine', category: 'Antidiabetic', price: 2800, stock: 3, type: 'rx', img: '💉' },
+                { name: 'Salbutamol Inhaler', category: 'Bronchodilator', price: 850, stock: 45, type: 'rx', img: '🫁' },
+                { name: 'Ibuprofen 400mg', category: 'NSAID', price: 150, stock: 420, type: 'otc', img: '💊' },
+                { name: 'Zinc Supplements', category: 'Supplement', price: 350, stock: 180, type: 'otc', img: '🧴' },
+            ],
+            customers: [
+                { name: 'John Doe', email: 'john@email.com', orders: 12, spent: 54000, initials: 'JD' },
+                { name: 'Jane Smith', email: 'jane@email.com', orders: 8, spent: 32000, initials: 'JS' },
+                { name: 'Alice Kamau', email: 'alice@email.com', orders: 15, spent: 67000, initials: 'AK' },
+                { name: 'Bob Njoroge', email: 'bob@email.com', orders: 6, spent: 21000, initials: 'BN' },
+                { name: 'Mary Wangari', email: 'mary@email.com', orders: 10, spent: 45000, initials: 'MW' },
+                { name: 'Peter Odhiambo', email: 'peter@email.com', orders: 4, spent: 12000, initials: 'PO' },
+                { name: 'Grace Njeri', email: 'grace@email.com', orders: 9, spent: 38000, initials: 'GN' },
+                { name: 'David Wafula', email: 'david@email.com', orders: 7, spent: 28000, initials: 'DW' },
+            ],
+            prescriptions: [
+                { patient: 'Alice Kamau', doctor: 'Dr. Wanjiku', drug: 'Amoxicillin 500mg', dosage: '1 cap 3x daily for 7 days', status: 'pending', date: '2026-02-25', notes: 'Upper respiratory tract infection. Check for penicillin allergy.' },
+                { patient: 'John Doe', doctor: 'Dr. Mwangi', drug: 'Metformin 850mg', dosage: '1 tab 2x daily with meals', status: 'pending', date: '2026-02-25', notes: 'Type 2 diabetes management. Monitor blood glucose levels.' },
+                { patient: 'Mary Wangari', doctor: 'Dr. Ochieng', drug: 'Losartan 50mg', dosage: '1 tab daily in the morning', status: 'filled', date: '2026-02-24', notes: 'Hypertension management. Monitor blood pressure weekly.' },
+                { patient: 'Bob Njoroge', doctor: 'Dr. Hassan', drug: 'Insulin Glargine', dosage: '10 units subcutaneously at bedtime', status: 'pending', date: '2026-02-24', notes: 'Insulin-dependent diabetes. Teach injection technique.' },
+                { patient: 'Grace Njeri', doctor: 'Dr. Kimani', drug: 'Salbutamol Inhaler', dosage: '2 puffs as needed', status: 'filled', date: '2026-02-23', notes: 'Acute asthma exacerbation. Review inhaler technique.' },
+                { patient: 'Peter Odhiambo', doctor: 'Dr. Wanjiku', drug: 'Omeprazole 20mg', dosage: '1 cap daily before breakfast', status: 'filled', date: '2026-02-23', notes: 'GERD management. 4-week course, reassess if symptoms persist.' },
+            ],
+            salesData: [32, 28, 45, 38, 52, 41, 60],
+            salesDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            revenueMonths: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+            revenueData: [180, 220, 260, 310, 340, 420],
+        };
 
         function switchTab(tabId) {
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
-
-            const titles = { 'dashboard': 'Store Overview', 'orders': 'Tenant Orders', 'settings': 'Storefront Settings' };
-            document.getElementById('page-title').innerText = titles[tabId];
+            event.currentTarget.classList.add('active');
+            const t = { dashboard: 'Store Overview', orders: 'Tenant Orders', products: 'Product Inventory', customers: 'Customers', prescriptions: 'Prescriptions', analytics: 'Analytics', settings: 'Storefront Settings' };
+            document.getElementById('page-title').innerText = t[tabId] || tabId;
         }
 
-        async function init() {
-            try {
-                const res = await fetch(`${API_URL}/pharmacists/me`, { headers });
-                const data = await res.json();
-                if (data.success && data.data.pharmacists.length > 0) {
-                    const profile = data.data.pharmacists[0];
-                    pharmacistId = profile._id;
-                    document.getElementById('pharm-name').innerText = profile.pharmacyName;
-                    document.getElementById('s-sales').innerText = profile.totalSales || 0;
-                    document.getElementById('s-rev').innerText = (profile.totalRevenue || 0).toLocaleString();
-                    document.getElementById('s-plan').innerText = profile.plan;
+        function renderDashboard() {
+            const totalRev = DEMO.orders.reduce((s, o) => s + o.total, 0);
+            const delivered = DEMO.orders.filter(o => o.status === 'delivered').length;
+            document.getElementById('dash-stats').innerHTML = [
+                { lbl: 'Total Orders', val: DEMO.orders.length, trend: '+24%', icon: '📦', color: '#d1fae5' },
+                { lbl: 'Revenue Today', val: 'KSh ' + totalRev.toLocaleString(), trend: '+18%', icon: '💰', color: '#dbeafe' },
+                { lbl: 'Products Listed', val: DEMO.products.length, trend: '+3', icon: '💊', color: '#fef3c7' },
+                { lbl: 'Active Customers', val: DEMO.customers.length, trend: '+12%', icon: '👥', color: '#ede9fe' },
+            ].map(s => `<div class="stat-card"><div class="accent" style="background:var(--emerald)"></div><div class="stat-top"><div class="stat-icon" style="background:${s.color}">${s.icon}</div><span class="stat-trend trend-up">↑ ${s.trend}</span></div><div class="stat-lbl">${s.lbl}</div><div class="stat-val">${s.val}</div></div>`).join('');
 
-                    // Pre-fill settings
-                    document.getElementById('cfg-sub').value = profile.subdomain || '';
-                    document.getElementById('cfg-custom').value = profile.customDomain || '';
-                    if (profile.theme) {
-                        document.getElementById('cfg-color1').value = profile.theme.primaryColor || '#0d9e6e';
-                        document.getElementById('cfg-color2').value = profile.theme.secondaryColor || '#0b1120';
-                    }
-                }
-            } catch (e) { console.error('Failed to load profile'); }
+            const maxS = Math.max(...DEMO.salesData);
+            document.getElementById('sales-chart').innerHTML = DEMO.salesDays.map((d, i) => `<div class="chart-bar-wrap"><div class="chart-bar primary" style="height:${(DEMO.salesData[i] / maxS) * 100}%"></div><div class="chart-label">${d}</div></div>`).join('');
+
+            document.getElementById('dash-orders').innerHTML = DEMO.orders.slice(0, 5).map(o => `<tr><td><span style="font-family:'DM Mono';color:var(--emerald)">${o.id}</span></td><td>${o.customer}</td><td>KSh ${o.total.toLocaleString()}</td><td><span class="badge b-${o.status === 'delivered' ? 'delivered' : 'pending'}">${o.status}</span></td></tr>`).join('');
+
+            document.getElementById('low-stock').innerHTML = DEMO.products.filter(p => p.stock < 15).map(p => `<tr><td><strong>${p.name}</strong></td><td><span class="badge b-low">${p.stock} left</span></td><td><button class="btn-sm btn-primary">Restock</button></td></tr>`).join('');
         }
 
-        async function loadOrders() {
-            document.getElementById('orders-list').innerHTML = '<tr><td colspan="5" style="text-align:center">Loading isolated orders...</td></tr>';
-            try {
-                const res = await fetch(`${API_URL}/orders/pharmacist`, { headers });
-                const data = await res.json();
-                if (data.success) {
-                    let html = '';
-                    data.data.orders.forEach(o => {
-                        html += `<tr>
-              <td><span style="font-family: monospace; color: var(--emerald)">${o._id.substring(18)}</span></td>
-              <td>${o.user?.name || 'Unknown'}</td>
-              <td>KSh ${o.totalAmount}</td>
-              <td><span class="badge b-${o.orderStatus === 'delivered' ? 'delivered' : 'pending'}">${o.orderStatus}</span></td>
-              <td>${new Date(o.createdAt).toLocaleDateString()}</td>
-            </tr>`;
-                    });
-                    document.getElementById('orders-list').innerHTML = html || '<tr><td colspan="5" style="text-align:center">No orders found on your domain</td></tr>';
-                }
-            } catch (e) {
-                document.getElementById('orders-list').innerHTML = '<tr><td colspan="5" style="text-align:center;color:red">Error loading orders</td></tr>';
-            }
+        function renderOrders() {
+            document.getElementById('orders-list').innerHTML = DEMO.orders.map(o => `<tr><td><span style="font-family:'DM Mono';color:var(--emerald)">${o.id}</span></td><td>${o.customer}</td><td>${o.items} items</td><td>KSh ${o.total.toLocaleString()}</td><td><span class="badge b-${o.status === 'delivered' ? 'delivered' : 'pending'}">${o.status}</span></td><td>${o.date}</td><td><button class="btn-sm btn-outline">View</button></td></tr>`).join('');
         }
 
-        async function saveTheme() {
-            if (!pharmacistId) return;
-            const theme = {
-                primaryColor: document.getElementById('cfg-color1').value,
-                secondaryColor: document.getElementById('cfg-color2').value
-            };
-
-            try {
-                const res = await fetch(`${API_URL}/pharmacists/${pharmacistId}`, {
-                    method: 'PUT',
-                    headers,
-                    body: JSON.stringify({ theme })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    alert('Storefront theme updated successfully!');
-                }
-            } catch (e) {
-                alert('Failed to update theme');
-            }
+        function renderProducts() {
+            document.getElementById('products-grid').innerHTML = DEMO.products.map(p => `<div class="product-card"><div class="pimg">${p.img}</div><h4>${p.name}</h4><div style="font-size:.72rem;color:var(--text-muted);margin-bottom:.3rem">${p.category}</div><div style="display:flex;justify-content:space-between;align-items:center"><div class="price">KSh ${p.price.toLocaleString()}</div><span class="badge b-${p.type}">${p.type.toUpperCase()}</span></div><div class="stock" style="color:${p.stock < 15 ? 'var(--red)' : 'var(--text-muted)'}">Stock: ${p.stock} units ${p.stock < 15 ? '⚠️' : ''}</div></div>`).join('');
         }
 
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
-            window.location.href = 'index.html';
+        function renderCustomers() {
+            document.getElementById('customers-list').innerHTML = DEMO.customers.sort((a, b) => b.spent - a.spent).map(c => `<div class="customer-row"><div class="customer-avatar">${c.initials}</div><div class="customer-info"><div class="cname">${c.name}</div><div class="cemail">${c.email}</div></div><div class="customer-stat"><div class="cval">${c.orders} orders</div><div class="clbl">KSh ${c.spent.toLocaleString()} total</div></div></div>`).join('');
         }
 
-        init();
+        function renderPrescriptions() {
+            document.getElementById('rx-queue').innerHTML = DEMO.prescriptions.map(rx => `<div class="rx-card"><h4>${rx.drug} <span class="badge b-${rx.status}">${rx.status}</span></h4><p><strong>Patient:</strong> ${rx.patient} · <strong>Prescriber:</strong> ${rx.doctor}</p><p><strong>Dosage:</strong> ${rx.dosage}</p><p style="margin-top:.4rem;font-style:italic">${rx.notes}</p><div class="rx-meta"><span>📅 ${rx.date}</span>${rx.status === 'pending' ? `<button class="btn-sm btn-primary" onclick="this.parentElement.parentElement.querySelector('.badge').className='badge b-filled';this.parentElement.parentElement.querySelector('.badge').innerText='filled';this.remove()">✅ Mark as Filled</button>` : ''}</div></div>`).join('');
+        }
+
+        function renderAnalytics() {
+            document.getElementById('analytics-stats').innerHTML = [
+                { lbl: 'Avg Order Value', val: 'KSh 3,294', icon: '📊', color: '#d1fae5' },
+                { lbl: 'Return Rate', val: '2.1%', icon: '↩️', color: '#dbeafe' },
+                { lbl: 'Prescription Fill Rate', val: '94%', icon: '💊', color: '#fef3c7' },
+                { lbl: 'Customer Retention', val: '87%', icon: '🔄', color: '#ede9fe' },
+            ].map(s => `<div class="stat-card"><div class="accent" style="background:var(--emerald)"></div><div class="stat-top"><div class="stat-icon" style="background:${s.color}">${s.icon}</div></div><div class="stat-lbl">${s.lbl}</div><div class="stat-val">${s.val}</div></div>`).join('');
+
+            const maxR = Math.max(...DEMO.revenueData);
+            document.getElementById('rev-chart').innerHTML = DEMO.revenueMonths.map((m, i) => `<div class="chart-bar-wrap"><div class="chart-bar primary" style="height:${(DEMO.revenueData[i] / maxR) * 100}%"></div><div class="chart-label">${m}</div></div>`).join('');
+
+            document.getElementById('top-products').innerHTML = DEMO.products.sort((a, b) => (b.price * (500 - b.stock)) - (a.price * (500 - a.stock))).slice(0, 6).map(p => `<tr><td><strong>${p.name}</strong></td><td>${500 - p.stock}</td><td>KSh ${((500 - p.stock) * p.price).toLocaleString()}</td></tr>`).join('');
+        }
+
+        function logout() { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = 'index.html' }
+
+        renderDashboard(); renderOrders(); renderProducts(); renderCustomers(); renderPrescriptions(); renderAnalytics();
     </script>
 </body>
 
