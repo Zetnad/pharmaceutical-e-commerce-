@@ -423,10 +423,12 @@
         let userRole = localStorage.getItem('role');
         let pharmacistId = null;
 
-        if (!token || userRole !== 'pharmacist') {
-            alert("Unauthorized Access. Directing you to login.");
-            window.location.href = 'index.html'; // In reality, route to a pharmacist login
-        }
+        // DEV MODE: Skip authentication gate during development
+        // TODO: Re-enable auth check before production deployment
+        // if (!token || userRole !== 'pharmacist') {
+        //     alert("Unauthorized Access. Directing you to login.");
+        //     window.location.href = 'index.html';
+        // }
 
         const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 

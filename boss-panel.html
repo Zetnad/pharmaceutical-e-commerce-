@@ -487,10 +487,12 @@
         let token = localStorage.getItem('token');
         let userRole = localStorage.getItem('role');
 
-        if (!token || userRole !== 'admin') {
-            alert("Unauthorized Access. Directing you to login.");
-            window.location.href = 'index.html'; // In reality, route to an admin login if separate
-        }
+        // DEV MODE: Skip authentication gate during development
+        // TODO: Re-enable auth check before production deployment
+        // if (!token || userRole !== 'admin') {
+        //     alert("Unauthorized Access. Directing you to login.");
+        //     window.location.href = 'index.html';
+        // }
 
         const headers = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
