@@ -1,5 +1,6 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+<<<<<<< HEAD
 
 <head>
   <meta charset="UTF-8">
@@ -1721,6 +1722,36 @@
           your 14-day dashboard access within 24 hours.</p>
         <button class="btn-ghost" onclick="closeTrialModal()" style="width:100%">Return to Home</button>
       </div>
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediHub — Your Pharmaceutical Marketplace</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+<nav>
+  <div class="nav-logo" onclick="go('home')"><div class="pill"></div>Medi<em>Hub</em></div>
+  <!-- hamburger toggle shown on mobile -->
+  <div class="nav-toggle" onclick="toggleNav()">☰</div>
+  <!-- wrap links/actions so they can be collapsed on small screens -->
+  <div class="nav-menu">
+    <ul class="nav-links">
+      <li><a onclick="go('home')">Home</a></li>
+      <li><a onclick="go('market')">Marketplace</a></li>
+      <li><a onclick="go('ai')">AI Checker</a></li>
+      <li><a onclick="go('pharm')">For Pharmacists</a></li>
+      <li><a onclick="go('price')">Pricing</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn-ghost" onclick="go('pharm')">Join as Pharmacist</button>
+      <button class="btn-primary" onclick="go('market')">Shop Now</button>
+>>>>>>> 3b62be25a1df437d08f27636557e327cc3fcced9
     </div>
   </div>
 
@@ -1807,6 +1838,7 @@
           <button class="btn-hero" onclick="go('ai')">🩺 Check Symptoms Free</button>
           <button class="btn-hero-outline" onclick="go('market')">Browse Pharmacy →</button>
         </div>
+<<<<<<< HEAD
         <div class="hero-stats">
           <div class="stat">
             <h3>12k+</h3>
@@ -2771,6 +2803,1088 @@
           body: JSON.stringify({
             model: "claude-sonnet-4-20250514", max_tokens: 1000,
             system: `You are MediHub's AI health assistant on a pharmaceutical SaaS platform in Africa. Analyze patient symptoms and:
+=======
+        <div class="chat-input-row">
+          <input class="chat-in" placeholder="Describe your symptoms..." onclick="go('ai')">
+          <button class="send-btn" onclick="go('ai')">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+      <div class="section alt">
+        <div class="section-label">Testimonials</div>
+        <h2 class="section-title">Trusted by Patients &amp; Pharmacists</h2>
+        <div class="grid-3" style="margin-top: 2.5rem">
+          <div class="tcard">
+            <div class="stars">★★★★★</div>
+            <blockquote>
+              "The AI symptom checker caught that my child might have a UTI and
+              recommended we see a doctor. It was spot on — and the medication
+              arrived in 2 hours."
+            </blockquote>
+            <div class="t-author">
+              <div class="avatar">👩</div>
+              <div>
+                <div class="t-name">Amina Khalid</div>
+                <div class="t-role">Parent, Nairobi</div>
+              </div>
+            </div>
+          </div>
+          <div class="tcard">
+            <div class="stars">★★★★★</div>
+            <blockquote>
+              "As a pharmacist, MediHub has tripled my customer reach. The
+              dashboard is intuitive, order management is seamless. I'd
+              recommend it to every independent pharmacist."
+            </blockquote>
+            <div class="t-author">
+              <div class="avatar">👨‍⚕️</div>
+              <div>
+                <div class="t-name">Dr. James Ochieng</div>
+                <div class="t-role">Licensed Pharmacist, Mombasa</div>
+              </div>
+            </div>
+          </div>
+          <div class="tcard">
+            <div class="stars">★★★★☆</div>
+            <blockquote>
+              "Finally a platform that takes medication safety seriously.
+              Prescription verification, licensed sellers only, and a real
+              pharmacist chat — this is how healthcare should work."
+            </blockquote>
+            <div class="t-author">
+              <div class="avatar">👨</div>
+              <div>
+                <div class="t-name">Samuel Waweru</div>
+                <div class="t-role">Patient, Kampala</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="footer-top">
+          <div>
+            <div class="f-logo" onclick="go('home')">
+              <div class="pill"></div>
+              Medi<em>Hub</em>
+            </div>
+            <p class="f-desc">
+              Africa's most trusted pharmaceutical SaaS — connecting patients
+              with licensed pharmacists and AI-powered health insights.
+            </p>
+            <div class="socials">
+              <div class="s-btn">𝕏</div>
+              <div class="s-btn">f</div>
+              <div class="s-btn">◻</div>
+              <div class="s-btn">in</div>
+              <div class="s-btn">▶</div>
+            </div>
+            <div class="f-newsletter">
+              <p>Health tips &amp; pharmacy deals in your inbox:</p>
+              <div class="nl-row">
+                <input type="email" placeholder="your@email.com" /><button>
+                  Subscribe
+                </button>
+              </div>
+            </div>
+            <div class="certs">
+              <div class="cert">🔒 SSL Secured</div>
+              <div class="cert">✅ FDA Compliant</div>
+              <div class="cert">🏥 WHO Standards</div>
+            </div>
+          </div>
+          <div class="f-col">
+            <h5>Platform</h5>
+            <ul>
+              <li><a onclick="go('market')">Marketplace</a></li>
+              <li><a onclick="go('ai')">AI Checker</a></li>
+              <li><a>Prescriptions</a></li>
+              <li><a onclick="go('pharm')">Pharmacist Portal</a></li>
+              <li><a>Mobile App</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Pharmacists</h5>
+            <ul>
+              <li><a onclick="go('pharm')">Join MediHub</a></li>
+              <li><a>Dashboard</a></li>
+              <li><a onclick="go('price')">Pricing Plans</a></li>
+              <li><a>Training</a></li>
+              <li><a>Partners</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Company</h5>
+            <ul>
+              <li><a>About Us</a></li>
+              <li><a>Medical Board</a></li>
+              <li><a>Blog</a></li>
+              <li><a>Press</a></li>
+              <li><a>Careers</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Legal &amp; Support</h5>
+            <ul>
+              <li><a>Help Center</a></li>
+              <li><a>Safety &amp; Compliance</a></li>
+              <li><a>Terms of Service</a></li>
+              <li><a>Privacy Policy</a></li>
+              <li><a>Cookie Policy</a></li>
+              <li><a>Report Issue</a></li>
+            </ul>
+          </div>
+        </div>
+        <hr class="f-hr" />
+        <div class="f-bottom">
+          <p>
+            © 2026 MediHub Technologies Ltd. All rights reserved. Registered in
+            Kenya. Not a substitute for professional medical advice.
+          </p>
+          <div class="f-bottom-links">
+            <a>Privacy</a><a>Terms</a><a>Cookies</a><a>Sitemap</a>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ══════════ MARKETPLACE ══════════ -->
+    <section class="page" id="market">
+      <div class="section alt" style="min-height: calc(100vh - 70px)">
+        <div class="section-label">Pharmacy Marketplace</div>
+        <h2 class="section-title">Browse 500+ Verified Pharmacies</h2>
+        <div class="search-row">
+          <span>🔍</span
+          ><input
+            type="text"
+            placeholder="Search medications, brands, pharmacies..."
+          />
+        </div>
+        <div class="filter-tabs">
+          <button class="ftab on">All Products</button>
+          <button class="ftab">💊 Pain Relief</button>
+          <button class="ftab">🤧 Cold &amp; Flu</button>
+          <button class="ftab">🫀 Cardiovascular</button>
+          <button class="ftab">🧴 Dermatology</button>
+          <button class="ftab">🍼 Mother &amp; Baby</button>
+          <button class="ftab">💉 Vitamins</button>
+          <button class="ftab">🧠 Mental Health</button>
+        </div>
+        <div class="grid-4">
+          <div class="product-card">
+            <div class="prod-img">
+              💊
+              <div class="prod-badge badge-otc">OTC</div>
+            </div>
+            <div class="prod-info">
+              <div class="prod-pharm">PharmaCare Nairobi ⭐4.9</div>
+              <div class="prod-name">Paracetamol 500mg (100 tabs)</div>
+              <div class="prod-desc">
+                Fast-acting pain relief and fever reducer. Suitable for adults
+                and children over 12.
+              </div>
+              <div class="prod-foot">
+                <div class="prod-price">KSh 280</div>
+                <button class="add-btn">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="prod-img">
+              🩺
+              <div class="prod-badge badge-rx">Rx</div>
+            </div>
+            <div class="prod-info">
+              <div class="prod-pharm">MediPlus Pharmacy ⭐4.8</div>
+              <div class="prod-name">Amoxicillin 250mg (21 caps)</div>
+              <div class="prod-desc">
+                Broad-spectrum antibiotic for bacterial infections. Prescription
+                required.
+              </div>
+              <div class="prod-foot">
+                <div class="prod-price">KSh 650</div>
+                <button class="add-btn">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="prod-img">
+              🌿
+              <div class="prod-badge badge-otc">OTC</div>
+            </div>
+            <div class="prod-info">
+              <div class="prod-pharm">WellnessHub ⭐4.7</div>
+              <div class="prod-name">Vitamin C 1000mg Effervescent</div>
+              <div class="prod-desc">
+                Immune support with high-dose Vitamin C. Lemon flavour. 20
+                tablets.
+              </div>
+              <div class="prod-foot">
+                <div class="prod-price">KSh 420</div>
+                <button class="add-btn">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="prod-img">
+              😷
+              <div class="prod-badge badge-otc">OTC</div>
+            </div>
+            <div class="prod-info">
+              <div class="prod-pharm">QuickMeds Kenya ⭐4.9</div>
+              <div class="prod-name">Cetirizine 10mg (30 tabs)</div>
+              <div class="prod-desc">
+                Non-drowsy antihistamine for allergies, hay fever, and
+                urticaria.
+              </div>
+              <div class="prod-foot">
+                <div class="prod-price">KSh 380</div>
+                <button class="add-btn">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="prod-img">
+              💉
+              <div class="prod-badge badge-rx">Rx</div>
+            </div>
+            <div class="prod-info">
+              <div class="prod-pharm">AfriMed ⭐4.6</div>
+              <div class="prod-name">Metformin 500mg (60 tabs)</div>
+              <div class="prod-desc">
+                Type 2 diabetes management. Prescription required. Store below
+                30°C.
+              </div>
+              <div class="prod-foot">
+                <div class="prod-price">KSh 520</div>
+                <button class="add-btn">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="prod-img">
+              🌙
+              <div class="prod-badge badge-otc">OTC</div>
+            </div>
+            <div class="prod-info">
+              <div class="prod-pharm">SleepWell Pharmacy ⭐4.8</div>
+              <div class="prod-name">Melatonin 5mg (60 tablets)</div>
+              <div class="prod-desc">
+                Natural sleep aid to regulate sleep-wake cycles. Drug-free
+                formula.
+              </div>
+              <div class="prod-foot">
+                <div class="prod-price">KSh 890</div>
+                <button class="add-btn">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="prod-img">
+              🫁
+              <div class="prod-badge badge-rx">Rx</div>
+            </div>
+            <div class="prod-info">
+              <div class="prod-pharm">RespiCare ⭐5.0</div>
+              <div class="prod-name">Salbutamol Inhaler 100mcg</div>
+              <div class="prod-desc">
+                Relieves bronchospasm in asthma. Fast-acting bronchodilator.
+              </div>
+              <div class="prod-foot">
+                <div class="prod-price">KSh 1,200</div>
+                <button class="add-btn">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="prod-img">
+              🧴
+              <div class="prod-badge badge-otc">OTC</div>
+            </div>
+            <div class="prod-info">
+              <div class="prod-pharm">DermaCare Kenya ⭐4.7</div>
+              <div class="prod-name">Hydrocortisone Cream 1%</div>
+              <div class="prod-desc">
+                Relieves itching, redness, and inflammation from eczema and
+                insect bites.
+              </div>
+              <div class="prod-foot">
+                <div class="prod-price">KSh 350</div>
+                <button class="add-btn">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer>
+        <div class="footer-top">
+          <div>
+            <div class="f-logo" onclick="go('home')">
+              <div class="pill"></div>
+              Medi<em>Hub</em>
+            </div>
+            <p class="f-desc">
+              Africa's most trusted pharmaceutical marketplace with verified
+              sellers.
+            </p>
+            <div class="socials">
+              <div class="s-btn">𝕏</div>
+              <div class="s-btn">f</div>
+              <div class="s-btn">in</div>
+            </div>
+            <div class="certs" style="margin-top: 1rem">
+              <div class="cert">🔒 SSL</div>
+              <div class="cert">✅ Licensed Sellers</div>
+            </div>
+          </div>
+          <div class="f-col">
+            <h5>Shop</h5>
+            <ul>
+              <li><a>All Products</a></li>
+              <li><a>By Category</a></li>
+              <li><a>Top Rated</a></li>
+              <li><a>New Arrivals</a></li>
+              <li><a>Deals</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>My Account</h5>
+            <ul>
+              <li><a>Orders</a></li>
+              <li><a>Prescriptions</a></li>
+              <li><a>Saved Items</a></li>
+              <li><a>Health History</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Help</h5>
+            <ul>
+              <li><a>FAQ</a></li>
+              <li><a>Returns</a></li>
+              <li><a>Delivery Info</a></li>
+              <li><a>Contact</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Legal</h5>
+            <ul>
+              <li><a>Terms</a></li>
+              <li><a>Privacy</a></li>
+              <li><a>Safe Use</a></li>
+            </ul>
+          </div>
+        </div>
+        <hr class="f-hr" />
+        <div class="f-bottom">
+          <p>
+            © 2026 MediHub Technologies Ltd. Medications sold by licensed
+            pharmacists only.
+          </p>
+          <div class="f-bottom-links"><a>Privacy</a><a>Terms</a></div>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ══════════ AI CHECKER ══════════ -->
+    <section class="page" id="ai">
+      <div
+        class="section dark ai-page-section"
+        style="min-height: calc(100vh - 70px)"
+      >
+        <div style="max-width: 780px; margin: 0 auto">
+          <div class="section-label light">AI-Powered Diagnosis</div>
+          <h2 class="section-title light" style="margin-bottom: 0.5rem">
+            Symptom Checker
+          </h2>
+          <p
+            style="
+              color: #64748b;
+              margin-bottom: 2rem;
+              font-size: 0.88rem;
+              max-width: 600px;
+              line-height: 1.6;
+            "
+          >
+            Describe your symptoms in natural language. Our AI will analyze them
+            and suggest possible conditions and OTC medications.
+            <strong style="color: #475569"
+              >Always consult a licensed doctor for serious conditions.</strong
+            >
+          </p>
+          <div class="chat-box">
+            <div class="chat-header">
+              <div class="chat-dot"></div>
+              <span>MediHub AI — Symptom Analyzer</span
+              ><small>Powered by Claude AI</small>
+            </div>
+            <div class="chat-msgs" id="msgs" style="max-height: 460px">
+              <div class="msg msg-ai">
+                <div class="bubble">
+                  👋 Hello! I'm MediHub's AI health assistant. Please describe
+                  your symptoms — what you're feeling, how long, and any other
+                  relevant details.
+                </div>
+                <div class="msg-time">Now</div>
+              </div>
+            </div>
+            <div class="chat-input-row">
+              <input
+                class="chat-in"
+                id="symp-in"
+                placeholder="e.g. I have a headache, fever 38°C, and sore throat for 2 days..."
+              />
+              <button class="send-btn" onclick="send()">→</button>
+            </div>
+          </div>
+          <div class="symptom-chips">
+            <button
+              class="chip"
+              onclick="
+                fill('Headache, fever 38°C, and body fatigue for 3 days')
+              "
+            >
+              💊 Headache + Fever
+            </button>
+            <button
+              class="chip"
+              onclick="fill('Sore throat, runny nose, slight cough for 5 days')"
+            >
+              🤧 Cold &amp; Flu
+            </button>
+            <button
+              class="chip"
+              onclick="
+                fill('Stomach pain, nausea, and diarrhea since yesterday')
+              "
+            >
+              🤢 Stomach Issues
+            </button>
+            <button
+              class="chip"
+              onclick="fill('Itchy red rash on my arm appeared 2 days ago')"
+            >
+              🧴 Skin Rash
+            </button>
+            <button
+              class="chip"
+              onclick="
+                fill('Chest tightness and shortness of breath when walking')
+              "
+            >
+              🫁 Breathing Issues
+            </button>
+          </div>
+        </div>
+      </div>
+      <footer>
+        <div class="footer-top">
+          <div>
+            <div class="f-logo" onclick="go('home')">
+              <div class="pill"></div>
+              Medi<em>Hub</em>
+            </div>
+            <p class="f-desc">
+              AI health assistance. Always consult a doctor for serious
+              conditions.
+            </p>
+            <div class="certs" style="margin-top: 1rem">
+              <div class="cert">🔒 HIPAA</div>
+              <div class="cert">🤖 Claude AI</div>
+            </div>
+          </div>
+          <div class="f-col">
+            <h5>AI Tools</h5>
+            <ul>
+              <li><a>Symptom Checker</a></li>
+              <li><a>Drug Interactions</a></li>
+              <li><a>Dosage Calculator</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Safety</h5>
+            <ul>
+              <li><a>How AI Works</a></li>
+              <li><a>Medical Disclaimer</a></li>
+              <li><a>Emergency Contacts</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Platform</h5>
+            <ul>
+              <li><a onclick="go('market')">Marketplace</a></li>
+              <li><a onclick="go('pharm')">Pharmacists</a></li>
+              <li><a onclick="go('price')">Pricing</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Legal</h5>
+            <ul>
+              <li><a>Terms</a></li>
+              <li><a>Privacy</a></li>
+            </ul>
+          </div>
+        </div>
+        <hr class="f-hr" />
+        <div class="f-bottom">
+          <p>
+            © 2026 MediHub Technologies Ltd. AI suggestions are not a substitute
+            for professional medical advice.
+          </p>
+          <div class="f-bottom-links"><a>Privacy</a><a>Terms</a></div>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ══════════ FOR PHARMACISTS ══════════ -->
+    <section class="page" id="pharm">
+      <div class="section white">
+        <div class="section-label">For Pharmacists</div>
+        <h2 class="section-title">Grow Your Pharmacy Online</h2>
+        <p class="section-sub">
+          Join 12,000+ licensed pharmacists already selling on MediHub. Set up
+          in minutes. Reach thousands of patients daily.
+        </p>
+        <div class="grid-2" style="margin-top: 3rem">
+          <div class="dash-box">
+            <div
+              style="
+                font-size: 0.78rem;
+                color: var(--mint);
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                margin-bottom: 1rem;
+                position: relative;
+                z-index: 2;
+              "
+            >
+              📊 Pharmacist Dashboard
+            </div>
+            <div style="position: relative; z-index: 2">
+              <div class="dash-stat-row">
+                <div class="dash-stat">
+                  <div class="dash-val">KSh 84,200</div>
+                  <div class="dash-lbl">Revenue this week</div>
+                </div>
+                <div class="dash-stat">
+                  <div class="dash-val">312</div>
+                  <div class="dash-lbl">Pending orders</div>
+                </div>
+              </div>
+              <div
+                style="
+                  background: rgba(255, 255, 255, 0.04);
+                  border: 1px solid rgba(255, 255, 255, 0.08);
+                  border-radius: 10px;
+                  padding: 1rem;
+                  margin-bottom: 10px;
+                "
+              >
+                <div
+                  style="font-size: 0.74rem; color: #64748b; margin-bottom: 8px"
+                >
+                  Monthly Sales (KSh '000)
+                </div>
+                <div class="bars">
+                  <div class="bar" style="height: 35%"></div>
+                  <div class="bar" style="height: 55%"></div>
+                  <div class="bar" style="height: 48%"></div>
+                  <div class="bar" style="height: 72%"></div>
+                  <div class="bar" style="height: 60%"></div>
+                  <div class="bar" style="height: 88%"></div>
+                  <div class="bar hi" style="height: 100%"></div>
+                </div>
+              </div>
+              <div class="order-row">
+                <span>💊 Paracetamol 500mg</span><b>×48 sold</b>
+              </div>
+              <div class="order-row">
+                <span>🩺 Amoxicillin 250mg</span><b>×31 sold</b>
+              </div>
+              <div class="order-row">
+                <span>🌿 Vitamin C 1000mg</span><b>×27 sold</b>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3
+              style="
+                font-family: &quot;Playfair Display&quot;, serif;
+                font-size: 1.8rem;
+                color: var(--navy);
+                margin-bottom: 0.8rem;
+              "
+            >
+              Start Selling in 3 Simple Steps
+            </h3>
+            <p
+              style="
+                color: var(--text-muted);
+                font-size: 0.9rem;
+                line-height: 1.6;
+              "
+            >
+              Our streamlined onboarding gets you from signup to your first sale
+              in less than 48 hours.
+            </p>
+            <div class="steps">
+              <div class="step">
+                <div class="step-n">1</div>
+                <div>
+                  <h4>Register &amp; Get Verified</h4>
+                  <p>
+                    Submit your pharmacy license. Our compliance team verifies
+                    you within 24–48 hours — fully secure.
+                  </p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-n">2</div>
+                <div>
+                  <h4>List Your Products</h4>
+                  <p>
+                    Upload your inventory via our bulk CSV tool or add products
+                    one by one through the intuitive dashboard.
+                  </p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-n">3</div>
+                <div>
+                  <h4>Receive Orders &amp; Get Paid</h4>
+                  <p>
+                    Fulfill orders via your logistics partner. Payments released
+                    within 48 hours of delivery confirmation.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <button
+              class="btn-primary"
+              style="padding: 14px 36px; font-size: 1rem; border-radius: 50px"
+            >
+              Apply as Pharmacist →
+            </button>
+            <p
+              style="
+                margin-top: 1rem;
+                font-size: 0.8rem;
+                color: var(--text-muted);
+              "
+            >
+              ✅ No listing fees for your first 30 days. Cancel anytime.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing for pharmacists -->
+      <div class="section">
+        <div class="section-label">Plans</div>
+        <h2 class="section-title">Transparent Pricing for Every Pharmacy</h2>
+        <p class="section-sub">
+          All plans include verification, dashboard access, and dedicated
+          support.
+        </p>
+        <div class="grid-3" style="margin-top: 3rem">
+          <div class="price-card">
+            <div class="price-tier">Starter</div>
+            <div class="price-amount">KSh 0<small>/mo</small></div>
+            <div class="price-desc">
+              For independent pharmacists getting started
+            </div>
+            <ul class="price-feats">
+              <li>Up to 50 product listings</li>
+              <li>Basic analytics dashboard</li>
+              <li>Standard support</li>
+              <li>3% commission per sale</li>
+              <li class="no">Priority search placement</li>
+              <li class="no">AI prescription assist</li>
+            </ul>
+            <button class="price-btn">Get Started Free</button>
+          </div>
+          <div class="price-card pop">
+            <div class="pop-badge">Most Popular</div>
+            <div class="price-tier">Growth</div>
+            <div class="price-amount">KSh 4,500<small>/mo</small></div>
+            <div class="price-desc">
+              For pharmacies ready to scale and grow faster
+            </div>
+            <ul class="price-feats">
+              <li>Unlimited product listings</li>
+              <li>Advanced analytics &amp; reports</li>
+              <li>Priority support</li>
+              <li>1.5% commission per sale</li>
+              <li>Priority search placement</li>
+              <li>AI prescription assist</li>
+            </ul>
+            <button class="price-btn">Start 14-Day Trial</button>
+          </div>
+          <div class="price-card">
+            <div class="price-tier">Enterprise</div>
+            <div class="price-amount">Custom</div>
+            <div class="price-desc">For pharmacy chains and distributors</div>
+            <ul class="price-feats">
+              <li>Multi-branch &amp; unlimited listings</li>
+              <li>Custom analytics &amp; API</li>
+              <li>Dedicated account manager</li>
+              <li>Negotiable commission</li>
+              <li>Top search placement</li>
+              <li>POS &amp; bulk tools</li>
+            </ul>
+            <button class="price-btn">Contact Sales</button>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="footer-top">
+          <div>
+            <div class="f-logo" onclick="go('home')">
+              <div class="pill"></div>
+              Medi<em>Hub</em>
+            </div>
+            <p class="f-desc">
+              Empowering pharmacists across Africa to reach more patients and
+              grow their business.
+            </p>
+            <div class="socials">
+              <div class="s-btn">𝕏</div>
+              <div class="s-btn">f</div>
+              <div class="s-btn">in</div>
+            </div>
+            <div class="f-newsletter">
+              <p>Pharmacist tips and updates:</p>
+              <div class="nl-row">
+                <input
+                  type="email"
+                  placeholder="pharmacist@example.com"
+                /><button>Subscribe</button>
+              </div>
+            </div>
+          </div>
+          <div class="f-col">
+            <h5>Tools</h5>
+            <ul>
+              <li><a>Dashboard</a></li>
+              <li><a>Inventory</a></li>
+              <li><a>Orders</a></li>
+              <li><a>Analytics</a></li>
+              <li><a>Prescriptions</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Resources</h5>
+            <ul>
+              <li><a>Seller Guide</a></li>
+              <li><a>Compliance Docs</a></li>
+              <li><a>Video Tutorials</a></li>
+              <li><a>Community Forum</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Support</h5>
+            <ul>
+              <li><a>Help Desk</a></li>
+              <li><a>Report Issue</a></li>
+              <li><a>Contact Sales</a></li>
+              <li><a>Partner Program</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Legal</h5>
+            <ul>
+              <li><a>Seller Agreement</a></li>
+              <li><a>Privacy Policy</a></li>
+              <li><a>Terms</a></li>
+              <li><a>Compliance</a></li>
+            </ul>
+          </div>
+        </div>
+        <hr class="f-hr" />
+        <div class="f-bottom">
+          <p>
+            © 2026 MediHub Technologies Ltd. All pharmacists are independently
+            licensed and responsible for their products.
+          </p>
+          <div class="f-bottom-links">
+            <a>Privacy</a><a>Terms</a><a>Compliance</a>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ══════════ PRICING ══════════ -->
+    <section class="page" id="price">
+      <div class="section white" style="padding-top: 4rem">
+        <div class="section-label">Pricing</div>
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-sub">
+          Whether you're a patient or pharmacist — we have a plan for you. No
+          hidden fees, no surprises.
+        </p>
+
+        <h3
+          style="
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+          "
+        >
+          For Patients
+        </h3>
+        <div class="grid-3">
+          <div class="price-card">
+            <div class="price-tier">Free</div>
+            <div class="price-amount">KSh 0<small>/mo</small></div>
+            <div class="price-desc">Basic access for everyday health needs</div>
+            <ul class="price-feats">
+              <li>AI symptom checker (5/month)</li>
+              <li>Browse &amp; order from marketplace</li>
+              <li>Basic health history</li>
+              <li class="no">Priority pharmacist chat</li>
+              <li class="no">Family accounts</li>
+            </ul>
+            <button class="price-btn">Get Started</button>
+          </div>
+          <div class="price-card pop">
+            <div class="pop-badge">Best Value</div>
+            <div class="price-tier">Premium</div>
+            <div class="price-amount">KSh 999<small>/mo</small></div>
+            <div class="price-desc">
+              For health-conscious individuals who want the full experience
+            </div>
+            <ul class="price-feats">
+              <li>Unlimited AI symptom checks</li>
+              <li>Priority pharmacist chat</li>
+              <li>Prescription tracking</li>
+              <li>Full health history export</li>
+              <li>Family accounts (up to 5)</li>
+              <li>Member discounts</li>
+            </ul>
+            <button class="price-btn">Start Free Trial</button>
+          </div>
+          <div class="price-card">
+            <div class="price-tier">Family Plus</div>
+            <div class="price-amount">KSh 1,899<small>/mo</small></div>
+            <div class="price-desc">Complete coverage for the whole family</div>
+            <ul class="price-feats">
+              <li>Everything in Premium</li>
+              <li>Up to 10 family members</li>
+              <li>Dedicated health advisor</li>
+              <li>Medication reminders</li>
+              <li>Annual health report</li>
+              <li>Emergency telehealth</li>
+            </ul>
+            <button class="price-btn">Get Family Plus</button>
+          </div>
+        </div>
+
+        <h3
+          style="
+            margin-top: 4rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--navy);
+          "
+        >
+          For Pharmacists
+        </h3>
+        <div class="grid-3">
+          <div class="price-card">
+            <div class="price-tier">Starter</div>
+            <div class="price-amount">KSh 0<small>/mo</small></div>
+            <div class="price-desc">
+              Just starting out? Begin here for free.
+            </div>
+            <ul class="price-feats">
+              <li>50 product listings</li>
+              <li>Basic dashboard</li>
+              <li>3% transaction fee</li>
+              <li class="no">Priority placement</li>
+              <li class="no">Analytics reports</li>
+            </ul>
+            <button class="price-btn">Start Free</button>
+          </div>
+          <div class="price-card pop">
+            <div class="pop-badge">Most Popular</div>
+            <div class="price-tier">Growth</div>
+            <div class="price-amount">KSh 4,500<small>/mo</small></div>
+            <div class="price-desc">
+              Scale your pharmacy with powerful tools
+            </div>
+            <ul class="price-feats">
+              <li>Unlimited listings</li>
+              <li>1.5% transaction fee</li>
+              <li>Priority placement</li>
+              <li>Advanced analytics</li>
+              <li>AI prescription assist</li>
+              <li>Priority support</li>
+            </ul>
+            <button class="price-btn">Try Free 14 Days</button>
+          </div>
+          <div class="price-card">
+            <div class="price-tier">Enterprise</div>
+            <div class="price-amount">Custom</div>
+            <div class="price-desc">
+              Chains, distributors &amp; hospital networks
+            </div>
+            <ul class="price-feats">
+              <li>Multi-branch support</li>
+              <li>Custom commission</li>
+              <li>API &amp; POS integration</li>
+              <li>Dedicated manager</li>
+              <li>SLA guarantee</li>
+              <li>White-label option</li>
+            </ul>
+            <button class="price-btn">Talk to Sales</button>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="footer-top">
+          <div>
+            <div class="f-logo" onclick="go('home')">
+              <div class="pill"></div>
+              Medi<em>Hub</em>
+            </div>
+            <p class="f-desc">
+              Making pharmaceutical access affordable and intelligent for all
+              Africans.
+            </p>
+            <div class="socials">
+              <div class="s-btn">𝕏</div>
+              <div class="s-btn">f</div>
+              <div class="s-btn">in</div>
+            </div>
+          </div>
+          <div class="f-col">
+            <h5>Platform</h5>
+            <ul>
+              <li><a onclick="go('market')">Marketplace</a></li>
+              <li><a onclick="go('ai')">AI Checker</a></li>
+              <li><a onclick="go('pharm')">Pharmacists</a></li>
+              <li><a onclick="go('price')">Pricing</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Company</h5>
+            <ul>
+              <li><a>About</a></li>
+              <li><a>Blog</a></li>
+              <li><a>Press</a></li>
+              <li><a>Careers</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Support</h5>
+            <ul>
+              <li><a>Help Center</a></li>
+              <li><a>Contact</a></li>
+              <li><a>Report Issue</a></li>
+            </ul>
+          </div>
+          <div class="f-col">
+            <h5>Legal</h5>
+            <ul>
+              <li><a>Terms</a></li>
+              <li><a>Privacy</a></li>
+              <li><a>Cookies</a></li>
+            </ul>
+          </div>
+        </div>
+        <hr class="f-hr" />
+        <div class="f-bottom">
+          <p>© 2026 MediHub Technologies Ltd. All rights reserved.</p>
+          <div class="f-bottom-links">
+            <a>Privacy</a><a>Terms</a><a>Sitemap</a>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <script>
+      function toggleNav() {
+        document.querySelector(".nav-menu")?.classList.toggle("open");
+      }
+      function closeNav() {
+        document.querySelector(".nav-menu.open")?.classList.remove("open");
+      }
+      function go(id) {
+        closeNav();
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      document.querySelectorAll(".ftab").forEach((t) =>
+        t.addEventListener("click", () => {
+          document
+            .querySelectorAll(".ftab")
+            .forEach((x) => x.classList.remove("on"));
+          t.classList.add("on");
+        }),
+      );
+
+      function fill(text) {
+        document.getElementById("symp-in").value = text;
+      }
+
+      function escape(t) {
+        return t
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function addMsg(cont, html, role) {
+        const t = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const d = document.createElement("div");
+        d.className = `msg msg-${role}`;
+        d.innerHTML = `<div class="bubble">${html}</div><div class="msg-time">${t}</div>`;
+        cont.appendChild(d);
+        cont.scrollTop = cont.scrollHeight;
+      }
+
+      async function send() {
+        const inp = document.getElementById("symp-in");
+        const text = inp.value.trim();
+        if (!text) return;
+        const cont = document.getElementById("msgs");
+        addMsg(cont, escape(text), "user");
+        inp.value = "";
+
+        const tid = "tid" + Date.now();
+        const td = document.createElement("div");
+        td.className = "msg msg-ai";
+        td.id = tid;
+        td.innerHTML =
+          '<div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+        cont.appendChild(td);
+        cont.scrollTop = cont.scrollHeight;
+
+        try {
+          const res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "claude-sonnet-4-20250514",
+              max_tokens: 1000,
+              system: `You are MediHub's AI health assistant on a pharmaceutical SaaS platform in Africa. Analyze patient symptoms and:
+>>>>>>> 3b62be25a1df437d08f27636557e327cc3fcced9
 1. Identify 2-3 possible conditions with confidence levels
 2. Suggest appropriate OTC medications if safe
 3. Clearly state when doctor visit is urgently needed
@@ -2782,6 +3896,7 @@ Format as HTML with inline styles matching a dark theme:
 - Disclaimer: <p style="color:#64748b;font-size:0.77rem;margin-top:10px">⚕️ Disclaimer: This is AI-generated guidance, not a medical diagnosis. Consult a licensed doctor or pharmacist.</p>
 
 Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
+<<<<<<< HEAD
             messages: [{ role: "user", content: text }]
           })
         });
@@ -2885,12 +4000,165 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
           const card = document.createElement('div');
           card.className = 'product-card';
           card.innerHTML = `
+=======
+              messages: [{ role: "user", content: text }],
+            }),
+          });
+          const data = await res.json();
+          const reply =
+            data.content?.[0]?.text ||
+            "Unable to analyze. Please consult a pharmacist directly.";
+          document.getElementById(tid)?.remove();
+          addMsg(cont, reply, "ai");
+        } catch (e) {
+          document.getElementById(tid)?.remove();
+          addMsg(
+            cont,
+            "⚠️ AI connection failed. Please try again or consult a pharmacist.",
+            "ai",
+          );
+        }
+      }
+
+      document.getElementById("symp-in")?.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") send();
+      });
+    </script>
+    <script>
+      // ==== backend integration script ====
+      const API_URL = "http://localhost:5000/api";
+
+      // override navigation helper so it's available after this block
+      function toggleNav() {
+        document.querySelector(".nav-menu")?.classList.toggle("open");
+      }
+      function closeNav() {
+        document.querySelector(".nav-menu.open")?.classList.remove("open");
+      }
+      function go(id) {
+        closeNav();
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        window.scrollTo(0, 0);
+      }
+
+      // update tab behaviour to trigger product load
+      document.querySelectorAll(".ftab").forEach((t) => {
+        t.addEventListener("click", () => {
+          document
+            .querySelectorAll(".ftab")
+            .forEach((x) => x.classList.remove("on"));
+          t.classList.add("on");
+          loadProducts();
+        });
+      });
+
+      // helper escaping; existing implementation is fine
+      function escape(t) {
+        return t
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      // chat utilities
+      function addMsg(cont, html, role) {
+        const t = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const d = document.createElement("div");
+        d.className = `msg msg-${role}`;
+        d.innerHTML = `<div class="bubble">${html}</div><div class="msg-time">${t}</div>`;
+        cont.appendChild(d);
+        cont.scrollTop = cont.scrollHeight;
+      }
+
+      async function send() {
+        const inp = document.getElementById("symp-in");
+        const text = inp.value.trim();
+        if (!text) return;
+        const cont = document.getElementById("msgs");
+        addMsg(cont, escape(text), "user");
+        inp.value = "";
+
+        const tid = "tid" + Date.now();
+        const td = document.createElement("div");
+        td.className = "msg msg-ai";
+        td.id = tid;
+        td.innerHTML =
+          '<div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>';
+        cont.appendChild(td);
+        cont.scrollTop = cont.scrollHeight;
+
+        try {
+          const res = await fetch(`${API_URL}/ai/analyze`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ symptoms: text }),
+          });
+          const data = await res.json();
+          const reply =
+            data.html ||
+            data.disclaimer ||
+            "Unable to analyze. Please consult a pharmacist directly.";
+          document.getElementById(tid)?.remove();
+          addMsg(cont, reply, "ai");
+        } catch (err) {
+          document.getElementById(tid)?.remove();
+          addMsg(
+            cont,
+            "⚠️ AI connection failed. Please try again or consult a pharmacist.",
+            "ai",
+          );
+        }
+      }
+
+      // override keypress listener (rebind in case old one was defined earlier)
+      document.getElementById("symp-in")?.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") send();
+      });
+
+      // marketplace loader
+      async function loadProducts() {
+        const grid = document.querySelector("#market .grid-4");
+        if (!grid) return;
+        const searchInput = document.querySelector("#market .search-row input");
+        const params = new URLSearchParams();
+        if (searchInput?.value.trim()) {
+          params.set("search", searchInput.value.trim());
+        }
+
+        const activeTab = document.querySelector(".ftab.on");
+        let category = "";
+        if (activeTab && !/All Products/i.test(activeTab.textContent)) {
+          category = activeTab.textContent
+            .replace(/[💊🤧🫀🧴🍼💉🧠]/g, "")
+            .trim()
+            .toLowerCase();
+        }
+        if (category) {
+          params.set("category", category);
+        }
+
+        const suffix = params.toString() ? `?${params.toString()}` : "";
+        try {
+          const res = await fetch(`${API_URL}/products${suffix}`);
+          const products = await res.json();
+          grid.innerHTML = "";
+          products.forEach((p) => {
+            const card = document.createElement("div");
+            card.className = "product-card";
+            card.innerHTML = `
+>>>>>>> 3b62be25a1df437d08f27636557e327cc3fcced9
         <div class="prod-img">
-          ${p.type === 'Rx' ? '🩺' : '💊'}
-          <div class="prod-badge ${p.type === 'Rx' ? 'badge-rx' : 'badge-otc'}">${p.type}</div>
+          ${p.type === "Rx" ? "🩺" : "💊"}
+          <div class="prod-badge ${p.type === "Rx" ? "badge-rx" : "badge-otc"}">${p.type}</div>
         </div>
         <div class="prod-info">
-          <div class="prod-pharm">${p.pharmacistName || 'Unknown'} ⭐${p.rating || '0.0'}</div>
+          <div class="prod-pharm">${p.pharmacistName || "Unknown"} ⭐${p.rating || "0.0"}</div>
           <div class="prod-name">${p.name}</div>
           <div class="prod-desc">${p.description}</div>
           <div class="prod-foot">
@@ -2899,6 +4167,7 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
           </div>
         </div>
       `;
+<<<<<<< HEAD
           grid.appendChild(card);
         });
       } catch (err) {
@@ -2921,3 +4190,26 @@ Be empathetic, concise, and professional. Use KSh pricing if relevant.`,
 </body>
 
 </html>
+=======
+            grid.appendChild(card);
+          });
+        } catch (err) {
+          console.error("product fetch failed", err);
+          grid.innerHTML = '<p style="color:red;">Failed to load products</p>';
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadProducts();
+        const searchInput = document.querySelector("#market .search-row input");
+        if (searchInput) {
+          searchInput.addEventListener("input", () => {
+            clearTimeout(searchInput._debounce);
+            searchInput._debounce = setTimeout(loadProducts, 300);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
+>>>>>>> 3b62be25a1df437d08f27636557e327cc3fcced9

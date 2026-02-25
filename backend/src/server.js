@@ -14,6 +14,7 @@ const userRoutes = require('./routes/users');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const pharmacistRoutes = require('./routes/pharmacists');
+const pharmacistDemoRoutes = require('./routes/pharmacists.demo');
 const aiRoutes = require('./routes/ai');
 const prescriptionRoutes = require('./routes/prescriptions');
 const paymentRoutes = require('./routes/payments');
@@ -21,8 +22,12 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 
-// ─── Connect Database ───
-connectDB();
+// ─── Connect Database (skip and run demo pharmacists routes if no DB URI provided) ───
+if (process.env.MONGODB_URI) {
+  connectDB();
+} else {
+  console.warn('⚠️ MONGODB_URI not set — running in demo mode for pharmacists routes');
+}
 
 // ─── Security Middleware ───
 app.use(helmet());
@@ -72,7 +77,8 @@ app.get('/api/health', (req, res) => {
     message: 'MediHub API is running',
     version: '1.0.0',
     environment: process.env.NODE_ENV,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    demo: !process.env.MONGODB_URI
   });
 });
 
@@ -81,7 +87,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/pharmacists', pharmacistRoutes);
+// Mount pharmacists routes; prefer real routes when DB is configured, otherwise use demo router
+if (process.env.MONGODB_URI) {
+  app.use('/api/pharmacists', pharmacistRoutes);
+} else {
+  app.use('/api/pharmacists', pharmacistDemoRoutes);
+}
 app.use('/api/ai', aiRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/payments', paymentRoutes);
