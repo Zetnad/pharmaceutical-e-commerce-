@@ -29,9 +29,12 @@ MediHub is a pharmaceutical e-commerce SaaS platform (B2B2C marketplace) for the
 ### Non-obvious notes
 
 - The backend runs in **demo mode** when `MONGODB_URI` is not set (skips MongoDB, only stub pharmacist routes work). For full functionality, MongoDB must be running and `MONGODB_URI` must be set in `backend/.env`.
-- The `.env` file is not committed; create from `backend/.env.example`. Key required values: `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL=http://localhost:5500`.
+- The `.env` file is not committed; create from `backend/.env.example`. Key required values: `MONGODB_URI`, `JWT_SECRET`. Set `CLIENT_URL=*` for development (wildcard CORS origin).
 - Tests (`npm test`) use Jest + Supertest and only cover demo-mode functionality (no MongoDB needed for tests).
-- There is a pre-existing frontend bug: the Marketplace page fails to load products because `js/scripts.js` expects the `/api/products` response to be a flat array, but the API returns `{success: true, products: [...]}`. The API itself works correctly (verified via curl).
+- There are two pre-existing bugs preventing the Marketplace from loading products in the browser:
+  1. The CORS config in `backend/src/server.js` only allows `Content-Type` and `Authorization` headers, but the frontend sends `x-tenant-domain`. The preflight check blocks the request.
+  2. `js/scripts.js` expects the `/api/products` response to be a flat array, but the API returns `{success: true, products: [...]}`.
+  The API itself works correctly (verified via curl).
 - Optional external APIs (Anthropic Claude, Stripe, SMTP) require their own secrets in `.env`; the app runs without them but those specific features will be unavailable.
 - MongoDB driver deprecation warnings (`useNewUrlParser`, `useUnifiedTopology`) are cosmetic and can be ignored.
 - `backend/scripts/seedDemo.js` is a separate demo seeder; the primary seeder is `npm run seed` which runs `backend/src/config/seed.js`.
