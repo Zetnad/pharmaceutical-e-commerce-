@@ -300,7 +300,8 @@ async function loadProducts() {
   const suffix = params.toString() ? `?${params.toString()}` : '';
   try {
     const res = await fetch(`${API_URL}/products${suffix}`);
-    const products = await res.json();
+    const data = await res.json();
+    const products = data.products || [];
     grid.innerHTML = '';
     products.forEach(p => {
       const card = document.createElement('div');
