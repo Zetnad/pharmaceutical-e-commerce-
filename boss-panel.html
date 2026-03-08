@@ -393,6 +393,25 @@
       line-height: 1.6;
     }
 
+    .dashboard-status {
+      margin: 0 0 1rem;
+      padding: 0.95rem 1rem;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      padding: 0.95rem 0;
+    }
+
     @media (max-width: 1300px) {
       .stats {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -468,8 +487,8 @@
       <div>
         <h1>Hospital executive command center</h1>
         <p>
-          This former super-admin panel is now positioned as a hospital leadership cockpit for occupancy, claims, payroll,
-          medication supply, branch performance, and AI governance rather than pharmacy-tenant administration.
+          This view is now wired to the hospital backend so executive KPIs, facilities, claims, staffing, and pharmacy
+          risk indicators can reflect live HMS data.
         </p>
       </div>
       <div class="actions">
@@ -478,38 +497,9 @@
       </div>
     </div>
 
-    <section class="stats">
-      <article class="card stat">
-        <span class="label green">Occupancy</span>
-        <strong>84%</strong>
-        <span>Average bed occupancy across main hospital, satellite clinic, and maternity unit.</span>
-      </article>
-      <article class="card stat">
-        <span class="label blue">OPD volume</span>
-        <strong>412</strong>
-        <span>Outpatient visits served today with 31 referrals to higher acuity areas.</span>
-      </article>
-      <article class="card stat">
-        <span class="label amber">Claims acceptance</span>
-        <strong>91%</strong>
-        <span>First-pass claims acceptance rate after validation and documentation review.</span>
-      </article>
-      <article class="card stat">
-        <span class="label red">Burnout risk</span>
-        <strong>12</strong>
-        <span>Staff flagged for overtime concentration or repeated roster strain.</span>
-      </article>
-      <article class="card stat">
-        <span class="label purple">Payroll exposure</span>
-        <strong>KSh 4.8M</strong>
-        <span>Projected payroll with on-call, overtime, locums, and shift differentials.</span>
-      </article>
-      <article class="card stat">
-        <span class="label amber">Stockout risk</span>
-        <strong>8</strong>
-        <span>Critical medicine or consumable lines approaching minimum safe stock.</span>
-      </article>
-    </section>
+    <div class="dashboard-status" id="exec-status">Loading executive hospital metrics...</div>
+
+    <section class="stats" id="exec-stats"></section>
 
     <section class="grid-2" style="margin-bottom: 1rem;">
       <article class="card">
@@ -526,62 +516,14 @@
               <th>Priority</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>
-                <span class="branch-name">MediHub Main Hospital</span>
-                <span class="muted">Medical, surgical, maternity, emergency</span>
-              </td>
-              <td>88% occupancy</td>
-              <td><span class="chip green">94% accepted</span></td>
-              <td><span class="chip amber">Tight</span></td>
-              <td class="muted">ICU night cover</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="branch-name">Riverside Specialist Clinic</span>
-                <span class="muted">OPD, imaging, day procedures</span>
-              </td>
-              <td>167 visits</td>
-              <td><span class="chip green">96% accepted</span></td>
-              <td><span class="chip green">Stable</span></td>
-              <td class="muted">Scale imaging slots</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="branch-name">Community Maternity Centre</span>
-                <span class="muted">ANC, delivery, newborn care</span>
-              </td>
-              <td>76% occupancy</td>
-              <td><span class="chip amber">85% accepted</span></td>
-              <td><span class="chip red">Gap</span></td>
-              <td class="muted">Midwife locum + payer follow-up</td>
-            </tr>
-          </tbody>
+          <tbody id="facility-scorecard-body"></tbody>
         </table>
       </article>
 
       <article class="card">
         <span class="label green">Executive priorities</span>
         <h2>What leadership should act on today</h2>
-        <div class="stack">
-          <div class="item">
-            <strong>Denial risk is clustering around missing admission documentation</strong>
-            <p class="muted">Most preventable denials are tied to incomplete admission notes, unsigned orders, and delayed pre-auth support files.</p>
-          </div>
-          <div class="item">
-            <strong>Nursing overtime is concentrated in emergency and maternity</strong>
-            <p class="muted">Fair scheduling, fatigue monitoring, and locum coverage should be prioritized before quality slips or turnover increases.</p>
-          </div>
-          <div class="item">
-            <strong>Pharmacy expiring-stock exposure is rising</strong>
-            <p class="muted">Redistribute near-expiry lines across branches and tighten reorder cadence on fast-moving antibiotics and fluids.</p>
-          </div>
-          <div class="item">
-            <strong>AI adoption is promising but needs governance discipline</strong>
-            <p class="muted">Ambient documentation and triage prompts should stay within approved use cases with audit review and safety oversight.</p>
-          </div>
-        </div>
+        <div class="stack" id="exec-priorities"></div>
       </article>
     </section>
 
@@ -589,61 +531,19 @@
       <article class="card">
         <span class="label amber">Revenue cycle</span>
         <h2>Claims and collections health</h2>
-        <div class="stack">
-          <div class="item">
-            <strong>Pre-authorizations pending: 14</strong>
-            <p class="muted">Average response time 19 hours. Two urgent theatre approvals escalated.</p>
-          </div>
-          <div class="item">
-            <strong>First-pass claim acceptance: 91%</strong>
-            <p class="muted">Target is 95%. Biggest gap is maternity and admissions documentation.</p>
-          </div>
-          <div class="item">
-            <strong>Patient self-pay collections: KSh 1.3M</strong>
-            <p class="muted">Mobile money is now the fastest settlement channel, followed by card.</p>
-          </div>
-        </div>
+        <div class="stack" id="revenue-cycle-stack"></div>
       </article>
 
       <article class="card">
         <span class="label purple">Workforce and payroll</span>
         <h2>Staffing pressure and payroll inputs</h2>
-        <div class="stack">
-          <div class="item">
-            <strong>Nurse overtime</strong>
-            <p class="muted">12 staff above weekly threshold, mainly ED and maternity coverage.</p>
-            <div class="bar"><span style="width: 79%;"></span></div>
-          </div>
-          <div class="item">
-            <strong>Clinical officer coverage</strong>
-            <p class="muted">Weekend outpatient demand forecast exceeds current roster by 1.5 FTE.</p>
-            <div class="bar"><span style="width: 68%;"></span></div>
-          </div>
-          <div class="item">
-            <strong>Credential expiry watch</strong>
-            <p class="muted">7 licenses or certifications require renewal within 45 days.</p>
-            <div class="bar"><span style="width: 41%;"></span></div>
-          </div>
-        </div>
+        <div class="stack" id="workforce-stack"></div>
       </article>
 
       <article class="card">
         <span class="label blue">Pharmacy and stores</span>
         <h2>Supply chain control</h2>
-        <div class="stack">
-          <div class="item">
-            <strong>Critical line risk</strong>
-            <p class="muted">Insulin, ceftriaxone, and blood gas cartridges are below safe days-on-hand targets.</p>
-          </div>
-          <div class="item">
-            <strong>Expiry management</strong>
-            <p class="muted">3.7% of current medicine value is inside a 60-day expiry window and should be actively redistributed.</p>
-          </div>
-          <div class="item">
-            <strong>Controlled drug accountability</strong>
-            <p class="muted">One unresolved variance in theatre requires closure before weekly compliance sign-off.</p>
-          </div>
-        </div>
+        <div class="stack" id="pharmacy-stack"></div>
       </article>
     </section>
 
@@ -652,52 +552,322 @@
         <span class="label red">AI governance</span>
         <h2>Governed AI operating model</h2>
         <p class="subtext">
-          Recent best-practice guidance emphasizes that AI in hospitals must have named oversight, approved workflows,
-          privacy assessments, and human review points.
+          The hospital API now drives this section too, keeping AI oversight aligned with approved use cases and review expectations.
         </p>
-        <div class="risk-grid">
-          <div class="risk">
-            <strong>Clinical safety owner assigned</strong>
-            <p>Ambient documentation and triage assistants should be overseen by a clinical safety lead, not only IT or vendors.</p>
-          </div>
-          <div class="risk">
-            <strong>DPIA and audit requirements</strong>
-            <p>Document what data is used, how recommendations are generated, who can review them, and how overrides are tracked.</p>
-          </div>
-          <div class="risk">
-            <strong>Approved use-case boundaries</strong>
-            <p>Use AI for drafting, prioritization, and risk prompts; do not allow unsupervised diagnostic or billing decisions.</p>
-          </div>
-          <div class="risk">
-            <strong>Bias and coding inflation monitoring</strong>
-            <p>Watch for uneven recommendations, over-documentation, or reimbursement distortion caused by automation.</p>
-          </div>
-        </div>
+        <div class="risk-grid" id="ai-governance-grid"></div>
       </article>
 
       <article class="card">
-        <span class="label green">Transformation roadmap</span>
-        <h2>Practical next build phases for this codebase</h2>
-        <div class="stack">
-          <div class="item">
-            <strong>Phase 1: Repositioning complete</strong>
-            <p class="muted">Public site, staff workspace, executive dashboard, legal copy, and AI-ready product narrative now reflect hospital operations.</p>
-          </div>
-          <div class="item">
-            <strong>Phase 2: Backend vocabulary shift</strong>
-            <p class="muted">Refactor pharmacy-tenant concepts into facility, department, staff role, encounter, claim, and medication administration models.</p>
-          </div>
-          <div class="item">
-            <strong>Phase 3: Department modules</strong>
-            <p class="muted">Add patient registration, visit management, staff scheduling, claim workflows, and pharmacy controls as first-class APIs.</p>
-          </div>
-          <div class="item">
-            <strong>Phase 4: Interoperability and compliance</strong>
-            <p class="muted">Introduce FHIR-aligned data contracts, audit trails, and data protection controls suitable for production healthcare use.</p>
-          </div>
-        </div>
+        <span class="label green">Delivery progress</span>
+        <h2>Current platform transformation status</h2>
+        <div class="stack" id="delivery-progress"></div>
       </article>
     </section>
   </main>
+
+  <script>
+    const API_URL = `${window.location.protocol}//${window.location.hostname || "localhost"}:5000/api`;
+
+    const fallbackData = {
+      overview: {
+        kpis: {
+          totalPatientsToday: 412,
+          occupancyRate: 0.84,
+          claimsAcceptanceRate: 0.91,
+          criticalStockAlerts: 3,
+          rosterGaps: 3,
+          totalClaims: 3
+        },
+        aiGovernance: {
+          approvedUseCases: ['ambient_documentation', 'triage_support', 'claims_readiness', 'medication_safety']
+        }
+      },
+      facilities: [
+        { name: 'MediHub Main Hospital', type: 'hospital', location: 'Nairobi', beds: 180, occupancyRate: 0.88, patientsToday: 284, claimsAcceptanceRate: 0.94, staffingAlerts: 2, priority: 'ICU night cover' },
+        { name: 'Riverside Specialist Clinic', type: 'clinic', location: 'Nairobi', beds: 24, occupancyRate: 0.41, patientsToday: 92, claimsAcceptanceRate: 0.96, staffingAlerts: 0, priority: 'Scale imaging slots' },
+        { name: 'Community Maternity Centre', type: 'maternity-centre', location: 'Kiambu', beds: 42, occupancyRate: 0.76, patientsToday: 36, claimsAcceptanceRate: 0.85, staffingAlerts: 1, priority: 'Midwife locum + payer follow-up' }
+      ],
+      claims: {
+        summary: { totalClaims: 3, submitted: 1, pendingAuthorization: 1, denialFollowUp: 1 },
+        claims: [
+          { payer: 'Jubilee', amount: 18200, status: 'submitted', stage: 'claim-scrub-complete', denialRisk: 'low' },
+          { payer: 'SHA', amount: 42800, status: 'pending-authorization', stage: 'waiting-supporting-documents', denialRisk: 'medium' },
+          { payer: 'AAR', amount: 61400, status: 'partially-paid', stage: 'denial-follow-up', denialRisk: 'high' }
+        ]
+      },
+      staffing: {
+        rosterGaps: [
+          { department: 'Emergency', role: 'nurse', severity: 'high', details: 'Night shift short by one nurse', gap: 1 },
+          { department: 'Maternity', role: 'midwife', severity: 'medium', details: 'Night shift locum required', gap: 1 },
+          { department: 'Outpatient', role: 'clinical_officer', severity: 'medium', details: 'Weekend load exceeds current cover', gap: 1 }
+        ],
+        payrollSummary: { projectedPayrollKes: 4800000, overtimeExposureKes: 362000, expiringCredentials: 7 }
+      },
+      pharmacy: {
+        summary: { totalAlerts: 3, criticalAlerts: 1 },
+        stockAlerts: [
+          { title: 'Ceftriaxone 1g vial', status: 'high', details: 'Low stock, 3 days on hand' },
+          { title: 'Insulin cartridge', status: 'medium', details: 'Expiry risk in 24 days' },
+          { title: 'Controlled register variance', status: 'critical', details: 'Theatre opioid reconciliation pending sign-off' }
+        ],
+        controlledRegister: { pendingReconciliation: 1, lastVariance: 'Theatre opioid balance mismatch pending sign-off' }
+      }
+    };
+
+    const execStatusEl = document.getElementById('exec-status');
+    const execStatsEl = document.getElementById('exec-stats');
+    const scorecardBodyEl = document.getElementById('facility-scorecard-body');
+    const prioritiesEl = document.getElementById('exec-priorities');
+    const revenueCycleEl = document.getElementById('revenue-cycle-stack');
+    const workforceEl = document.getElementById('workforce-stack');
+    const pharmacyEl = document.getElementById('pharmacy-stack');
+    const aiGovernanceEl = document.getElementById('ai-governance-grid');
+    const deliveryProgressEl = document.getElementById('delivery-progress');
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatPercent(value) {
+      return `${Math.round(Number(value || 0) * 100)}%`;
+    }
+
+    function formatCurrency(value) {
+      return `KSh ${Number(value || 0).toLocaleString()}`;
+    }
+
+    function severityClass(value) {
+      const normalized = String(value || '').toLowerCase();
+      if (['critical', 'high', 'denied'].includes(normalized)) return 'red';
+      if (['medium', 'pending-authorization', 'partially-paid'].includes(normalized)) return 'amber';
+      return 'green';
+    }
+
+    async function fetchJson(path) {
+      const response = await fetch(`${API_URL}${path}`);
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || `Failed to load ${path}`);
+      }
+      return data;
+    }
+
+    function setExecStatus(message, isFallback = false) {
+      execStatusEl.textContent = isFallback ? `${message} Showing local fallback view.` : message;
+    }
+
+    function renderStats(data) {
+      const cards = [
+        ['green', 'Occupancy', formatPercent(data.overview.kpis.occupancyRate), 'Average occupancy across connected facilities.'],
+        ['blue', 'Patient volume', data.overview.kpis.totalPatientsToday, 'Patients seen today across the hospital network.'],
+        ['amber', 'Claims acceptance', formatPercent(data.overview.kpis.claimsAcceptanceRate), 'Current first-pass acceptance trend from submitted claims.'],
+        ['red', 'Roster gaps', data.staffing.rosterGaps.length, 'Coverage pressure requiring HR or operational intervention.'],
+        ['purple', 'Payroll exposure', formatCurrency(data.staffing.payrollSummary.projectedPayrollKes), 'Projected payroll including overtime and current pressure.'],
+        ['amber', 'Stock alerts', data.pharmacy.summary.totalAlerts || data.overview.kpis.criticalStockAlerts, 'Pharmacy or stores issues needing executive visibility.']
+      ];
+
+      execStatsEl.innerHTML = cards.map(([color, label, value, note]) => `
+        <article class="card stat">
+          <span class="label ${color}">${escapeHtml(label)}</span>
+          <strong>${escapeHtml(value)}</strong>
+          <span>${escapeHtml(note)}</span>
+        </article>
+      `).join('');
+    }
+
+    function renderScorecard(data) {
+      if (!data.facilities.length) {
+        scorecardBodyEl.innerHTML = `<tr><td colspan="5" class="empty-state">No facilities returned by the hospital API.</td></tr>`;
+        return;
+      }
+
+      scorecardBodyEl.innerHTML = data.facilities.map((facility) => {
+        const staffingAlerts = Array.isArray(facility.staffingAlerts) ? facility.staffingAlerts.length : Number(facility.staffingAlerts || 0);
+        const occupancy = facility.occupancyRate != null
+          ? formatPercent(facility.occupancyRate)
+          : (facility.totalBeds ? formatPercent((facility.occupiedBeds || 0) / facility.totalBeds) : '0%');
+        const claims = facility.claimsAcceptanceRate != null
+          ? formatPercent(facility.claimsAcceptanceRate)
+          : formatPercent(data.overview.kpis.claimsAcceptanceRate);
+        const staffingState = staffingAlerts > 0 ? 'Tight' : 'Stable';
+        const priority = facility.priority || facility.executiveAlerts?.[0]?.details || 'Monitor current performance';
+        return `
+          <tr>
+            <td>
+              <span class="branch-name">${escapeHtml(facility.name)}</span>
+              <span class="muted">${escapeHtml((facility.services || []).slice(0, 4).join(', ') || facility.type || 'Healthcare facility')}</span>
+            </td>
+            <td>${escapeHtml(occupancy)} · ${escapeHtml(facility.patientsToday || facility.beds || 0)} load</td>
+            <td><span class="chip ${severityClass(claims === '0%' ? 'medium' : 'green')}">${escapeHtml(claims)} accepted</span></td>
+            <td><span class="chip ${staffingAlerts > 0 ? 'amber' : 'green'}">${escapeHtml(staffingState)}</span></td>
+            <td class="muted">${escapeHtml(priority)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderStack(container, items, includeBar = false) {
+      container.innerHTML = items.map((item) => `
+        <div class="item">
+          <strong>${escapeHtml(item.title)}</strong>
+          <p class="muted">${escapeHtml(item.description)}</p>
+          ${includeBar ? `<div class="bar"><span style="width: ${escapeHtml(item.percent || 0)}%;"></span></div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderPriorities(data) {
+      const highRiskClaim = data.claims.claims.find((claim) => claim.denialRisk === 'high');
+      const criticalStock = data.pharmacy.stockAlerts.find((alert) => ['critical', 'high'].includes(String(alert.status).toLowerCase()));
+      const highGap = data.staffing.rosterGaps.find((gap) => String(gap.severity).toLowerCase() === 'high');
+      renderStack(prioritiesEl, [
+        {
+          title: `${data.claims.summary.denialFollowUp || 0} denial follow-up issues need finance attention`,
+          description: highRiskClaim ? `Highest-risk payer currently flagged: ${highRiskClaim.payer}.` : 'No high-risk claim is currently marked by the API.'
+        },
+        {
+          title: `${data.staffing.rosterGaps.length} staffing gaps are affecting service resilience`,
+          description: highGap ? `${highGap.department} has the most urgent current coverage risk.` : 'No severe staffing gap was returned by the backend.'
+        },
+        {
+          title: `${data.pharmacy.summary.totalAlerts || 0} pharmacy or stock alerts are open`,
+          description: criticalStock ? `${criticalStock.title} is the top current supply-chain concern.` : 'No critical medicine alert was returned.'
+        },
+        {
+          title: 'AI governance remains an executive oversight topic',
+          description: 'Approved use cases are visible below and should remain subject to audit, human review, and policy control.'
+        }
+      ]);
+    }
+
+    function renderRevenueCycle(data) {
+      const submitted = data.claims.summary.submitted || data.claims.claims.filter((claim) => claim.status === 'submitted').length;
+      renderStack(revenueCycleEl, [
+        {
+          title: `${data.claims.summary.pendingAuthorization || 0} claims pending authorization`,
+          description: 'Authorization and support-document queues should be monitored before they become denial risk.'
+        },
+        {
+          title: `${formatPercent(data.overview.kpis.claimsAcceptanceRate)} current claims acceptance`,
+          description: `${submitted} claims are already in a submitted or beyond-submission stage.`
+        },
+        {
+          title: `${data.claims.summary.denialFollowUp || 0} claims in denial follow-up`,
+          description: 'These should be reviewed against documentation, payer policy, and appeal readiness.'
+        }
+      ]);
+    }
+
+    function renderWorkforce(data) {
+      const payroll = data.staffing.payrollSummary;
+      const rosterPressure = Math.min(95, 30 + (data.staffing.rosterGaps.length * 18));
+      const overtimePressure = Math.min(95, 25 + Math.round((payroll.overtimeExposureKes || 0) / 10000));
+      const credentialPressure = Math.min(95, 20 + ((payroll.expiringCredentials || 0) * 8));
+      renderStack(workforceEl, [
+        {
+          title: 'Roster gap pressure',
+          description: `${data.staffing.rosterGaps.length} active gaps require coverage action or workload balancing.`,
+          percent: rosterPressure
+        },
+        {
+          title: 'Overtime exposure',
+          description: `${formatCurrency(payroll.overtimeExposureKes)} is currently exposed to overtime cost pressure.`,
+          percent: overtimePressure
+        },
+        {
+          title: 'Credential expiry watch',
+          description: `${payroll.expiringCredentials || 0} active credentialed staff records need monitoring.`,
+          percent: credentialPressure
+        }
+      ], true);
+    }
+
+    function renderPharmacy(data) {
+      renderStack(pharmacyEl, (data.pharmacy.stockAlerts || []).slice(0, 3).map((alert) => ({
+        title: `${alert.title || alert.item} · ${String(alert.status).replace(/-/g, ' ')}`,
+        description: alert.details || (alert.daysOnHand ? `${alert.daysOnHand} days on hand.` : (alert.daysToExpiry ? `${alert.daysToExpiry} days to expiry.` : 'Executive review required.'))
+      })));
+    }
+
+    function renderAi(data) {
+      aiGovernanceEl.innerHTML = (data.overview.aiGovernance.approvedUseCases || []).map((useCase) => `
+        <div class="risk">
+          <strong>${escapeHtml(String(useCase).replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()))}</strong>
+          <p>Approved as a human-reviewed AI support workflow inside MediHub HMS.</p>
+        </div>
+      `).join('');
+    }
+
+    function renderDeliveryProgress(liveConnected) {
+      renderStack(deliveryProgressEl, [
+        {
+          title: liveConnected ? 'Phase 4 dashboard integration connected' : 'Phase 4 dashboard integration prepared',
+          description: liveConnected
+            ? 'Executive and staff dashboards are consuming the hospital API in this environment.'
+            : 'Dashboard pages include backend wiring and local fallback rendering.'
+        },
+        {
+          title: 'Phase 3 hospital models completed',
+          description: 'Facilities, patients, encounters, and claims now exist as real backend models.'
+        },
+        {
+          title: 'Demo-mode compatibility retained',
+          description: 'The same pages continue to work when MongoDB is not configured by using the hospital demo route set.'
+        },
+        {
+          title: 'Next target: deeper CRUD and permissions',
+          description: 'The next strongest phase is editing workflows, authorization rules, and richer staff-facing interaction.'
+        }
+      ]);
+    }
+
+    function renderDashboard(data, liveConnected) {
+      renderStats(data);
+      renderScorecard(data);
+      renderPriorities(data);
+      renderRevenueCycle(data);
+      renderWorkforce(data);
+      renderPharmacy(data);
+      renderAi(data);
+      renderDeliveryProgress(liveConnected);
+    }
+
+    async function loadExecutiveDashboard() {
+      renderDashboard(fallbackData, false);
+      setExecStatus('Unable to confirm backend yet.', true);
+
+      try {
+        const [overviewRes, facilitiesRes, claimsRes, staffingRes, pharmacyRes] = await Promise.all([
+          fetchJson('/hospital/overview'),
+          fetchJson('/hospital/facilities'),
+          fetchJson('/hospital/claims'),
+          fetchJson('/hospital/staffing'),
+          fetchJson('/hospital/pharmacy')
+        ]);
+
+        renderDashboard({
+          overview: overviewRes.overview || fallbackData.overview,
+          facilities: facilitiesRes.facilities || fallbackData.facilities,
+          claims: {
+            summary: claimsRes.summary || fallbackData.claims.summary,
+            claims: claimsRes.claims || fallbackData.claims.claims
+          },
+          staffing: staffingRes.staffing || fallbackData.staffing,
+          pharmacy: pharmacyRes.pharmacy || fallbackData.pharmacy
+        }, true);
+
+        setExecStatus('Live hospital API connected. Occupancy, facility, claims, staffing, and pharmacy signals are now being read from the backend.');
+      } catch (error) {
+        setExecStatus(error.message || 'Hospital API unavailable.', true);
+      }
+    }
+
+    loadExecutiveDashboard();
+  </script>
 </body>
 </html>

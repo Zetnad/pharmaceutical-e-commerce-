@@ -417,6 +417,25 @@
       line-height: 1.6;
     }
 
+    .dashboard-status {
+      margin: 0 0 1rem;
+      padding: 0.9rem 1rem;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      padding: 0.95rem 0;
+    }
+
     @media (max-width: 1200px) {
       .stats {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -493,8 +512,8 @@
       <div>
         <h1>Frontline hospital operations</h1>
         <p>
-          This repurposed workspace tracks what staff actually need during a shift: triage load, nursing tasks, clinical
-          officer reviews, medication safety, insurance bottlenecks, and staffing pressure.
+          This workspace now reads from the hospital API so triage, staffing, pharmacy, and claims information can reflect
+          the current backend state instead of fixed mock data.
         </p>
       </div>
       <div class="actions">
@@ -503,46 +522,16 @@
       </div>
     </div>
 
-    <section class="stats">
-      <article class="card stat">
-        <span class="label green">Waiting</span>
-        <strong>36</strong>
-        <span>Patients waiting in OPD, ED triage, and specialist queues.</span>
-      </article>
-      <article class="card stat">
-        <span class="label blue">Admitted</span>
-        <strong>124</strong>
-        <span>Current inpatients across wards, HDU, and maternity.</span>
-      </article>
-      <article class="card stat">
-        <span class="label amber">Medication rounds</span>
-        <strong>58</strong>
-        <span>Medication administrations due in the next 2 hours.</span>
-      </article>
-      <article class="card stat">
-        <span class="label red">Critical alerts</span>
-        <strong>5</strong>
-        <span>Escalations for deteriorating patients or delayed actions.</span>
-      </article>
-      <article class="card stat">
-        <span class="label blue">Pending claims</span>
-        <strong>17</strong>
-        <span>Encounters waiting for insurer review or authorization.</span>
-      </article>
-      <article class="card stat">
-        <span class="label amber">Roster gaps</span>
-        <strong>4</strong>
-        <span>Open coverage needs for night shift and emergency call.</span>
-      </article>
-    </section>
+    <div class="dashboard-status" id="staff-status">Loading live hospital operations data...</div>
+
+    <section class="stats" id="staff-stats"></section>
 
     <section class="grid-2" style="margin-bottom: 1rem;">
       <article class="card">
         <span class="label green">Queue board</span>
         <h2>Live triage and consultation queue</h2>
         <p class="subtext">
-          Clinical officers in East African facilities often lead triage, outpatient review, emergency stabilization, and
-          continuity documentation. The queue is built around those realities.
+          Clinical officers, nurses, and doctors are shown from the hospital encounter queue exposed by the new backend.
         </p>
         <table>
           <thead>
@@ -554,77 +543,15 @@
               <th>Next action</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>
-                <span class="queue-patient">Amina Noor</span>
-                <span class="queue-meta">MRN 100482 · Fever, cough, fatigue</span>
-              </td>
-              <td>OPD triage</td>
-              <td><span class="chip amber">Medium</span></td>
-              <td>CO Kelvin</td>
-              <td class="muted">Vitals + malaria screen</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="queue-patient">Peter Mwangi</span>
-                <span class="queue-meta">MRN 100511 · Chest pain on exertion</span>
-              </td>
-              <td>Emergency</td>
-              <td><span class="chip red">High</span></td>
-              <td>Dr. Njeri</td>
-              <td class="muted">ECG, troponin, urgent review</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="queue-patient">Faith Akinyi</span>
-                <span class="queue-meta">MRN 100533 · Antenatal follow-up</span>
-              </td>
-              <td>Maternity clinic</td>
-              <td><span class="chip green">Low</span></td>
-              <td>Nurse Janet</td>
-              <td class="muted">Routine review + labs</td>
-            </tr>
-            <tr>
-              <td>
-                <span class="queue-patient">Daniel Kiptoo</span>
-                <span class="queue-meta">MRN 100548 · Post-op dressing pain</span>
-              </td>
-              <td>Surgical ward</td>
-              <td><span class="chip amber">Medium</span></td>
-              <td>Nurse Brian</td>
-              <td class="muted">Pain assessment + medication check</td>
-            </tr>
-          </tbody>
+          <tbody id="queue-table-body"></tbody>
         </table>
       </article>
 
       <article class="card">
         <span class="label blue">Team workload</span>
         <h2>Role-based workload and safety view</h2>
-        <p class="subtext">A hospital system works best when the shift lead can see pressure by role instead of only total patient counts.</p>
-        <div class="workload">
-          <div class="workload-item">
-            <strong>Clinical officers · 82% utilized</strong>
-            <p class="muted">High outpatient and emergency review load. Two COs carrying more than 12 active encounters each.</p>
-            <div class="bar"><span style="width: 82%;"></span></div>
-          </div>
-          <div class="workload-item">
-            <strong>Nurses · 91% utilized</strong>
-            <p class="muted">Medication round and observation backlog in surgical ward and pediatrics.</p>
-            <div class="bar"><span style="width: 91%;"></span></div>
-          </div>
-          <div class="workload-item">
-            <strong>Doctors · 76% utilized</strong>
-            <p class="muted">Specialist consult requests concentrated in medicine and cardiology clinics.</p>
-            <div class="bar"><span style="width: 76%;"></span></div>
-          </div>
-          <div class="workload-item">
-            <strong>Pharmacy · 68% utilized</strong>
-            <p class="muted">Discharge prescriptions increasing; ward refill queues still within target.</p>
-            <div class="bar"><span style="width: 68%;"></span></div>
-          </div>
-        </div>
+        <p class="subtext">Operational pressure is derived from staff mix, encounter assignments, and department demand.</p>
+        <div class="workload" id="workload-list"></div>
       </article>
     </section>
 
@@ -632,58 +559,19 @@
       <article class="card">
         <span class="label green">Nursing operations</span>
         <h2>Shift handover priorities</h2>
-        <div class="checklist">
-          <div class="check">
-            <strong>Medication administration due</strong>
-            <p>58 doses due within 2 hours, including 6 high-alert medications requiring double check.</p>
-          </div>
-          <div class="check">
-            <strong>Observations overdue</strong>
-            <p>7 inpatient observation charts overdue by more than 20 minutes in surgical and pediatric wards.</p>
-          </div>
-          <div class="check">
-            <strong>Discharge readiness</strong>
-            <p>11 patients clinically ready but awaiting billing clearance, pharmacy counseling, or discharge summaries.</p>
-          </div>
-        </div>
+        <div class="checklist" id="nursing-checks"></div>
       </article>
 
       <article class="card">
         <span class="label amber">Pharmacy safety</span>
         <h2>Medication and stock actions</h2>
-        <div class="checklist">
-          <div class="check">
-            <strong>Expiring within 30 days</strong>
-            <p>Ceftriaxone vials, insulin cartridges, and IV fluids flagged for redistribution and reorder planning.</p>
-          </div>
-          <div class="check">
-            <strong>Prescription verification queue</strong>
-            <p>19 scripts waiting pharmacist release; 4 need allergy or duplication review before dispensing.</p>
-          </div>
-          <div class="check">
-            <strong>Controlled register variance</strong>
-            <p>One discrepancy in theatre opioid log requires reconciliation before shift close.</p>
-          </div>
-        </div>
+        <div class="checklist" id="pharmacy-checks"></div>
       </article>
 
       <article class="card">
         <span class="label blue">Insurance and cashier</span>
         <h2>Revenue-cycle actions on shift</h2>
-        <div class="checklist">
-          <div class="check">
-            <strong>Pre-authorizations pending</strong>
-            <p>6 inpatient procedures waiting insurer response; urgent cases escalated to finance liaison.</p>
-          </div>
-          <div class="check">
-            <strong>Cashier queue</strong>
-            <p>Average payment completion time is 7 minutes for mobile money and 11 minutes for card settlements.</p>
-          </div>
-          <div class="check">
-            <strong>Denial prevention watchlist</strong>
-            <p>Missing admission notes and unsigned orders are the top documentation gaps today.</p>
-          </div>
-        </div>
+        <div class="checklist" id="revenue-checks"></div>
       </article>
     </section>
 
@@ -695,68 +583,340 @@
           <thead>
             <tr>
               <th>Unit</th>
-              <th>Required</th>
-              <th>Assigned</th>
+              <th>Role</th>
+              <th>Shift</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Emergency</td>
-              <td>2 doctors / 4 nurses</td>
-              <td>2 / 3</td>
-              <td><span class="chip red">Gap</span></td>
-              <td class="muted">Escalate float nurse</td>
-            </tr>
-            <tr>
-              <td>Pediatrics</td>
-              <td>1 doctor / 3 nurses</td>
-              <td>1 / 3</td>
-              <td><span class="chip green">Covered</span></td>
-              <td class="muted">Stable</td>
-            </tr>
-            <tr>
-              <td>Maternity</td>
-              <td>1 CO / 3 nurses</td>
-              <td>1 / 2</td>
-              <td><span class="chip amber">Tight</span></td>
-              <td class="muted">Hold locum on standby</td>
-            </tr>
-            <tr>
-              <td>Ward pharmacy</td>
-              <td>2 pharmacists</td>
-              <td>2</td>
-              <td><span class="chip green">Covered</span></td>
-              <td class="muted">Monitor discharge rush</td>
-            </tr>
-          </tbody>
+          <tbody id="staffing-table-body"></tbody>
         </table>
       </article>
 
       <article class="card">
         <span class="label green">AI-assisted operations</span>
         <h2>Where AI helps this workspace</h2>
-        <div class="checklist">
-          <div class="check">
-            <strong>Ambient note support</strong>
-            <p>Generate draft consultation notes and discharge summaries for clinician review instead of manual re-entry.</p>
-          </div>
-          <div class="check">
-            <strong>Triage prompts</strong>
-            <p>Suggest acuity checks, missing vitals, and high-risk symptom escalations while keeping final decisions human-led.</p>
-          </div>
-          <div class="check">
-            <strong>Claims readiness hints</strong>
-            <p>Flag incomplete documentation and payer-sensitive items before billing submits a claim.</p>
-          </div>
-          <div class="check">
-            <strong>Medication safety cross-check</strong>
-            <p>Highlight potential interactions, duplicates, and allergy conflicts for pharmacist and prescriber review.</p>
-          </div>
-        </div>
+        <div class="checklist" id="ai-operations"></div>
       </article>
     </section>
   </main>
+
+  <script>
+    const API_URL = `${window.location.protocol}//${window.location.hostname || "localhost"}:5000/api`;
+
+    const fallbackData = {
+      overview: {
+        kpis: {
+          totalPatientsToday: 412,
+          occupancyRate: 0.84,
+          claimsAcceptanceRate: 0.91,
+          criticalStockAlerts: 3,
+          rosterGaps: 3
+        },
+        aiGovernance: {
+          approvedUseCases: ['ambient_documentation', 'triage_support', 'claims_readiness', 'medication_safety']
+        }
+      },
+      patients: [
+        { mrn: 'MH-1001', name: 'Amina Noor', triageLevel: 'medium', department: 'Outpatient', currentStatus: 'waiting', allergies: ['Penicillin'] },
+        { mrn: 'MH-1002', name: 'Peter Mwangi', triageLevel: 'high', department: 'Emergency', currentStatus: 'under-review', allergies: [] },
+        { mrn: 'MH-1003', name: 'Faith Akinyi', triageLevel: 'low', department: 'Maternity', currentStatus: 'queued', allergies: [] }
+      ],
+      encounters: [
+        { patientId: 'pt-1001', patientName: 'Amina Noor', department: 'Outpatient', assignedTo: 'Kelvin Mutua', assignedRole: 'clinical_officer', status: 'triage-complete', nextAction: 'Consultation and malaria screen' },
+        { patientId: 'pt-1002', patientName: 'Peter Mwangi', department: 'Emergency', assignedTo: 'Dr. Leah Kimani', assignedRole: 'doctor', status: 'critical-review', nextAction: 'ECG, troponin, urgent physician review' },
+        { patientId: 'pt-1003', patientName: 'Faith Akinyi', department: 'ANC', assignedTo: 'Agnes Muthoni', assignedRole: 'nurse', status: 'awaiting-vitals', nextAction: 'Routine ANC checks and labs' }
+      ],
+      staff: [
+        { name: 'Kelvin Mutua', role: 'clinical_officer', workload: 0.84 },
+        { name: 'Agnes Muthoni', role: 'nurse', workload: 0.91 },
+        { name: 'Dr. Leah Kimani', role: 'doctor', workload: 0.74 },
+        { name: 'Brian Omondi', role: 'pharmacist', workload: 0.69 }
+      ],
+      claims: {
+        summary: { pendingAuthorization: 1, denialFollowUp: 1 },
+        claims: [
+          { status: 'submitted', denialRisk: 'low', payer: 'Jubilee', stage: 'claim-scrub-complete' },
+          { status: 'pending-authorization', denialRisk: 'medium', payer: 'SHA', stage: 'waiting-supporting-documents' },
+          { status: 'partially-paid', denialRisk: 'high', payer: 'AAR', stage: 'denial-follow-up' }
+        ]
+      },
+      pharmacy: {
+        summary: { totalAlerts: 3, criticalAlerts: 1 },
+        stockAlerts: [
+          { item: 'Ceftriaxone 1g vial', status: 'low-stock', daysOnHand: 3 },
+          { item: 'Insulin cartridge', status: 'expiry-risk', daysToExpiry: 24 },
+          { item: 'Blood gas cartridge', status: 'critical', daysOnHand: 2 }
+        ],
+        controlledRegister: {
+          pendingReconciliation: 1,
+          lastVariance: 'Theatre opioid balance mismatch pending sign-off'
+        }
+      },
+      staffing: {
+        rosterGaps: [
+          { department: 'Emergency', role: 'nurse', shift: 'night', gap: 1, severity: 'high' },
+          { department: 'Maternity', role: 'midwife', shift: 'night', gap: 1, severity: 'medium' },
+          { department: 'Outpatient', role: 'clinical_officer', shift: 'weekend', gap: 1, severity: 'medium' }
+        ],
+        payrollSummary: { projectedPayrollKes: 4800000, overtimeExposureKes: 362000 }
+      }
+    };
+
+    const statsEl = document.getElementById('staff-stats');
+    const queueBodyEl = document.getElementById('queue-table-body');
+    const workloadEl = document.getElementById('workload-list');
+    const nursingChecksEl = document.getElementById('nursing-checks');
+    const pharmacyChecksEl = document.getElementById('pharmacy-checks');
+    const revenueChecksEl = document.getElementById('revenue-checks');
+    const staffingBodyEl = document.getElementById('staffing-table-body');
+    const aiOperationsEl = document.getElementById('ai-operations');
+    const staffStatusEl = document.getElementById('staff-status');
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatRole(role) {
+      return String(role || 'unassigned')
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+
+    function severityClass(value) {
+      const normalized = String(value || '').toLowerCase();
+      if (['critical', 'high', 'emergency'].includes(normalized)) return 'red';
+      if (['medium', 'pending', 'expiry-risk', 'low-stock'].includes(normalized)) return 'amber';
+      return 'green';
+    }
+
+    function setStaffStatus(message, isFallback = false) {
+      staffStatusEl.textContent = isFallback ? `${message} Showing local fallback view.` : message;
+    }
+
+    async function fetchJson(path) {
+      const response = await fetch(`${API_URL}${path}`);
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || `Failed to load ${path}`);
+      }
+      return data;
+    }
+
+    function renderStats(data) {
+      const waiting = data.patients.filter((patient) => ['waiting', 'queued', 'registered'].includes(patient.currentStatus)).length;
+      const activeEncounters = data.encounters.filter((encounter) => !['discharged', 'closed'].includes(encounter.status)).length;
+      const pharmacyAlerts = data.pharmacy.summary?.totalAlerts || data.pharmacy.stockAlerts.length;
+      const criticalAlerts = data.encounters.filter((encounter) => encounter.status === 'critical-review').length
+        + (data.pharmacy.summary?.criticalAlerts || 0)
+        + data.staffing.rosterGaps.filter((gap) => String(gap.severity).toLowerCase() === 'high').length;
+      const pendingClaims = data.claims.summary?.pendingAuthorization
+        || data.claims.claims.filter((claim) => claim.status === 'pending-authorization').length;
+      const rosterGaps = data.staffing.rosterGaps.length;
+
+      const cards = [
+        ['green', 'Waiting queue', waiting, 'Patients currently waiting for triage, consultation, or facility processing.'],
+        ['blue', 'Active encounters', activeEncounters, 'Live encounters moving across outpatient, emergency, and maternity workflows.'],
+        ['amber', 'Pharmacy alerts', pharmacyAlerts, 'Medicine and stock alerts requiring pharmacist or stores review.'],
+        ['red', 'Critical alerts', criticalAlerts, 'High-priority clinical, staffing, or medication risk signals.'],
+        ['blue', 'Pending claims', pendingClaims, 'Claims or authorizations still requiring finance follow-up.'],
+        ['amber', 'Roster gaps', rosterGaps, 'Open staffing coverage issues across upcoming shifts.']
+      ];
+
+      statsEl.innerHTML = cards.map(([color, label, value, note]) => `
+        <article class="card stat">
+          <span class="label ${color}">${escapeHtml(label)}</span>
+          <strong>${escapeHtml(value)}</strong>
+          <span>${escapeHtml(note)}</span>
+        </article>
+      `).join('');
+    }
+
+    function renderQueue(data) {
+      if (!data.encounters.length) {
+        queueBodyEl.innerHTML = `<tr><td colspan="5" class="empty-state">No active encounters returned by the hospital API.</td></tr>`;
+        return;
+      }
+
+      const patientMap = new Map(data.patients.map((patient) => [patient.id || patient.patientId || patient.mrn || patient.name, patient]));
+      queueBodyEl.innerHTML = data.encounters.slice(0, 6).map((encounter) => {
+        const patient = patientMap.get(encounter.patientId) || data.patients.find((item) => item.name === encounter.patientName) || {};
+        const acuity = patient.triageLevel || encounter.status || 'pending';
+        return `
+          <tr>
+            <td>
+              <span class="queue-patient">${escapeHtml(encounter.patientName || patient.name || 'Unknown patient')}</span>
+              <span class="queue-meta">${escapeHtml(patient.mrn || 'No MRN')} · ${escapeHtml(encounter.encounterType || encounter.department || 'Encounter')}</span>
+            </td>
+            <td>${escapeHtml(encounter.department || 'General')}</td>
+            <td><span class="chip ${severityClass(acuity)}">${escapeHtml(acuity)}</span></td>
+            <td>${escapeHtml(encounter.assignedTo || formatRole(encounter.assignedRole))}</td>
+            <td class="muted">${escapeHtml(encounter.nextAction || 'Clinical review pending')}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderWorkload(data) {
+      const staffByRole = ['clinical_officer', 'nurse', 'doctor', 'pharmacist'].map((role) => {
+        const members = data.staff.filter((member) => member.role === role);
+        const assigned = data.encounters.filter((encounter) => encounter.assignedRole === role).length;
+        const avgWorkload = members.length && members.some((member) => typeof member.workload === 'number')
+          ? Math.round((members.reduce((sum, member) => sum + (member.workload || 0), 0) / members.length) * 100)
+          : Math.min(95, Math.max(28, 28 + (assigned * 18) + (members.length * 7)));
+
+        return {
+          role,
+          members: members.length,
+          assigned,
+          utilization: avgWorkload
+        };
+      });
+
+      workloadEl.innerHTML = staffByRole.map((entry) => `
+        <div class="workload-item">
+          <strong>${escapeHtml(formatRole(entry.role))} · ${escapeHtml(entry.utilization)}% utilized</strong>
+          <p class="muted">${escapeHtml(entry.members)} staff on file with ${escapeHtml(entry.assigned)} active assignments in the encounter queue.</p>
+          <div class="bar"><span style="width: ${escapeHtml(entry.utilization)}%;"></span></div>
+        </div>
+      `).join('');
+    }
+
+    function renderChecklist(element, items) {
+      element.innerHTML = items.map((item) => `
+        <div class="check">
+          <strong>${escapeHtml(item.title)}</strong>
+          <p>${escapeHtml(item.description)}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderDetailSections(data) {
+      const highAcuity = data.patients.filter((patient) => ['high', 'emergency'].includes(String(patient.triageLevel).toLowerCase())).length;
+      const underReview = data.patients.filter((patient) => ['under-review', 'admitted'].includes(patient.currentStatus)).length;
+      const highRiskClaim = data.claims.claims.find((claim) => claim.denialRisk === 'high');
+      const stockAlerts = data.pharmacy.stockAlerts || [];
+
+      renderChecklist(nursingChecksEl, [
+        {
+          title: `${underReview} patients under active nursing review`,
+          description: 'Use this as a handover checkpoint for bedside observation, escalation, and medication follow-through.'
+        },
+        {
+          title: `${highAcuity} high-acuity patients need close monitoring`,
+          description: 'High and emergency triage levels should be reviewed quickly for observations, escalation, and documentation completeness.'
+        },
+        {
+          title: `${data.encounters.length} encounters currently need coordination`,
+          description: 'Focus on discharge blockers, pending next actions, and care-team handoffs to reduce queue friction.'
+        }
+      ]);
+
+      renderChecklist(pharmacyChecksEl, [
+        ...stockAlerts.slice(0, 2).map((alert) => ({
+          title: `${alert.item || alert.title} · ${String(alert.status || 'review').replace(/-/g, ' ')}`,
+          description: alert.daysOnHand
+            ? `${alert.daysOnHand} days on hand remaining.`
+            : (alert.daysToExpiry ? `Expiry window: ${alert.daysToExpiry} days.` : (alert.details || 'Pharmacy review required.'))
+        })),
+        {
+          title: `${data.pharmacy.controlledRegister?.pendingReconciliation || 0} controlled-register reconciliations pending`,
+          description: data.pharmacy.controlledRegister?.lastVariance || 'No recent controlled-drug variance reported.'
+        }
+      ]);
+
+      renderChecklist(revenueChecksEl, [
+        {
+          title: `${data.claims.summary?.pendingAuthorization || 0} pre-authorizations or claims pending`,
+          description: 'These require billing or insurer follow-up before the encounter can move cleanly through settlement.'
+        },
+        {
+          title: `${data.claims.summary?.denialFollowUp || 0} denial follow-up items in queue`,
+          description: highRiskClaim
+            ? `Highest-risk claim currently tracked through ${highRiskClaim.payer}.`
+            : 'No high-risk denial cases returned by the API.'
+        },
+        {
+          title: 'Claims-readiness review remains active',
+          description: 'Use AI and charge-capture checks to catch missing documentation before submission.'
+        }
+      ]);
+    }
+
+    function renderStaffing(data) {
+      if (!data.staffing.rosterGaps.length) {
+        staffingBodyEl.innerHTML = `<tr><td colspan="5" class="empty-state">No roster gaps returned by the hospital API.</td></tr>`;
+        return;
+      }
+
+      staffingBodyEl.innerHTML = data.staffing.rosterGaps.map((gap) => `
+        <tr>
+          <td>${escapeHtml(gap.department || 'General')}</td>
+          <td>${escapeHtml(formatRole(gap.role || 'staff'))}</td>
+          <td>${escapeHtml(gap.shift || 'current')}</td>
+          <td><span class="chip ${severityClass(gap.severity)}">${escapeHtml(gap.severity || 'review')}</span></td>
+          <td class="muted">${escapeHtml(gap.details || `Gap size: ${gap.gap || 0}`)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAi(data) {
+      const useCases = data.overview.aiGovernance?.approvedUseCases || [];
+      renderChecklist(aiOperationsEl, useCases.map((useCase) => ({
+        title: formatRole(useCase),
+        description: 'Enabled for human-reviewed support within frontline hospital operations.'
+      })));
+    }
+
+    function renderDashboard(data) {
+      renderStats(data);
+      renderQueue(data);
+      renderWorkload(data);
+      renderDetailSections(data);
+      renderStaffing(data);
+      renderAi(data);
+    }
+
+    async function loadDashboard() {
+      renderDashboard(fallbackData);
+      setStaffStatus('Unable to confirm backend yet.', true);
+
+      try {
+        const [overviewRes, patientsRes, encountersRes, staffRes, claimsRes, pharmacyRes, staffingRes] = await Promise.all([
+          fetchJson('/hospital/overview'),
+          fetchJson('/hospital/patients'),
+          fetchJson('/hospital/encounters'),
+          fetchJson('/hospital/staff'),
+          fetchJson('/hospital/claims'),
+          fetchJson('/hospital/pharmacy'),
+          fetchJson('/hospital/staffing')
+        ]);
+
+        renderDashboard({
+          overview: overviewRes.overview || fallbackData.overview,
+          patients: patientsRes.patients || fallbackData.patients,
+          encounters: encountersRes.encounters || fallbackData.encounters,
+          staff: staffRes.staff || fallbackData.staff,
+          claims: {
+            summary: claimsRes.summary || fallbackData.claims.summary,
+            claims: claimsRes.claims || fallbackData.claims.claims
+          },
+          pharmacy: pharmacyRes.pharmacy || fallbackData.pharmacy,
+          staffing: staffingRes.staffing || fallbackData.staffing
+        });
+
+        setStaffStatus('Live hospital API connected. This dashboard is reading current HMS queue, staffing, pharmacy, and claims data.');
+      } catch (error) {
+        setStaffStatus(error.message || 'Hospital API unavailable.', true);
+      }
+    }
+
+    loadDashboard();
+  </script>
 </body>
 </html>

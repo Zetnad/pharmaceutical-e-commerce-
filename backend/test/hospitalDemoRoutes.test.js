@@ -27,6 +27,14 @@ test('GET /api/hospital/patients can filter by department', async () => {
   expect(res.body.patients.every((patient) => patient.department === 'Outpatient')).toBe(true);
 });
 
+test('GET /api/hospital/facilities returns facility list', async () => {
+  const res = await request(app).get('/api/hospital/facilities');
+  expect(res.statusCode).toBe(200);
+  expect(res.body.success).toBe(true);
+  expect(Array.isArray(res.body.facilities)).toBe(true);
+  expect(res.body.facilities.length).toBeGreaterThan(0);
+});
+
 test('POST /api/hospital/patients registers a patient', async () => {
   const res = await request(app)
     .post('/api/hospital/patients')

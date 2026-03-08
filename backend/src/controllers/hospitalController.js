@@ -122,7 +122,26 @@ exports.getOverview = asyncHandler(async (req, res) => {
 // @route  GET /api/hospital/facilities
 exports.getFacilities = asyncHandler(async (req, res) => {
   const facilities = await Facility.find({ isActive: true }).sort('name');
-  sendSuccess(res, 200, 'Facilities fetched.', { facilities });
+  sendSuccess(res, 200, 'Facilities fetched.', {
+    facilities: facilities.map((facility) => ({
+      id: facility._id,
+      name: facility.name,
+      code: facility.code,
+      type: facility.type,
+      location: facility.location?.city || facility.location?.county || facility.location?.country,
+      totalBeds: facility.totalBeds,
+      occupiedBeds: facility.occupiedBeds,
+      occupancyRate: facility.totalBeds ? facility.occupiedBeds / facility.totalBeds : 0,
+      services: facility.services || [],
+      patientsToday: facility.operationalMetrics?.patientsToday || 0,
+      claimsAcceptanceRate: facility.operationalMetrics?.claimsAcceptanceRate || 0,
+      projectedPayrollKes: facility.operationalMetrics?.projectedPayrollKes || 0,
+      overtimeExposureKes: facility.operationalMetrics?.overtimeExposureKes || 0,
+      pharmacyAlerts: facility.pharmacyAlerts || [],
+      staffingAlerts: facility.staffingAlerts || [],
+      executiveAlerts: facility.executiveAlerts || []
+    }))
+  });
 });
 
 // @route  GET /api/hospital/patients

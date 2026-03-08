@@ -10,7 +10,14 @@ const facilities = [
     location: 'Nairobi',
     beds: 180,
     occupancyRate: 0.88,
-    services: ['Emergency', 'Medicine', 'Surgery', 'Maternity', 'Pharmacy', 'Laboratory']
+    services: ['Emergency', 'Medicine', 'Surgery', 'Maternity', 'Pharmacy', 'Laboratory'],
+    patientsToday: 284,
+    claimsAcceptanceRate: 0.94,
+    projectedPayrollKes: 3200000,
+    overtimeExposureKes: 210000,
+    pharmacyAlerts: 2,
+    staffingAlerts: 2,
+    priority: 'ICU night cover'
   },
   {
     id: 'fac-clinic',
@@ -19,7 +26,14 @@ const facilities = [
     location: 'Nairobi',
     beds: 24,
     occupancyRate: 0.41,
-    services: ['Outpatient', 'Imaging', 'Day Procedures', 'Pharmacy']
+    services: ['Outpatient', 'Imaging', 'Day Procedures', 'Pharmacy'],
+    patientsToday: 92,
+    claimsAcceptanceRate: 0.96,
+    projectedPayrollKes: 900000,
+    overtimeExposureKes: 64000,
+    pharmacyAlerts: 1,
+    staffingAlerts: 0,
+    priority: 'Scale imaging slots'
   },
   {
     id: 'fac-maternity',
@@ -28,7 +42,14 @@ const facilities = [
     location: 'Kiambu',
     beds: 42,
     occupancyRate: 0.76,
-    services: ['ANC', 'Delivery', 'Newborn Care', 'Pharmacy']
+    services: ['ANC', 'Delivery', 'Newborn Care', 'Pharmacy'],
+    patientsToday: 36,
+    claimsAcceptanceRate: 0.85,
+    projectedPayrollKes: 700000,
+    overtimeExposureKes: 88000,
+    pharmacyAlerts: 0,
+    staffingAlerts: 1,
+    priority: 'Midwife locum + payer follow-up'
   }
 ];
 
@@ -300,6 +321,14 @@ router.get('/overview', (req, res) => {
         humanReviewRequired: true
       }
     }
+  });
+});
+
+router.get('/facilities', (req, res) => {
+  return res.json({
+    success: true,
+    message: 'Facilities fetched.',
+    facilities
   });
 });
 

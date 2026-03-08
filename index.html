@@ -745,19 +745,19 @@
             <h3>Live hospital operating picture</h3>
             <div class="stat-grid">
               <div class="stat-box">
-                <strong>184</strong>
+                <strong id="hero-patients-today">184</strong>
                 <span>Patients moving through OPD, lab, imaging, and wards today.</span>
               </div>
               <div class="stat-box">
-                <strong>88%</strong>
+                <strong id="hero-claims-acceptance">88%</strong>
                 <span>Insurance eligibility and pre-auth visibility across current encounters.</span>
               </div>
               <div class="stat-box">
-                <strong>23</strong>
+                <strong id="hero-stock-alerts">23</strong>
                 <span>Medication batches approaching reorder or expiry thresholds this week.</span>
               </div>
               <div class="stat-box">
-                <strong>9</strong>
+                <strong id="hero-roster-gaps">9</strong>
                 <span>Critical staffing gaps flagged for nurses, locums, and on-call cover.</span>
               </div>
             </div>
@@ -792,7 +792,7 @@
       <div class="container">
         <div class="section-head">
           <div>
-            <div class="pill-note">Built from current HMS research and hospital operations best practices</div>
+            <div class="pill-note" id="live-overview-status">Built from current HMS research and hospital operations best practices</div>
             <h2>What a complete AI-ready hospital system needs</h2>
           </div>
           <p>
@@ -800,6 +800,23 @@
             pharmacy safety, claims management, workforce coverage, interoperability, and careful AI governance instead
             of a consumer e-commerce experience.
           </p>
+        </div>
+        <div class="grid-3" id="network-snapshot" style="margin-bottom: 1rem;">
+          <article class="dashboard-card">
+            <span class="tag">Live network snapshot</span>
+            <strong>Main hospital operations</strong>
+            <p>Backend-connected facility updates will appear here when the hospital API is available.</p>
+          </article>
+          <article class="dashboard-card">
+            <span class="tag">Claims and staffing</span>
+            <strong>Revenue-cycle and workforce view</strong>
+            <p>Approval rates, roster pressure, and payroll exposure will refresh from the hospital endpoints.</p>
+          </article>
+          <article class="dashboard-card">
+            <span class="tag">Pharmacy and safety</span>
+            <strong>Medication risk visibility</strong>
+            <p>Supply and medication safety alerts will feed this section once the backend is reachable.</p>
+          </article>
         </div>
         <div class="grid-4">
           <article class="insight">
@@ -1248,6 +1265,12 @@
     const conditionsEl = document.getElementById("out-conditions");
     const medsEl = document.getElementById("out-meds");
     const careEl = document.getElementById("out-care");
+    const heroPatientsTodayEl = document.getElementById("hero-patients-today");
+    const heroClaimsAcceptanceEl = document.getElementById("hero-claims-acceptance");
+    const heroStockAlertsEl = document.getElementById("hero-stock-alerts");
+    const heroRosterGapsEl = document.getElementById("hero-roster-gaps");
+    const overviewStatusEl = document.getElementById("live-overview-status");
+    const networkSnapshotEl = document.getElementById("network-snapshot");
 
     function escapeHtml(value) {
       return String(value)
@@ -1269,6 +1292,64 @@
     function setStatus(message, isError = false) {
       statusEl.textContent = message;
       statusEl.className = isError ? "status error" : "status";
+    }
+
+    function formatPercent(value) {
+      return `${Math.round(Number(value || 0) * 100)}%`;
+    }
+
+    async function fetchJson(path) {
+      const response = await fetch(`${API_URL}${path}`);
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || `Failed to load ${path}`);
+      }
+      return data;
+    }
+
+    function renderNetworkSnapshot(overview, facilities) {
+      heroPatientsTodayEl.textContent = overview.kpis?.totalPatientsToday ?? heroPatientsTodayEl.textContent;
+      heroClaimsAcceptanceEl.textContent = formatPercent(overview.kpis?.claimsAcceptanceRate ?? 0.88);
+      heroStockAlertsEl.textContent = overview.kpis?.criticalStockAlerts ?? heroStockAlertsEl.textContent;
+      heroRosterGapsEl.textContent = overview.kpis?.rosterGaps ?? heroRosterGapsEl.textContent;
+
+      if (!facilities || !facilities.length) {
+        return;
+      }
+
+      networkSnapshotEl.innerHTML = facilities.slice(0, 3).map((facility) => {
+        const staffingAlerts = Array.isArray(facility.staffingAlerts) ? facility.staffingAlerts.length : Number(facility.staffingAlerts || 0);
+        const priority = facility.priority || facility.executiveAlerts?.[0]?.details || "Operational review active.";
+        const occupancy = facility.occupancyRate != null
+          ? formatPercent(facility.occupancyRate)
+          : (facility.totalBeds ? formatPercent((facility.occupiedBeds || 0) / facility.totalBeds) : "0%");
+        const claimsRate = facility.claimsAcceptanceRate != null
+          ? formatPercent(facility.claimsAcceptanceRate)
+          : formatPercent(overview.kpis?.claimsAcceptanceRate ?? 0);
+        return `
+          <article class="dashboard-card">
+            <span class="tag">${escapeHtml(facility.type || "facility")}</span>
+            <strong>${escapeHtml(facility.name)}</strong>
+            <p>
+              ${escapeHtml(occupancy)} occupancy / load with ${escapeHtml(claimsRate)} claims acceptance.
+              Staffing alerts: ${escapeHtml(staffingAlerts)}. ${escapeHtml(priority)}
+            </p>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function loadHospitalOverview() {
+      try {
+        const [overviewRes, facilitiesRes] = await Promise.all([
+          fetchJson("/hospital/overview"),
+          fetchJson("/hospital/facilities")
+        ]);
+        renderNetworkSnapshot(overviewRes.overview || {}, facilitiesRes.facilities || []);
+        overviewStatusEl.textContent = "Live hospital API connected: occupancy, claims, staffing, and facility signals are current";
+      } catch (error) {
+        overviewStatusEl.textContent = "Live hospital API unavailable: showing baseline HMS narrative";
+      }
     }
 
     async function runAiAssessment() {
@@ -1315,6 +1396,7 @@
     }
 
     button.addEventListener("click", runAiAssessment);
+    loadHospitalOverview();
   </script>
 </body>
 </html>
