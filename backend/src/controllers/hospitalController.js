@@ -31,6 +31,11 @@ const parseName = (name = '') => {
 };
 
 const staffRoles = ['doctor', 'nurse', 'clinical_officer', 'pharmacist', 'lab_technologist', 'radiographer', 'finance', 'hr', 'admin'];
+const parseArrayField = (value) => {
+  if (Array.isArray(value)) return value.filter(Boolean).map((item) => String(item).trim()).filter(Boolean);
+  if (typeof value === 'string') return value.split(',').map((item) => item.trim()).filter(Boolean);
+  return [];
+};
 
 const serializePatient = (patient) => ({
   id: patient._id,
@@ -74,6 +79,26 @@ const serializeClaim = (claim) => ({
   stage: claim.stage,
   denialRisk: claim.denialRisk,
   facilityName: claim.facility?.name || null
+});
+
+const serializeFacility = (facility) => ({
+  id: facility._id,
+  name: facility.name,
+  code: facility.code,
+  type: facility.type,
+  location: facility.location?.city || facility.location?.county || facility.location?.country,
+  totalBeds: facility.totalBeds,
+  occupiedBeds: facility.occupiedBeds,
+  occupancyRate: facility.totalBeds ? facility.occupiedBeds / facility.totalBeds : 0,
+  services: facility.services || [],
+  departments: facility.departments || [],
+  patientsToday: facility.operationalMetrics?.patientsToday || 0,
+  claimsAcceptanceRate: facility.operationalMetrics?.claimsAcceptanceRate || 0,
+  projectedPayrollKes: facility.operationalMetrics?.projectedPayrollKes || 0,
+  overtimeExposureKes: facility.operationalMetrics?.overtimeExposureKes || 0,
+  pharmacyAlerts: facility.pharmacyAlerts || [],
+  staffingAlerts: facility.staffingAlerts || [],
+  executiveAlerts: facility.executiveAlerts || []
 });
 
 const serializePatientDetail = (patient) => ({
@@ -193,25 +218,101 @@ exports.getOverview = asyncHandler(async (req, res) => {
 exports.getFacilities = asyncHandler(async (req, res) => {
   const facilities = await Facility.find({ isActive: true }).sort('name');
   sendSuccess(res, 200, 'Facilities fetched.', {
-    facilities: facilities.map((facility) => ({
-      id: facility._id,
-      name: facility.name,
-      code: facility.code,
-      type: facility.type,
-      location: facility.location?.city || facility.location?.county || facility.location?.country,
-      totalBeds: facility.totalBeds,
-      occupiedBeds: facility.occupiedBeds,
-      occupancyRate: facility.totalBeds ? facility.occupiedBeds / facility.totalBeds : 0,
-      services: facility.services || [],
-      patientsToday: facility.operationalMetrics?.patientsToday || 0,
-      claimsAcceptanceRate: facility.operationalMetrics?.claimsAcceptanceRate || 0,
-      projectedPayrollKes: facility.operationalMetrics?.projectedPayrollKes || 0,
-      overtimeExposureKes: facility.operationalMetrics?.overtimeExposureKes || 0,
-      pharmacyAlerts: facility.pharmacyAlerts || [],
-      staffingAlerts: facility.staffingAlerts || [],
-      executiveAlerts: facility.executiveAlerts || []
-    }))
+    facilities: facilities.map(serializeFacility)
   });
+});
+
+// @route  GET /api/hospital/facilities/:id
+exports.getFacility = asyncHandler(async (req, res) => {
+  const facility = await Facility.findById(req.params.id);
+  if (!facility) return sendError(res, 404, 'Facility not found.');
+  sendSuccess(res, 200, 'Facility fetched.', { facility: serializeFacility(facility) });
+});
+
+// @route  POST /api/hospital/facilities
+exports.createFacility = asyncHandler(async (req, res) => {
+  const {
+    name,
+    code,
+    type,
+    city,
+    county,
+    country,
+    totalBeds,
+    occupiedBeds,
+    departments,
+    services,
+    patientsToday,
+    claimsAcceptanceRate,
+    projectedPayrollKes,
+    overtimeExposureKes
+  } = req.body || {};
+
+  if (!name) return sendError(res, 400, 'Facility name is required.');
+
+  const facility = await Facility.create({
+    name,
+    code,
+    type: type || 'hospital',
+    location: {
+      city: city || '',
+      county: county || '',
+      country: country || 'Kenya'
+    },
+    totalBeds: Number(totalBeds || 0),
+    occupiedBeds: Number(occupiedBeds || 0),
+    departments: parseArrayField(departments),
+    services: parseArrayField(services),
+    operationalMetrics: {
+      patientsToday: Number(patientsToday || 0),
+      claimsAcceptanceRate: Number(claimsAcceptanceRate || 0),
+      projectedPayrollKes: Number(projectedPayrollKes || 0),
+      overtimeExposureKes: Number(overtimeExposureKes || 0)
+    }
+  });
+
+  sendSuccess(res, 201, 'Facility created successfully.', { facility: serializeFacility(facility) });
+});
+
+// @route  PUT /api/hospital/facilities/:id
+exports.updateFacility = asyncHandler(async (req, res) => {
+  const facility = await Facility.findById(req.params.id);
+  if (!facility) return sendError(res, 404, 'Facility not found.');
+
+  const {
+    name,
+    code,
+    type,
+    city,
+    county,
+    country,
+    totalBeds,
+    occupiedBeds,
+    departments,
+    services,
+    patientsToday,
+    claimsAcceptanceRate,
+    projectedPayrollKes,
+    overtimeExposureKes
+  } = req.body || {};
+
+  if (name !== undefined) facility.name = name;
+  if (code !== undefined) facility.code = code;
+  if (type !== undefined) facility.type = type;
+  if (city !== undefined) facility.location.city = city;
+  if (county !== undefined) facility.location.county = county;
+  if (country !== undefined) facility.location.country = country;
+  if (totalBeds != null) facility.totalBeds = Number(totalBeds);
+  if (occupiedBeds != null) facility.occupiedBeds = Number(occupiedBeds);
+  if (departments !== undefined) facility.departments = parseArrayField(departments);
+  if (services !== undefined) facility.services = parseArrayField(services);
+  if (patientsToday != null) facility.operationalMetrics.patientsToday = Number(patientsToday);
+  if (claimsAcceptanceRate != null) facility.operationalMetrics.claimsAcceptanceRate = Number(claimsAcceptanceRate);
+  if (projectedPayrollKes != null) facility.operationalMetrics.projectedPayrollKes = Number(projectedPayrollKes);
+  if (overtimeExposureKes != null) facility.operationalMetrics.overtimeExposureKes = Number(overtimeExposureKes);
+
+  await facility.save();
+  sendSuccess(res, 200, 'Facility updated successfully.', { facility: serializeFacility(facility) });
 });
 
 // @route  GET /api/hospital/patients
@@ -528,7 +629,30 @@ exports.getStaff = asyncHandler(async (req, res) => {
 
 // @route  GET /api/hospital/claims
 exports.getClaims = asyncHandler(async (req, res) => {
-  const claims = await Claim.find()
+  const { status, payer, denialRisk, q } = req.query;
+  const query = {};
+  if (status) query.status = status;
+  if (payer) query.payer = new RegExp(`^${String(payer)}$`, 'i');
+  if (denialRisk) query.denialRisk = denialRisk;
+
+  let patientIds = null;
+  if (q) {
+    const matchedPatients = await Patient.find({
+      $or: [
+        { firstName: new RegExp(String(q), 'i') },
+        { lastName: new RegExp(String(q), 'i') },
+        { mrn: new RegExp(String(q), 'i') }
+      ]
+    }).select('_id');
+    patientIds = matchedPatients.map((patient) => patient._id);
+    query.$or = [
+      { payer: new RegExp(String(q), 'i') },
+      { claimNumber: new RegExp(String(q), 'i') },
+      ...(patientIds.length ? [{ patient: { $in: patientIds } }] : [])
+    ];
+  }
+
+  const claims = await Claim.find(query)
     .sort('-createdAt')
     .populate('patient', 'mrn firstName lastName')
     .populate('facility', 'name code');

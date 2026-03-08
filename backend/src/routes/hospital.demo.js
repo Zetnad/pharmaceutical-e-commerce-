@@ -349,6 +349,99 @@ router.get('/facilities', (req, res) => {
   });
 });
 
+router.get('/facilities/:id', (req, res) => {
+  const facility = facilities.find((item) => item.id === req.params.id);
+  if (!facility) return res.status(404).json({ success: false, message: 'Facility not found.' });
+  return res.json({ success: true, message: 'Facility fetched.', facility });
+});
+
+router.post('/facilities', protectHospitalWrite, authorizeHospitalRoles('admin'), (req, res) => {
+  const {
+    name,
+    code,
+    type,
+    city,
+    county,
+    country,
+    totalBeds,
+    occupiedBeds,
+    departments,
+    services,
+    patientsToday,
+    claimsAcceptanceRate,
+    projectedPayrollKes,
+    overtimeExposureKes
+  } = req.body || {};
+
+  if (!name) return res.status(400).json({ success: false, message: 'Facility name is required.' });
+
+  const facility = {
+    id: `fac-${Date.now()}`,
+    name,
+    code: code || '',
+    type: type || 'hospital',
+    location: city || county || country || 'Kenya',
+    beds: Number(totalBeds || 0),
+    totalBeds: Number(totalBeds || 0),
+    occupiedBeds: Number(occupiedBeds || 0),
+    occupancyRate: Number(totalBeds || 0) ? Number(occupiedBeds || 0) / Number(totalBeds || 1) : 0,
+    services: Array.isArray(services) ? services : String(services || '').split(',').map((item) => item.trim()).filter(Boolean),
+    departments: Array.isArray(departments) ? departments : String(departments || '').split(',').map((item) => item.trim()).filter(Boolean),
+    patientsToday: Number(patientsToday || 0),
+    claimsAcceptanceRate: Number(claimsAcceptanceRate || 0),
+    projectedPayrollKes: Number(projectedPayrollKes || 0),
+    overtimeExposureKes: Number(overtimeExposureKes || 0),
+    pharmacyAlerts: 0,
+    staffingAlerts: 0,
+    priority: 'New facility created'
+  };
+  facilities.push(facility);
+  return res.status(201).json({ success: true, message: 'Facility created successfully.', facility });
+});
+
+router.put('/facilities/:id', protectHospitalWrite, authorizeHospitalRoles('admin'), (req, res) => {
+  const facility = facilities.find((item) => item.id === req.params.id);
+  if (!facility) return res.status(404).json({ success: false, message: 'Facility not found.' });
+
+  const {
+    name,
+    code,
+    type,
+    city,
+    county,
+    country,
+    totalBeds,
+    occupiedBeds,
+    departments,
+    services,
+    patientsToday,
+    claimsAcceptanceRate,
+    projectedPayrollKes,
+    overtimeExposureKes
+  } = req.body || {};
+
+  if (name !== undefined) facility.name = name;
+  if (code !== undefined) facility.code = code;
+  if (type !== undefined) facility.type = type;
+  if (city !== undefined || county !== undefined || country !== undefined) facility.location = city || county || country || facility.location;
+  if (totalBeds != null) {
+    facility.beds = Number(totalBeds);
+    facility.totalBeds = Number(totalBeds);
+  }
+  if (occupiedBeds != null) {
+    facility.occupiedBeds = Number(occupiedBeds);
+    facility.occupancyRate = facility.beds ? Number(occupiedBeds) / facility.beds : 0;
+  }
+  if (departments !== undefined) facility.departments = Array.isArray(departments) ? departments : String(departments || '').split(',').map((item) => item.trim()).filter(Boolean);
+  if (services !== undefined) facility.services = Array.isArray(services) ? services : String(services || '').split(',').map((item) => item.trim()).filter(Boolean);
+  if (patientsToday != null) facility.patientsToday = Number(patientsToday);
+  if (claimsAcceptanceRate != null) facility.claimsAcceptanceRate = Number(claimsAcceptanceRate);
+  if (projectedPayrollKes != null) facility.projectedPayrollKes = Number(projectedPayrollKes);
+  if (overtimeExposureKes != null) facility.overtimeExposureKes = Number(overtimeExposureKes);
+
+  return res.json({ success: true, message: 'Facility updated successfully.', facility });
+});
+
 router.get('/patients', (req, res) => {
   const { status, department, q } = req.query;
   let result = [...patients];
@@ -560,18 +653,32 @@ router.get('/staff', (req, res) => {
 });
 
 router.get('/claims', (req, res) => {
+  const { status, payer, denialRisk, q } = req.query;
+  let result = [...claims];
+  if (status) result = result.filter((claim) => claim.status === status);
+  if (payer) result = result.filter((claim) => String(claim.payer).toLowerCase() === String(payer).toLowerCase());
+  if (denialRisk) result = result.filter((claim) => claim.denialRisk === denialRisk);
+  if (q) {
+    const term = String(q).toLowerCase();
+    result = result.filter((claim) =>
+      String(claim.patientName || '').toLowerCase().includes(term)
+      || String(claim.payer || '').toLowerCase().includes(term)
+      || String(claim.claimNumber || claim.id || '').toLowerCase().includes(term)
+    );
+  }
+
   const summary = {
-    totalClaims: claims.length,
-    submitted: claims.filter((claim) => claim.status === 'submitted').length,
-    pendingAuthorization: claims.filter((claim) => claim.status === 'pending-authorization').length,
-    denialFollowUp: claims.filter((claim) => claim.stage === 'denial-follow-up').length
+    totalClaims: result.length,
+    submitted: result.filter((claim) => claim.status === 'submitted').length,
+    pendingAuthorization: result.filter((claim) => claim.status === 'pending-authorization').length,
+    denialFollowUp: result.filter((claim) => claim.stage === 'denial-follow-up').length
   };
 
   return res.json({
     success: true,
     message: 'Hospital claims fetched.',
     summary,
-    claims
+    claims: result
   });
 });
 

@@ -6,6 +6,9 @@ const router = express.Router();
 
 router.get('/overview', hospitalCtrl.getOverview);
 router.get('/facilities', hospitalCtrl.getFacilities);
+router.get('/facilities/:id', hospitalCtrl.getFacility);
+router.post('/facilities', protectHospitalWrite, authorizeHospitalRoles('admin'), hospitalCtrl.createFacility);
+router.put('/facilities/:id', protectHospitalWrite, authorizeHospitalRoles('admin'), hospitalCtrl.updateFacility);
 router.get('/patients', hospitalCtrl.getPatients);
 router.get('/patients/:id', hospitalCtrl.getPatient);
 router.post('/patients', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), hospitalCtrl.createPatient);

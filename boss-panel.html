@@ -746,6 +746,127 @@
         </div>
       </article>
     </section>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <article class="card">
+        <span class="label green">Facility management</span>
+        <h2>Create or update facility operations</h2>
+        <p class="subtext">Admin users can manage facility structure and core operational metrics from the command center.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="facility-detail-id">Existing facility</label>
+            <select id="facility-detail-id"></select>
+          </div>
+          <div class="field">
+            <label for="facility-name">Facility name</label>
+            <input id="facility-name" type="text" placeholder="Facility name">
+          </div>
+          <div class="field">
+            <label for="facility-code">Facility code</label>
+            <input id="facility-code" type="text" placeholder="e.g. MMH">
+          </div>
+          <div class="field">
+            <label for="facility-type">Facility type</label>
+            <select id="facility-type">
+              <option value="hospital">Hospital</option>
+              <option value="clinic">Clinic</option>
+              <option value="maternity-centre">Maternity Centre</option>
+              <option value="diagnostic-centre">Diagnostic Centre</option>
+              <option value="medical-centre">Medical Centre</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="facility-city">City</label>
+            <input id="facility-city" type="text" placeholder="City">
+          </div>
+          <div class="field">
+            <label for="facility-county">County</label>
+            <input id="facility-county" type="text" placeholder="County">
+          </div>
+          <div class="field">
+            <label for="facility-beds">Total beds</label>
+            <input id="facility-beds" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-occupied">Occupied beds</label>
+            <input id="facility-occupied" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-patients-today">Patients today</label>
+            <input id="facility-patients-today" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-claims-rate">Claims acceptance rate</label>
+            <input id="facility-claims-rate" type="number" min="0" max="1" step="0.01" value="0.9">
+          </div>
+          <div class="field">
+            <label for="facility-payroll">Projected payroll (KES)</label>
+            <input id="facility-payroll" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-overtime">Overtime exposure (KES)</label>
+            <input id="facility-overtime" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-departments">Departments</label>
+            <textarea id="facility-departments" placeholder="Comma-separated departments"></textarea>
+          </div>
+          <div class="field">
+            <label for="facility-services">Services</label>
+            <textarea id="facility-services" placeholder="Comma-separated services"></textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="facility-create-submit" type="button">Create facility</button>
+            <button class="btn btn-secondary" id="facility-update-submit" type="button">Update facility</button>
+          </div>
+          <div class="form-message" id="facility-form-message"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label amber">Claim lifecycle board</span>
+        <h2>Filter and review claims</h2>
+        <p class="subtext">Use payer, status, denial-risk, or search filters to focus the revenue-cycle queue.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="claim-filter-status">Status</label>
+            <select id="claim-filter-status">
+              <option value="">All statuses</option>
+              <option value="draft">Draft</option>
+              <option value="submitted">Submitted</option>
+              <option value="pending-authorization">Pending Authorization</option>
+              <option value="partially-paid">Partially Paid</option>
+              <option value="paid">Paid</option>
+              <option value="denied">Denied</option>
+              <option value="appealed">Appealed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-filter-risk">Denial risk</label>
+            <select id="claim-filter-risk">
+              <option value="">All risk levels</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-filter-payer">Payer</label>
+            <input id="claim-filter-payer" type="text" placeholder="e.g. SHA">
+          </div>
+          <div class="field">
+            <label for="claim-filter-query">Search</label>
+            <input id="claim-filter-query" type="text" placeholder="Patient, claim number, or payer">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="claim-filter-apply" type="button">Apply filters</button>
+            <button class="btn btn-secondary" id="claim-filter-reset" type="button">Reset filters</button>
+          </div>
+          <div class="form-message" id="claim-filter-message"></div>
+          <div class="stack" id="claim-lifecycle-list"></div>
+        </div>
+      </article>
+    </section>
   </main>
 
   <script>
@@ -768,9 +889,9 @@
         }
       },
       facilities: [
-        { name: 'MediHub Main Hospital', type: 'hospital', location: 'Nairobi', beds: 180, occupancyRate: 0.88, patientsToday: 284, claimsAcceptanceRate: 0.94, staffingAlerts: 2, priority: 'ICU night cover' },
-        { name: 'Riverside Specialist Clinic', type: 'clinic', location: 'Nairobi', beds: 24, occupancyRate: 0.41, patientsToday: 92, claimsAcceptanceRate: 0.96, staffingAlerts: 0, priority: 'Scale imaging slots' },
-        { name: 'Community Maternity Centre', type: 'maternity-centre', location: 'Kiambu', beds: 42, occupancyRate: 0.76, patientsToday: 36, claimsAcceptanceRate: 0.85, staffingAlerts: 1, priority: 'Midwife locum + payer follow-up' }
+        { id: 'fac-main', code: 'MMH', name: 'MediHub Main Hospital', type: 'hospital', location: 'Nairobi', totalBeds: 180, occupiedBeds: 158, beds: 180, occupancyRate: 0.88, patientsToday: 284, claimsAcceptanceRate: 0.94, staffingAlerts: 2, priority: 'ICU night cover', departments: ['Emergency', 'Medicine', 'Surgery'], services: ['Emergency', 'Medicine', 'Surgery', 'Maternity'] },
+        { id: 'fac-clinic', code: 'RSC', name: 'Riverside Specialist Clinic', type: 'clinic', location: 'Nairobi', totalBeds: 24, occupiedBeds: 10, beds: 24, occupancyRate: 0.41, patientsToday: 92, claimsAcceptanceRate: 0.96, staffingAlerts: 0, priority: 'Scale imaging slots', departments: ['Outpatient', 'Imaging'], services: ['Outpatient', 'Imaging', 'Day Procedures'] },
+        { id: 'fac-maternity', code: 'CMC', name: 'Community Maternity Centre', type: 'maternity-centre', location: 'Kiambu', totalBeds: 42, occupiedBeds: 32, beds: 42, occupancyRate: 0.76, patientsToday: 36, claimsAcceptanceRate: 0.85, staffingAlerts: 1, priority: 'Midwife locum + payer follow-up', departments: ['ANC', 'Delivery', 'Newborn Care'], services: ['ANC', 'Delivery', 'Newborn Care'] }
       ],
       patients: [
         { id: 'pt-1001', mrn: 'MH-1001', name: 'Amina Noor', facilityId: 'fac-main' },
@@ -784,9 +905,9 @@
       claims: {
         summary: { totalClaims: 3, submitted: 1, pendingAuthorization: 1, denialFollowUp: 1 },
         claims: [
-          { payer: 'Jubilee', amount: 18200, status: 'submitted', stage: 'claim-scrub-complete', denialRisk: 'low' },
-          { payer: 'SHA', amount: 42800, status: 'pending-authorization', stage: 'waiting-supporting-documents', denialRisk: 'medium' },
-          { payer: 'AAR', amount: 61400, status: 'partially-paid', stage: 'denial-follow-up', denialRisk: 'high' }
+          { id: 'clm-001', claimNumber: 'CLM-1001', patientName: 'Faith Akinyi', payer: 'Jubilee', amount: 18200, status: 'submitted', stage: 'claim-scrub-complete', denialRisk: 'low', facilityName: 'Community Maternity Centre' },
+          { id: 'clm-002', claimNumber: 'CLM-1002', patientName: 'David Kiptoo', payer: 'SHA', amount: 42800, status: 'pending-authorization', stage: 'waiting-supporting-documents', denialRisk: 'medium', facilityName: 'MediHub Main Hospital' },
+          { id: 'clm-003', claimNumber: 'CLM-1003', patientName: 'Mercy Njeri', payer: 'AAR', amount: 61400, status: 'partially-paid', stage: 'denial-follow-up', denialRisk: 'high', facilityName: 'MediHub Main Hospital' }
         ]
       },
       staffing: {
@@ -839,6 +960,31 @@
     const claimUpdateNotesEl = document.getElementById('claim-update-notes');
     const claimUpdateSubmitEl = document.getElementById('claim-update-submit');
     const claimUpdateMessageEl = document.getElementById('claim-update-message');
+    const facilityDetailIdEl = document.getElementById('facility-detail-id');
+    const facilityNameEl = document.getElementById('facility-name');
+    const facilityCodeEl = document.getElementById('facility-code');
+    const facilityTypeEl = document.getElementById('facility-type');
+    const facilityCityEl = document.getElementById('facility-city');
+    const facilityCountyEl = document.getElementById('facility-county');
+    const facilityBedsEl = document.getElementById('facility-beds');
+    const facilityOccupiedEl = document.getElementById('facility-occupied');
+    const facilityPatientsTodayEl = document.getElementById('facility-patients-today');
+    const facilityClaimsRateEl = document.getElementById('facility-claims-rate');
+    const facilityPayrollEl = document.getElementById('facility-payroll');
+    const facilityOvertimeEl = document.getElementById('facility-overtime');
+    const facilityDepartmentsEl = document.getElementById('facility-departments');
+    const facilityServicesEl = document.getElementById('facility-services');
+    const facilityCreateSubmitEl = document.getElementById('facility-create-submit');
+    const facilityUpdateSubmitEl = document.getElementById('facility-update-submit');
+    const facilityMessageEl = document.getElementById('facility-form-message');
+    const claimFilterStatusEl = document.getElementById('claim-filter-status');
+    const claimFilterRiskEl = document.getElementById('claim-filter-risk');
+    const claimFilterPayerEl = document.getElementById('claim-filter-payer');
+    const claimFilterQueryEl = document.getElementById('claim-filter-query');
+    const claimFilterApplyEl = document.getElementById('claim-filter-apply');
+    const claimFilterResetEl = document.getElementById('claim-filter-reset');
+    const claimFilterMessageEl = document.getElementById('claim-filter-message');
+    const claimLifecycleListEl = document.getElementById('claim-lifecycle-list');
 
     let currentHospitalData = JSON.parse(JSON.stringify(fallbackData));
 
@@ -937,9 +1083,13 @@
     }
 
     function fillSelect(element, items, valueGetter, labelGetter, placeholder = 'Select an option') {
+      const previousValue = element.value;
       element.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + items.map((item) => `
         <option value="${escapeHtml(valueGetter(item))}">${escapeHtml(labelGetter(item))}</option>
       `).join('');
+      if (previousValue && items.some((item) => String(valueGetter(item)) === String(previousValue))) {
+        element.value = previousValue;
+      }
     }
 
     function renderStats(data) {
@@ -1112,8 +1262,55 @@
       fillSelect(claimPatientEl, data.patients || [], (patient) => patient.id, (patient) => `${patient.name} (${patient.mrn || 'No MRN'})`, 'Choose patient');
       fillSelect(claimEncounterEl, data.encounters || [], (encounter) => encounter.id, (encounter) => `${encounter.encounterNumber || encounter.id} · ${encounter.patientName || 'Patient'}`, 'No encounter selected');
       fillSelect(claimUpdateIdEl, data.claims.claims || [], (claim) => claim.id, (claim) => `${claim.claimNumber || claim.id} · ${claim.payer} · ${claim.status}`, 'Choose claim');
+      fillSelect(facilityDetailIdEl, data.facilities || [], (facility) => facility.id, (facility) => `${facility.name} (${facility.code || facility.type || 'facility'})`, 'Choose facility');
 
       if (!claimFacilityEl.value && data.facilities?.[0]) claimFacilityEl.value = data.facilities[0].id;
+      if (!facilityDetailIdEl.value && data.facilities?.[0]) facilityDetailIdEl.value = data.facilities[0].id;
+    }
+
+    function fallbackFacilityDetail(facilityId) {
+      return currentHospitalData.facilities.find((item) => item.id === facilityId) || null;
+    }
+
+    function renderClaimLifecycle(claims) {
+      if (!claims.length) {
+        claimLifecycleListEl.innerHTML = `<div class="empty-state">No claims match the current filters.</div>`;
+        return;
+      }
+
+      renderStack(claimLifecycleListEl, claims.map((claim) => ({
+        title: `${claim.claimNumber || claim.id || 'Claim'} · ${claim.payer} · ${claim.status}`,
+        description: `${claim.patientName || 'Patient unavailable'} · ${formatCurrency(claim.amount || 0)} · ${claim.stage || 'stage pending'} · Risk: ${claim.denialRisk || 'unknown'}`
+      })));
+    }
+
+    async function loadFacilityDetail() {
+      const facilityId = facilityDetailIdEl.value;
+      if (!facilityId) return;
+
+      let facility = null;
+      try {
+        const data = await fetchJson(`/hospital/facilities/${facilityId}`);
+        facility = data.facility;
+      } catch (error) {
+        facility = fallbackFacilityDetail(facilityId);
+      }
+
+      if (!facility) return;
+      facilityNameEl.value = facility.name || '';
+      facilityCodeEl.value = facility.code || '';
+      facilityTypeEl.value = facility.type || 'hospital';
+      facilityCityEl.value = facility.location || facility.city || '';
+      facilityCountyEl.value = facility.county || '';
+      facilityBedsEl.value = facility.totalBeds ?? facility.beds ?? 0;
+      facilityOccupiedEl.value = facility.occupiedBeds ?? Math.round((facility.occupancyRate || 0) * Number(facility.totalBeds || facility.beds || 0));
+      facilityPatientsTodayEl.value = facility.patientsToday || 0;
+      facilityClaimsRateEl.value = facility.claimsAcceptanceRate ?? 0;
+      facilityPayrollEl.value = facility.projectedPayrollKes || 0;
+      facilityOvertimeEl.value = facility.overtimeExposureKes || 0;
+      facilityDepartmentsEl.value = (facility.departments || []).join(', ');
+      facilityServicesEl.value = (facility.services || []).join(', ');
+      setFormMessage(facilityMessageEl, '');
     }
 
     function renderDashboard(data, liveConnected) {
@@ -1127,6 +1324,8 @@
       renderAi(data);
       renderDeliveryProgress(liveConnected);
       populateClaimForms(data);
+      loadFacilityDetail();
+      renderClaimLifecycle(data.claims.claims || []);
     }
 
     async function startDemoSession() {
@@ -1200,6 +1399,121 @@
       }
     }
 
+    async function createFacility() {
+      facilityCreateSubmitEl.disabled = true;
+      setFormMessage(facilityMessageEl, 'Creating facility...');
+      try {
+        const data = await fetchAuthorizedJson('/hospital/facilities', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: facilityNameEl.value.trim(),
+            code: facilityCodeEl.value.trim(),
+            type: facilityTypeEl.value,
+            city: facilityCityEl.value.trim(),
+            county: facilityCountyEl.value.trim(),
+            totalBeds: Number(facilityBedsEl.value || 0),
+            occupiedBeds: Number(facilityOccupiedEl.value || 0),
+            departments: facilityDepartmentsEl.value.trim(),
+            services: facilityServicesEl.value.trim(),
+            patientsToday: Number(facilityPatientsTodayEl.value || 0),
+            claimsAcceptanceRate: Number(facilityClaimsRateEl.value || 0),
+            projectedPayrollKes: Number(facilityPayrollEl.value || 0),
+            overtimeExposureKes: Number(facilityOvertimeEl.value || 0)
+          })
+        });
+        setFormMessage(facilityMessageEl, `Facility ${data.facility.name} created successfully.`);
+        await loadExecutiveDashboard();
+        facilityDetailIdEl.value = data.facility.id;
+        await loadFacilityDetail();
+      } catch (error) {
+        setFormMessage(facilityMessageEl, error.message || 'Failed to create facility.', true);
+      } finally {
+        facilityCreateSubmitEl.disabled = false;
+      }
+    }
+
+    async function updateFacility() {
+      facilityUpdateSubmitEl.disabled = true;
+      setFormMessage(facilityMessageEl, 'Updating facility...');
+      try {
+        const facilityId = facilityDetailIdEl.value;
+        if (!facilityId) throw new Error('Choose a facility to update.');
+        const data = await fetchAuthorizedJson(`/hospital/facilities/${facilityId}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            name: facilityNameEl.value.trim(),
+            code: facilityCodeEl.value.trim(),
+            type: facilityTypeEl.value,
+            city: facilityCityEl.value.trim(),
+            county: facilityCountyEl.value.trim(),
+            totalBeds: Number(facilityBedsEl.value || 0),
+            occupiedBeds: Number(facilityOccupiedEl.value || 0),
+            departments: facilityDepartmentsEl.value.trim(),
+            services: facilityServicesEl.value.trim(),
+            patientsToday: Number(facilityPatientsTodayEl.value || 0),
+            claimsAcceptanceRate: Number(facilityClaimsRateEl.value || 0),
+            projectedPayrollKes: Number(facilityPayrollEl.value || 0),
+            overtimeExposureKes: Number(facilityOvertimeEl.value || 0)
+          })
+        });
+        setFormMessage(facilityMessageEl, `Facility ${data.facility.name} updated successfully.`);
+        await loadExecutiveDashboard();
+        facilityDetailIdEl.value = data.facility.id;
+        await loadFacilityDetail();
+      } catch (error) {
+        setFormMessage(facilityMessageEl, error.message || 'Failed to update facility.', true);
+      } finally {
+        facilityUpdateSubmitEl.disabled = false;
+      }
+    }
+
+    async function applyClaimFilters() {
+      claimFilterApplyEl.disabled = true;
+      setFormMessage(claimFilterMessageEl, 'Applying claim filters...');
+      try {
+        const params = new URLSearchParams();
+        if (claimFilterStatusEl.value) params.set('status', claimFilterStatusEl.value);
+        if (claimFilterRiskEl.value) params.set('denialRisk', claimFilterRiskEl.value);
+        if (claimFilterPayerEl.value.trim()) params.set('payer', claimFilterPayerEl.value.trim());
+        if (claimFilterQueryEl.value.trim()) params.set('q', claimFilterQueryEl.value.trim());
+
+        let claimsPayload = null;
+        try {
+          const data = await fetchJson(`/hospital/claims${params.toString() ? `?${params.toString()}` : ''}`);
+          claimsPayload = data.claims || [];
+          setFormMessage(claimFilterMessageEl, `Showing ${claimsPayload.length} claims from the hospital API.`);
+        } catch (error) {
+          claimsPayload = (currentHospitalData.claims.claims || []).filter((claim) => {
+            const matchesStatus = !claimFilterStatusEl.value || claim.status === claimFilterStatusEl.value;
+            const matchesRisk = !claimFilterRiskEl.value || claim.denialRisk === claimFilterRiskEl.value;
+            const matchesPayer = !claimFilterPayerEl.value.trim() || String(claim.payer || '').toLowerCase() === claimFilterPayerEl.value.trim().toLowerCase();
+            const term = claimFilterQueryEl.value.trim().toLowerCase();
+            const matchesQuery = !term
+              || String(claim.patientName || '').toLowerCase().includes(term)
+              || String(claim.payer || '').toLowerCase().includes(term)
+              || String(claim.claimNumber || claim.id || '').toLowerCase().includes(term);
+            return matchesStatus && matchesRisk && matchesPayer && matchesQuery;
+          });
+          setFormMessage(claimFilterMessageEl, `Backend filter unavailable. Showing ${claimsPayload.length} locally filtered claims.`);
+        }
+
+        renderClaimLifecycle(claimsPayload);
+      } catch (error) {
+        setFormMessage(claimFilterMessageEl, error.message || 'Failed to apply claim filters.', true);
+      } finally {
+        claimFilterApplyEl.disabled = false;
+      }
+    }
+
+    function resetClaimFilters() {
+      claimFilterStatusEl.value = '';
+      claimFilterRiskEl.value = '';
+      claimFilterPayerEl.value = '';
+      claimFilterQueryEl.value = '';
+      renderClaimLifecycle(currentHospitalData.claims.claims || []);
+      setFormMessage(claimFilterMessageEl, 'Filters cleared.');
+    }
+
     async function loadExecutiveDashboard() {
       renderDashboard(fallbackData, false);
       setExecStatus('Unable to confirm backend yet.', true);
@@ -1238,6 +1552,11 @@
     execSessionClearEl.addEventListener('click', clearSession);
     claimSubmitEl.addEventListener('click', submitClaim);
     claimUpdateSubmitEl.addEventListener('click', updateClaim);
+    facilityDetailIdEl.addEventListener('change', loadFacilityDetail);
+    facilityCreateSubmitEl.addEventListener('click', createFacility);
+    facilityUpdateSubmitEl.addEventListener('click', updateFacility);
+    claimFilterApplyEl.addEventListener('click', applyClaimFilters);
+    claimFilterResetEl.addEventListener('click', resetClaimFilters);
     syncSessionUi();
     loadExecutiveDashboard();
   </script>
