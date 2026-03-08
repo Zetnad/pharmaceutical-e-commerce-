@@ -1,0 +1,430 @@
+const express = require('express');
+
+const router = express.Router();
+
+const facilities = [
+  {
+    id: 'fac-main',
+    name: 'MediHub Main Hospital',
+    type: 'hospital',
+    location: 'Nairobi',
+    beds: 180,
+    occupancyRate: 0.88,
+    services: ['Emergency', 'Medicine', 'Surgery', 'Maternity', 'Pharmacy', 'Laboratory']
+  },
+  {
+    id: 'fac-clinic',
+    name: 'Riverside Specialist Clinic',
+    type: 'clinic',
+    location: 'Nairobi',
+    beds: 24,
+    occupancyRate: 0.41,
+    services: ['Outpatient', 'Imaging', 'Day Procedures', 'Pharmacy']
+  },
+  {
+    id: 'fac-maternity',
+    name: 'Community Maternity Centre',
+    type: 'maternity-centre',
+    location: 'Kiambu',
+    beds: 42,
+    occupancyRate: 0.76,
+    services: ['ANC', 'Delivery', 'Newborn Care', 'Pharmacy']
+  }
+];
+
+const staff = [
+  {
+    id: 'stf-001',
+    name: 'Dr. Leah Kimani',
+    role: 'doctor',
+    department: 'Medicine',
+    facilityId: 'fac-main',
+    shift: 'day',
+    status: 'on-duty',
+    licenseNumber: 'KMPDC-443210',
+    workload: 0.74
+  },
+  {
+    id: 'stf-002',
+    name: 'Kelvin Mutua',
+    role: 'clinical_officer',
+    department: 'Outpatient',
+    facilityId: 'fac-main',
+    shift: 'day',
+    status: 'on-duty',
+    licenseNumber: 'COC-11842',
+    workload: 0.84
+  },
+  {
+    id: 'stf-003',
+    name: 'Agnes Muthoni',
+    role: 'nurse',
+    department: 'Ward Operations',
+    facilityId: 'fac-main',
+    shift: 'day',
+    status: 'handover-lead',
+    licenseNumber: 'NCK-22015',
+    workload: 0.91
+  },
+  {
+    id: 'stf-004',
+    name: 'Brian Omondi',
+    role: 'pharmacist',
+    department: 'Hospital Pharmacy',
+    facilityId: 'fac-main',
+    shift: 'day',
+    status: 'on-duty',
+    licenseNumber: 'PPB-99831',
+    workload: 0.69
+  },
+  {
+    id: 'stf-005',
+    name: 'Grace Naliaka',
+    role: 'finance',
+    department: 'Claims and Billing',
+    facilityId: 'fac-main',
+    shift: 'day',
+    status: 'on-duty',
+    licenseNumber: null,
+    workload: 0.72
+  },
+  {
+    id: 'stf-006',
+    name: 'Janet Wanjiru',
+    role: 'hr',
+    department: 'Workforce Management',
+    facilityId: 'fac-main',
+    shift: 'day',
+    status: 'on-duty',
+    licenseNumber: null,
+    workload: 0.58
+  }
+];
+
+const patients = [
+  {
+    id: 'pt-1001',
+    mrn: 'MH-1001',
+    name: 'Amina Noor',
+    gender: 'female',
+    age: 28,
+    phone: '+254700111222',
+    visitType: 'OPD',
+    triageLevel: 'medium',
+    department: 'Outpatient',
+    facilityId: 'fac-main',
+    insurance: { provider: 'SHA', memberNumber: 'SHA-022311' },
+    currentStatus: 'waiting',
+    allergies: ['Penicillin']
+  },
+  {
+    id: 'pt-1002',
+    mrn: 'MH-1002',
+    name: 'Peter Mwangi',
+    gender: 'male',
+    age: 54,
+    phone: '+254700333444',
+    visitType: 'Emergency',
+    triageLevel: 'high',
+    department: 'Emergency',
+    facilityId: 'fac-main',
+    insurance: { provider: 'AAR', memberNumber: 'AAR-918221' },
+    currentStatus: 'under-review',
+    allergies: []
+  },
+  {
+    id: 'pt-1003',
+    mrn: 'MH-1003',
+    name: 'Faith Akinyi',
+    gender: 'female',
+    age: 31,
+    phone: '+254700555666',
+    visitType: 'ANC',
+    triageLevel: 'low',
+    department: 'Maternity',
+    facilityId: 'fac-maternity',
+    insurance: { provider: 'Jubilee', memberNumber: 'JBL-554219' },
+    currentStatus: 'queued',
+    allergies: []
+  }
+];
+
+const encounters = [
+  {
+    id: 'enc-001',
+    patientId: 'pt-1001',
+    patientName: 'Amina Noor',
+    encounterType: 'outpatient',
+    department: 'Outpatient',
+    assignedTo: 'Kelvin Mutua',
+    assignedRole: 'clinical_officer',
+    status: 'triage-complete',
+    nextAction: 'Consultation and malaria screen',
+    claimStatus: 'eligibility-confirmed'
+  },
+  {
+    id: 'enc-002',
+    patientId: 'pt-1002',
+    patientName: 'Peter Mwangi',
+    encounterType: 'emergency',
+    department: 'Emergency',
+    assignedTo: 'Dr. Leah Kimani',
+    assignedRole: 'doctor',
+    status: 'critical-review',
+    nextAction: 'ECG, troponin, urgent physician review',
+    claimStatus: 'self-pay-deposit'
+  },
+  {
+    id: 'enc-003',
+    patientId: 'pt-1003',
+    patientName: 'Faith Akinyi',
+    encounterType: 'maternity',
+    department: 'ANC',
+    assignedTo: 'Agnes Muthoni',
+    assignedRole: 'nurse',
+    status: 'awaiting-vitals',
+    nextAction: 'Routine ANC checks and labs',
+    claimStatus: 'preauth-not-required'
+  }
+];
+
+const claims = [
+  {
+    id: 'clm-001',
+    patientName: 'Faith Akinyi',
+    payer: 'Jubilee',
+    amount: 18200,
+    status: 'submitted',
+    stage: 'claim-scrub-complete',
+    denialRisk: 'low'
+  },
+  {
+    id: 'clm-002',
+    patientName: 'David Kiptoo',
+    payer: 'SHA',
+    amount: 42800,
+    status: 'pending-authorization',
+    stage: 'waiting-supporting-documents',
+    denialRisk: 'medium'
+  },
+  {
+    id: 'clm-003',
+    patientName: 'Mercy Njeri',
+    payer: 'AAR',
+    amount: 61400,
+    status: 'partially-paid',
+    stage: 'denial-follow-up',
+    denialRisk: 'high'
+  }
+];
+
+const pharmacy = {
+  dispensingQueue: [
+    {
+      prescriptionId: 'rx-1001',
+      patientName: 'Amina Noor',
+      source: 'OPD',
+      status: 'verification-pending',
+      note: 'Check penicillin allergy before release'
+    },
+    {
+      prescriptionId: 'rx-1002',
+      patientName: 'Daniel Kiptoo',
+      source: 'Surgical Ward',
+      status: 'ward-refill',
+      note: 'Analgesia refill due in 45 minutes'
+    }
+  ],
+  stockAlerts: [
+    { item: 'Ceftriaxone 1g vial', status: 'low-stock', daysOnHand: 3 },
+    { item: 'Insulin cartridge', status: 'expiry-risk', daysToExpiry: 24 },
+    { item: 'Blood gas cartridge', status: 'critical', daysOnHand: 2 }
+  ],
+  controlledRegister: {
+    pendingReconciliation: 1,
+    lastVariance: 'Theatre opioid balance mismatch pending sign-off'
+  }
+};
+
+const staffing = {
+  rosterGaps: [
+    { department: 'Emergency', role: 'nurse', shift: 'night', gap: 1, severity: 'high' },
+    { department: 'Maternity', role: 'midwife', shift: 'night', gap: 1, severity: 'medium' },
+    { department: 'Outpatient', role: 'clinical_officer', shift: 'weekend', gap: 1, severity: 'medium' }
+  ],
+  payrollSummary: {
+    projectedPayrollKes: 4800000,
+    overtimeExposureKes: 362000,
+    locumExposureKes: 91000,
+    expiringCredentials: 7
+  }
+};
+
+const modules = [
+  'patient_administration',
+  'emr_and_encounters',
+  'doctor_nurse_clinical_officer_workflows',
+  'hospital_pharmacy',
+  'billing_and_claims',
+  'staffing_and_payroll',
+  'executive_analytics',
+  'ai_governance'
+];
+
+const nextMrnNumber = () => {
+  const highest = patients.reduce((max, patient) => {
+    const value = Number(String(patient.mrn || '').split('-')[1] || 0);
+    return Math.max(max, value);
+  }, 1000);
+  return `MH-${highest + 1}`;
+};
+
+router.get('/overview', (req, res) => {
+  return res.json({
+    success: true,
+    message: 'Hospital overview fetched.',
+    overview: {
+      platform: 'MediHub HMS',
+      modules,
+      facilities,
+      kpis: {
+        totalPatientsToday: 412,
+        occupancyRate: 0.84,
+        claimsAcceptanceRate: 0.91,
+        criticalStockAlerts: pharmacy.stockAlerts.length,
+        rosterGaps: staffing.rosterGaps.length
+      },
+      aiGovernance: {
+        enabled: true,
+        approvedUseCases: ['ambient_documentation', 'triage_support', 'claims_readiness', 'medication_safety'],
+        humanReviewRequired: true
+      }
+    }
+  });
+});
+
+router.get('/patients', (req, res) => {
+  const { status, department, q } = req.query;
+  let result = [...patients];
+
+  if (status) result = result.filter((patient) => patient.currentStatus === status);
+  if (department) result = result.filter((patient) => patient.department.toLowerCase() === String(department).toLowerCase());
+  if (q) {
+    const term = String(q).toLowerCase();
+    result = result.filter((patient) => patient.name.toLowerCase().includes(term) || patient.mrn.toLowerCase().includes(term));
+  }
+
+  return res.json({
+    success: true,
+    message: 'Hospital patients fetched.',
+    total: result.length,
+    patients: result
+  });
+});
+
+router.post('/patients', (req, res) => {
+  const { name, gender, age, phone, visitType, department, facilityId, insuranceProvider, insuranceMemberNumber } = req.body || {};
+
+  if (!name || !visitType || !department || !facilityId) {
+    return res.status(400).json({
+      success: false,
+      message: 'name, visitType, department, and facilityId are required.'
+    });
+  }
+
+  const facility = facilities.find((item) => item.id === facilityId);
+  if (!facility) {
+    return res.status(400).json({ success: false, message: 'Invalid facilityId.' });
+  }
+
+  const id = `pt-${Date.now()}`;
+  const patient = {
+    id,
+    mrn: nextMrnNumber(),
+    name,
+    gender: gender || 'unspecified',
+    age: Number(age || 0),
+    phone: phone || null,
+    visitType,
+    triageLevel: 'pending',
+    department,
+    facilityId,
+    insurance: {
+      provider: insuranceProvider || 'self-pay',
+      memberNumber: insuranceMemberNumber || null
+    },
+    currentStatus: 'registered',
+    allergies: []
+  };
+
+  patients.push(patient);
+
+  return res.status(201).json({
+    success: true,
+    message: 'Patient registered successfully.',
+    patient
+  });
+});
+
+router.get('/encounters', (req, res) => {
+  const { status, department } = req.query;
+  let result = [...encounters];
+  if (status) result = result.filter((encounter) => encounter.status === status);
+  if (department) result = result.filter((encounter) => encounter.department.toLowerCase() === String(department).toLowerCase());
+
+  return res.json({
+    success: true,
+    message: 'Hospital encounters fetched.',
+    total: result.length,
+    encounters: result
+  });
+});
+
+router.get('/staff', (req, res) => {
+  const { role, department, facilityId } = req.query;
+  let result = [...staff];
+  if (role) result = result.filter((member) => member.role === role);
+  if (department) result = result.filter((member) => member.department.toLowerCase() === String(department).toLowerCase());
+  if (facilityId) result = result.filter((member) => member.facilityId === facilityId);
+
+  return res.json({
+    success: true,
+    message: 'Hospital staff fetched.',
+    total: result.length,
+    staff: result
+  });
+});
+
+router.get('/claims', (req, res) => {
+  const summary = {
+    totalClaims: claims.length,
+    submitted: claims.filter((claim) => claim.status === 'submitted').length,
+    pendingAuthorization: claims.filter((claim) => claim.status === 'pending-authorization').length,
+    denialFollowUp: claims.filter((claim) => claim.stage === 'denial-follow-up').length
+  };
+
+  return res.json({
+    success: true,
+    message: 'Hospital claims fetched.',
+    summary,
+    claims
+  });
+});
+
+router.get('/pharmacy', (req, res) => {
+  return res.json({
+    success: true,
+    message: 'Hospital pharmacy status fetched.',
+    pharmacy
+  });
+});
+
+router.get('/staffing', (req, res) => {
+  return res.json({
+    success: true,
+    message: 'Hospital staffing status fetched.',
+    staffing
+  });
+});
+
+module.exports = router;

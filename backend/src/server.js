@@ -15,6 +15,7 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const pharmacistRoutes = require('./routes/pharmacists');
 const pharmacistDemoRoutes = require('./routes/pharmacists.demo');
+const hospitalDemoRoutes = require('./routes/hospital.demo');
 const aiRoutes = require('./routes/ai');
 const prescriptionRoutes = require('./routes/prescriptions');
 const paymentRoutes = require('./routes/payments');
@@ -97,6 +98,7 @@ app.get('/api/store', (req, res) => {
 // ─── API Routes ───
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/hospital', hospitalDemoRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 // Mount pharmacists routes; prefer real routes when DB is configured, otherwise use demo router

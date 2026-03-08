@@ -17,11 +17,11 @@ exports.register = asyncHandler(async (req, res) => {
   const existing = await User.findOne({ email });
   if (existing) return sendError(res, 400, 'Email already registered.');
 
-  // Only allow patient/pharmacist on self-registration
+  // Keep self-registration limited while broader hospital staff onboarding is introduced.
   const allowedRoles = ['patient', 'pharmacist'];
   const userRole = allowedRoles.includes(role) ? role : 'patient';
 
-  // If registering on a specific tenant's domain, automatically link them
+  // If registering on a specific tenant domain, automatically link patient accounts for legacy tenant compatibility.
   const tenantData = (req.tenant && userRole === 'patient') ? req.tenant._id : undefined;
 
   const user = await User.create({ name, email, password, phone, role: userRole, tenant: tenantData });
@@ -47,10 +47,10 @@ exports.login = asyncHandler(async (req, res) => {
 
   if (!user.isActive) return sendError(res, 401, 'Your account has been deactivated. Contact support.');
 
-  // Tenant Isolation Check: If logging in as a patient on a specific tenant's domain, they must belong to that tenant.
+  // Legacy tenant isolation for patient accounts on a specific tenant domain.
   if (req.tenant && user.role === 'patient') {
     if (!user.tenant || user.tenant.toString() !== req.tenant._id.toString()) {
-      return sendError(res, 401, 'Invalid credentials for this pharmacy.');
+      return sendError(res, 401, 'Invalid credentials for this facility.');
     }
   }
 

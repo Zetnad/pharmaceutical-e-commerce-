@@ -1,13 +1,26 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+const USER_ROLES = [
+  'patient',
+  'doctor',
+  'nurse',
+  'clinical_officer',
+  'pharmacist',
+  'lab_technologist',
+  'radiographer',
+  'finance',
+  'hr',
+  'admin'
+];
+
 const userSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'Name is required'], trim: true },
   email: { type: String, required: [true, 'Email is required'], unique: true, lowercase: true, trim: true },
   password: { type: String, required: [true, 'Password is required'], minlength: 6, select: false },
   phone: { type: String, trim: true },
-  role: { type: String, enum: ['patient', 'pharmacist', 'admin'], default: 'patient' },
-  tenant: { type: mongoose.Schema.Types.ObjectId, ref: 'Pharmacist' }, // Links a patient to a specific B2B2C pharmacy
+  role: { type: String, enum: USER_ROLES, default: 'patient' },
+  tenant: { type: mongoose.Schema.Types.ObjectId, ref: 'Pharmacist' }, // Legacy tenant link retained for compatibility until facility models are introduced
   plan: { type: String, enum: ['free', 'premium', 'family'], default: 'free' },
   avatar: { type: String, default: null },
   isVerified: { type: Boolean, default: false },
@@ -16,6 +29,32 @@ const userSchema = new mongoose.Schema({
     street: String, city: String, county: String,
     country: { type: String, default: 'Kenya' }
   },
+  patientProfile: {
+    nationalId: String,
+    bloodGroup: String,
+    dateOfBirth: Date,
+    gender: String,
+    emergencyContact: {
+      name: String,
+      relation: String,
+      phone: String
+    }
+  },
+  staffProfile: {
+    employeeId: String,
+    department: String,
+    facilityName: String,
+    specialty: String,
+    licenseNumber: String,
+    shiftPattern: String
+  },
+  insuranceProfiles: [{
+    provider: String,
+    memberNumber: String,
+    planName: String,
+    relationship: String,
+    isPrimary: { type: Boolean, default: true }
+  }],
   familyMembers: [{ name: String, relation: String, dateOfBirth: Date }],
   healthHistory: [{ medication: String, date: Date, notes: String }],
   aiChecksUsed: { type: Number, default: 0 },
