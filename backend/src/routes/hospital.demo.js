@@ -638,11 +638,22 @@ router.put('/encounters/:id', protectHospitalWrite, authorizeHospitalRoles('admi
 });
 
 router.get('/staff', (req, res) => {
-  const { role, department, facilityId } = req.query;
+  const { role, department, facilityId, q, shiftPattern, isActive } = req.query;
   let result = [...staff];
   if (role) result = result.filter((member) => member.role === role);
   if (department) result = result.filter((member) => member.department.toLowerCase() === String(department).toLowerCase());
   if (facilityId) result = result.filter((member) => member.facilityId === facilityId);
+  if (shiftPattern) result = result.filter((member) => String(member.shift || member.shiftPattern || '').toLowerCase() === String(shiftPattern).toLowerCase());
+  if (isActive === 'false') result = result.filter((member) => member.isActive === false);
+  if (q) {
+    const term = String(q).toLowerCase();
+    result = result.filter((member) =>
+      String(member.name || '').toLowerCase().includes(term)
+      || String(member.department || '').toLowerCase().includes(term)
+      || String(member.role || '').toLowerCase().includes(term)
+      || String(member.employeeId || '').toLowerCase().includes(term)
+    );
+  }
 
   return res.json({
     success: true,
@@ -650,6 +661,92 @@ router.get('/staff', (req, res) => {
     total: result.length,
     staff: result
   });
+});
+
+router.get('/staff/:id', (req, res) => {
+  const member = staff.find((item) => item.id === req.params.id);
+  if (!member) return res.status(404).json({ success: false, message: 'Staff member not found.' });
+  return res.json({ success: true, message: 'Hospital staff member fetched.', staff: member });
+});
+
+router.post('/staff', protectHospitalWrite, authorizeHospitalRoles('admin'), (req, res) => {
+  const {
+    name,
+    email,
+    phone,
+    role,
+    employeeId,
+    department,
+    facilityId,
+    facilityName,
+    specialty,
+    licenseNumber,
+    shiftPattern
+  } = req.body || {};
+
+  if (!name || !email || !role) {
+    return res.status(400).json({ success: false, message: 'name, email, and role are required.' });
+  }
+
+  const member = {
+    id: `stf-${Date.now()}`,
+    name,
+    email,
+    phone: phone || null,
+    role,
+    department: department || '',
+    facilityId: facilityId || facilities[0]?.id || null,
+    facilityName: facilityName || facilities.find((facility) => facility.id === facilityId)?.name || '',
+    specialty: specialty || '',
+    licenseNumber: licenseNumber || null,
+    shift: shiftPattern || '',
+    shiftPattern: shiftPattern || '',
+    employeeId: employeeId || '',
+    status: 'on-duty',
+    isActive: true,
+    workload: 0.5
+  };
+
+  staff.push(member);
+  return res.status(201).json({ success: true, message: 'Staff member created successfully.', staff: member });
+});
+
+router.put('/staff/:id', protectHospitalWrite, authorizeHospitalRoles('admin'), (req, res) => {
+  const member = staff.find((item) => item.id === req.params.id);
+  if (!member) return res.status(404).json({ success: false, message: 'Staff member not found.' });
+
+  const {
+    name,
+    email,
+    phone,
+    role,
+    isActive,
+    employeeId,
+    department,
+    facilityId,
+    facilityName,
+    specialty,
+    licenseNumber,
+    shiftPattern
+  } = req.body || {};
+
+  if (name !== undefined) member.name = name;
+  if (email !== undefined) member.email = email;
+  if (phone !== undefined) member.phone = phone;
+  if (role !== undefined) member.role = role;
+  if (typeof isActive === 'boolean') member.isActive = isActive;
+  if (employeeId !== undefined) member.employeeId = employeeId;
+  if (department !== undefined) member.department = department;
+  if (facilityId !== undefined) member.facilityId = facilityId;
+  if (facilityName !== undefined) member.facilityName = facilityName;
+  if (specialty !== undefined) member.specialty = specialty;
+  if (licenseNumber !== undefined) member.licenseNumber = licenseNumber;
+  if (shiftPattern !== undefined) {
+    member.shiftPattern = shiftPattern;
+    member.shift = shiftPattern;
+  }
+
+  return res.json({ success: true, message: 'Staff member updated successfully.', staff: member });
 });
 
 router.get('/claims', (req, res) => {

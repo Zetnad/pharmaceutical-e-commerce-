@@ -101,6 +101,23 @@ const serializeFacility = (facility) => ({
   executiveAlerts: facility.executiveAlerts || []
 });
 
+const serializeStaffMember = (member) => ({
+  id: member._id,
+  name: member.name,
+  email: member.email,
+  phone: member.phone || null,
+  role: member.role,
+  isActive: member.isActive,
+  employeeId: member.staffProfile?.employeeId || null,
+  department: member.staffProfile?.department || null,
+  facilityName: member.staffProfile?.facilityName || null,
+  specialty: member.staffProfile?.specialty || null,
+  licenseNumber: member.staffProfile?.licenseNumber || null,
+  shiftPattern: member.staffProfile?.shiftPattern || null,
+  createdAt: member.createdAt,
+  updatedAt: member.updatedAt
+});
+
 const serializePatientDetail = (patient) => ({
   ...serializePatient(patient),
   firstName: patient.firstName,
@@ -614,17 +631,115 @@ exports.updateEncounter = asyncHandler(async (req, res) => {
 
 // @route  GET /api/hospital/staff
 exports.getStaff = asyncHandler(async (req, res) => {
-  const { role, department, facilityName } = req.query;
+  const { role, department, facilityName, q, shiftPattern, isActive } = req.query;
   const query = { role: { $in: staffRoles }, isActive: true };
   if (role) query.role = role;
   if (department) query['staffProfile.department'] = new RegExp(`^${String(department)}$`, 'i');
   if (facilityName) query['staffProfile.facilityName'] = new RegExp(`^${String(facilityName)}$`, 'i');
+  if (shiftPattern) query['staffProfile.shiftPattern'] = new RegExp(`^${String(shiftPattern)}$`, 'i');
+  if (isActive === 'false') query.isActive = false;
+  if (q) {
+    query.$or = [
+      { name: new RegExp(String(q), 'i') },
+      { email: new RegExp(String(q), 'i') },
+      { 'staffProfile.employeeId': new RegExp(String(q), 'i') },
+      { 'staffProfile.department': new RegExp(String(q), 'i') },
+      { 'staffProfile.specialty': new RegExp(String(q), 'i') }
+    ];
+  }
 
   const staff = await User.find(query).sort('name').select('-password');
   sendSuccess(res, 200, 'Hospital staff fetched.', {
     total: staff.length,
-    staff
+    staff: staff.map(serializeStaffMember)
   });
+});
+
+// @route  GET /api/hospital/staff/:id
+exports.getStaffMember = asyncHandler(async (req, res) => {
+  const member = await User.findById(req.params.id).select('-password');
+  if (!member || !staffRoles.includes(member.role)) return sendError(res, 404, 'Staff member not found.');
+  sendSuccess(res, 200, 'Hospital staff member fetched.', { staff: serializeStaffMember(member) });
+});
+
+// @route  POST /api/hospital/staff
+exports.createStaffMember = asyncHandler(async (req, res) => {
+  const {
+    name,
+    email,
+    password,
+    phone,
+    role,
+    employeeId,
+    department,
+    facilityName,
+    specialty,
+    licenseNumber,
+    shiftPattern
+  } = req.body || {};
+
+  if (!name || !email || !role) {
+    return sendError(res, 400, 'name, email, and role are required.');
+  }
+  if (!staffRoles.includes(role)) return sendError(res, 400, 'Invalid staff role.');
+
+  const member = await User.create({
+    name,
+    email,
+    password: password || 'changeme123',
+    phone,
+    role,
+    isVerified: true,
+    staffProfile: {
+      employeeId: employeeId || '',
+      department: department || '',
+      facilityName: facilityName || '',
+      specialty: specialty || '',
+      licenseNumber: licenseNumber || '',
+      shiftPattern: shiftPattern || ''
+    }
+  });
+
+  sendSuccess(res, 201, 'Staff member created successfully.', { staff: serializeStaffMember(member) });
+});
+
+// @route  PUT /api/hospital/staff/:id
+exports.updateStaffMember = asyncHandler(async (req, res) => {
+  const member = await User.findById(req.params.id);
+  if (!member || !staffRoles.includes(member.role)) return sendError(res, 404, 'Staff member not found.');
+
+  const {
+    name,
+    email,
+    phone,
+    role,
+    isActive,
+    employeeId,
+    department,
+    facilityName,
+    specialty,
+    licenseNumber,
+    shiftPattern
+  } = req.body || {};
+
+  if (name !== undefined) member.name = name;
+  if (email !== undefined) member.email = email;
+  if (phone !== undefined) member.phone = phone;
+  if (role) {
+    if (!staffRoles.includes(role)) return sendError(res, 400, 'Invalid staff role.');
+    member.role = role;
+  }
+  if (typeof isActive === 'boolean') member.isActive = isActive;
+  if (!member.staffProfile) member.staffProfile = {};
+  if (employeeId !== undefined) member.staffProfile.employeeId = employeeId;
+  if (department !== undefined) member.staffProfile.department = department;
+  if (facilityName !== undefined) member.staffProfile.facilityName = facilityName;
+  if (specialty !== undefined) member.staffProfile.specialty = specialty;
+  if (licenseNumber !== undefined) member.staffProfile.licenseNumber = licenseNumber;
+  if (shiftPattern !== undefined) member.staffProfile.shiftPattern = shiftPattern;
+
+  await member.save();
+  sendSuccess(res, 200, 'Staff member updated successfully.', { staff: serializeStaffMember(member) });
 });
 
 // @route  GET /api/hospital/claims

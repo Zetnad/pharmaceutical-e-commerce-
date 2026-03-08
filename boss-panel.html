@@ -867,6 +867,134 @@
         </div>
       </article>
     </section>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <article class="card">
+        <span class="label purple">Staff management</span>
+        <h2>Create or update staff assignments</h2>
+        <p class="subtext">Admins can maintain staff profiles, department placement, facility assignment, role, specialty, and shift pattern from here.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="staff-detail-id">Existing staff member</label>
+            <select id="staff-detail-id"></select>
+          </div>
+          <div class="field">
+            <label for="staff-name">Full name</label>
+            <input id="staff-name" type="text" placeholder="Staff name">
+          </div>
+          <div class="field">
+            <label for="staff-email">Email</label>
+            <input id="staff-email" type="email" placeholder="staff@medihub.com">
+          </div>
+          <div class="field">
+            <label for="staff-phone">Phone</label>
+            <input id="staff-phone" type="text" placeholder="+2547...">
+          </div>
+          <div class="field">
+            <label for="staff-role">Role</label>
+            <select id="staff-role">
+              <option value="doctor">Doctor</option>
+              <option value="nurse">Nurse</option>
+              <option value="clinical_officer">Clinical Officer</option>
+              <option value="pharmacist">Pharmacist</option>
+              <option value="lab_technologist">Lab Technologist</option>
+              <option value="radiographer">Radiographer</option>
+              <option value="finance">Finance</option>
+              <option value="hr">HR</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staff-facility-name">Facility</label>
+            <input id="staff-facility-name" type="text" placeholder="Facility name">
+          </div>
+          <div class="field">
+            <label for="staff-department">Department</label>
+            <input id="staff-department" type="text" placeholder="Department">
+          </div>
+          <div class="field">
+            <label for="staff-specialty">Specialty</label>
+            <input id="staff-specialty" type="text" placeholder="Specialty">
+          </div>
+          <div class="field">
+            <label for="staff-license">License number</label>
+            <input id="staff-license" type="text" placeholder="License number">
+          </div>
+          <div class="field">
+            <label for="staff-employee-id">Employee ID</label>
+            <input id="staff-employee-id" type="text" placeholder="Employee ID">
+          </div>
+          <div class="field">
+            <label for="staff-shift">Shift pattern</label>
+            <select id="staff-shift">
+              <option value="day">Day</option>
+              <option value="night">Night</option>
+              <option value="weekend">Weekend</option>
+              <option value="rotational">Rotational</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staff-active">Active status</label>
+            <select id="staff-active">
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="staff-create-submit" type="button">Create staff member</button>
+            <button class="btn btn-secondary" id="staff-update-submit" type="button">Update staff member</button>
+          </div>
+          <div class="form-message" id="staff-form-message"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label blue">Staff roster board</span>
+        <h2>Filter and review staff assignments</h2>
+        <p class="subtext">Filter the current staff roster by role, department, shift, or search term to review coverage and assignments.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="staff-filter-role">Role</label>
+            <select id="staff-filter-role">
+              <option value="">All roles</option>
+              <option value="doctor">Doctor</option>
+              <option value="nurse">Nurse</option>
+              <option value="clinical_officer">Clinical Officer</option>
+              <option value="pharmacist">Pharmacist</option>
+              <option value="lab_technologist">Lab Technologist</option>
+              <option value="radiographer">Radiographer</option>
+              <option value="finance">Finance</option>
+              <option value="hr">HR</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staff-filter-department">Department</label>
+            <input id="staff-filter-department" type="text" placeholder="Department">
+          </div>
+          <div class="field">
+            <label for="staff-filter-shift">Shift</label>
+            <select id="staff-filter-shift">
+              <option value="">All shifts</option>
+              <option value="day">Day</option>
+              <option value="night">Night</option>
+              <option value="weekend">Weekend</option>
+              <option value="rotational">Rotational</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staff-filter-query">Search</label>
+            <input id="staff-filter-query" type="text" placeholder="Name, employee ID, specialty">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="staff-filter-apply" type="button">Apply filters</button>
+            <button class="btn btn-secondary" id="staff-filter-reset" type="button">Reset filters</button>
+          </div>
+          <div class="form-message" id="staff-filter-message"></div>
+          <div class="stack" id="staff-roster-list"></div>
+        </div>
+      </article>
+    </section>
   </main>
 
   <script>
@@ -926,6 +1054,12 @@
           { title: 'Controlled register variance', status: 'critical', details: 'Theatre opioid reconciliation pending sign-off' }
         ],
         controlledRegister: { pendingReconciliation: 1, lastVariance: 'Theatre opioid balance mismatch pending sign-off' }
+      },
+      staff: [
+        { id: 'stf-001', name: 'Dr. Leah Kimani', email: 'leah@medihub.com', role: 'doctor', employeeId: 'EMP-DR-001', department: 'Medicine', facilityName: 'MediHub Main Hospital', specialty: 'Internal Medicine', licenseNumber: 'KMPDC-443210', shiftPattern: 'day', isActive: true },
+        { id: 'stf-002', name: 'Kelvin Mutua', email: 'kelvin@medihub.com', role: 'clinical_officer', employeeId: 'EMP-CO-001', department: 'Outpatient', facilityName: 'MediHub Main Hospital', specialty: 'General Clinical Practice', licenseNumber: 'COC-11842', shiftPattern: 'day', isActive: true },
+        { id: 'stf-003', name: 'Agnes Muthoni', email: 'agnes@medihub.com', role: 'nurse', employeeId: 'EMP-NR-001', department: 'Ward Operations', facilityName: 'MediHub Main Hospital', specialty: 'Inpatient Nursing', licenseNumber: 'NCK-22015', shiftPattern: 'day', isActive: true },
+        { id: 'stf-004', name: 'Grace Naliaka', email: 'grace@medihub.com', role: 'finance', employeeId: 'EMP-FN-001', department: 'Claims and Billing', facilityName: 'MediHub Main Hospital', specialty: 'Revenue Cycle', licenseNumber: '', shiftPattern: 'day', isActive: true }
       }
     };
 
@@ -985,6 +1119,29 @@
     const claimFilterResetEl = document.getElementById('claim-filter-reset');
     const claimFilterMessageEl = document.getElementById('claim-filter-message');
     const claimLifecycleListEl = document.getElementById('claim-lifecycle-list');
+    const staffDetailIdEl = document.getElementById('staff-detail-id');
+    const staffNameEl = document.getElementById('staff-name');
+    const staffEmailEl = document.getElementById('staff-email');
+    const staffPhoneEl = document.getElementById('staff-phone');
+    const staffRoleEl = document.getElementById('staff-role');
+    const staffFacilityNameEl = document.getElementById('staff-facility-name');
+    const staffDepartmentEl = document.getElementById('staff-department');
+    const staffSpecialtyEl = document.getElementById('staff-specialty');
+    const staffLicenseEl = document.getElementById('staff-license');
+    const staffEmployeeIdEl = document.getElementById('staff-employee-id');
+    const staffShiftEl = document.getElementById('staff-shift');
+    const staffActiveEl = document.getElementById('staff-active');
+    const staffCreateSubmitEl = document.getElementById('staff-create-submit');
+    const staffUpdateSubmitEl = document.getElementById('staff-update-submit');
+    const staffMessageEl = document.getElementById('staff-form-message');
+    const staffFilterRoleEl = document.getElementById('staff-filter-role');
+    const staffFilterDepartmentEl = document.getElementById('staff-filter-department');
+    const staffFilterShiftEl = document.getElementById('staff-filter-shift');
+    const staffFilterQueryEl = document.getElementById('staff-filter-query');
+    const staffFilterApplyEl = document.getElementById('staff-filter-apply');
+    const staffFilterResetEl = document.getElementById('staff-filter-reset');
+    const staffFilterMessageEl = document.getElementById('staff-filter-message');
+    const staffRosterListEl = document.getElementById('staff-roster-list');
 
     let currentHospitalData = JSON.parse(JSON.stringify(fallbackData));
 
@@ -1272,6 +1429,10 @@
       return currentHospitalData.facilities.find((item) => item.id === facilityId) || null;
     }
 
+    function fallbackStaffDetail(staffId) {
+      return currentHospitalData.staff.find((item) => item.id === staffId) || null;
+    }
+
     function renderClaimLifecycle(claims) {
       if (!claims.length) {
         claimLifecycleListEl.innerHTML = `<div class="empty-state">No claims match the current filters.</div>`;
@@ -1281,6 +1442,18 @@
       renderStack(claimLifecycleListEl, claims.map((claim) => ({
         title: `${claim.claimNumber || claim.id || 'Claim'} · ${claim.payer} · ${claim.status}`,
         description: `${claim.patientName || 'Patient unavailable'} · ${formatCurrency(claim.amount || 0)} · ${claim.stage || 'stage pending'} · Risk: ${claim.denialRisk || 'unknown'}`
+      })));
+    }
+
+    function renderStaffRoster(staff) {
+      if (!staff.length) {
+        staffRosterListEl.innerHTML = `<div class="empty-state">No staff members match the current filters.</div>`;
+        return;
+      }
+
+      renderStack(staffRosterListEl, staff.map((member) => ({
+        title: `${member.name} · ${String(member.role || '').replace(/_/g, ' ')} · ${member.shiftPattern || 'unscheduled'}`,
+        description: `${member.department || 'No department'} · ${member.facilityName || 'No facility'} · ${member.employeeId || 'No employee ID'} · ${member.isActive === false ? 'Inactive' : 'Active'}`
       })));
     }
 
@@ -1313,6 +1486,33 @@
       setFormMessage(facilityMessageEl, '');
     }
 
+    async function loadStaffDetail() {
+      const staffId = staffDetailIdEl.value;
+      if (!staffId) return;
+
+      let member = null;
+      try {
+        const data = await fetchJson(`/hospital/staff/${staffId}`);
+        member = data.staff;
+      } catch (error) {
+        member = fallbackStaffDetail(staffId);
+      }
+
+      if (!member) return;
+      staffNameEl.value = member.name || '';
+      staffEmailEl.value = member.email || '';
+      staffPhoneEl.value = member.phone || '';
+      staffRoleEl.value = member.role || 'doctor';
+      staffFacilityNameEl.value = member.facilityName || '';
+      staffDepartmentEl.value = member.department || '';
+      staffSpecialtyEl.value = member.specialty || '';
+      staffLicenseEl.value = member.licenseNumber || '';
+      staffEmployeeIdEl.value = member.employeeId || '';
+      staffShiftEl.value = member.shiftPattern || 'day';
+      staffActiveEl.value = member.isActive === false ? 'false' : 'true';
+      setFormMessage(staffMessageEl, '');
+    }
+
     function renderDashboard(data, liveConnected) {
       currentHospitalData = data;
       renderStats(data);
@@ -1326,6 +1526,10 @@
       populateClaimForms(data);
       loadFacilityDetail();
       renderClaimLifecycle(data.claims.claims || []);
+      fillSelect(staffDetailIdEl, data.staff || [], (member) => member.id, (member) => `${member.name} (${member.role})`, 'Choose staff member');
+      if (!staffDetailIdEl.value && data.staff?.[0]) staffDetailIdEl.value = data.staff[0].id;
+      loadStaffDetail();
+      renderStaffRoster(data.staff || []);
     }
 
     async function startDemoSession() {
@@ -1505,6 +1709,116 @@
       }
     }
 
+    async function createStaffMember() {
+      staffCreateSubmitEl.disabled = true;
+      setFormMessage(staffMessageEl, 'Creating staff member...');
+      try {
+        const data = await fetchAuthorizedJson('/hospital/staff', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: staffNameEl.value.trim(),
+            email: staffEmailEl.value.trim(),
+            phone: staffPhoneEl.value.trim(),
+            role: staffRoleEl.value,
+            employeeId: staffEmployeeIdEl.value.trim(),
+            department: staffDepartmentEl.value.trim(),
+            facilityName: staffFacilityNameEl.value.trim(),
+            specialty: staffSpecialtyEl.value.trim(),
+            licenseNumber: staffLicenseEl.value.trim(),
+            shiftPattern: staffShiftEl.value
+          })
+        });
+        setFormMessage(staffMessageEl, `Staff member ${data.staff.name} created successfully.`);
+        await loadExecutiveDashboard();
+        staffDetailIdEl.value = data.staff.id;
+        await loadStaffDetail();
+      } catch (error) {
+        setFormMessage(staffMessageEl, error.message || 'Failed to create staff member.', true);
+      } finally {
+        staffCreateSubmitEl.disabled = false;
+      }
+    }
+
+    async function updateStaffMember() {
+      staffUpdateSubmitEl.disabled = true;
+      setFormMessage(staffMessageEl, 'Updating staff member...');
+      try {
+        const staffId = staffDetailIdEl.value;
+        if (!staffId) throw new Error('Choose a staff member to update.');
+        const data = await fetchAuthorizedJson(`/hospital/staff/${staffId}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            name: staffNameEl.value.trim(),
+            email: staffEmailEl.value.trim(),
+            phone: staffPhoneEl.value.trim(),
+            role: staffRoleEl.value,
+            isActive: staffActiveEl.value === 'true',
+            employeeId: staffEmployeeIdEl.value.trim(),
+            department: staffDepartmentEl.value.trim(),
+            facilityName: staffFacilityNameEl.value.trim(),
+            specialty: staffSpecialtyEl.value.trim(),
+            licenseNumber: staffLicenseEl.value.trim(),
+            shiftPattern: staffShiftEl.value
+          })
+        });
+        setFormMessage(staffMessageEl, `Staff member ${data.staff.name} updated successfully.`);
+        await loadExecutiveDashboard();
+        staffDetailIdEl.value = data.staff.id;
+        await loadStaffDetail();
+      } catch (error) {
+        setFormMessage(staffMessageEl, error.message || 'Failed to update staff member.', true);
+      } finally {
+        staffUpdateSubmitEl.disabled = false;
+      }
+    }
+
+    async function applyStaffFilters() {
+      staffFilterApplyEl.disabled = true;
+      setFormMessage(staffFilterMessageEl, 'Applying staff filters...');
+      try {
+        const params = new URLSearchParams();
+        if (staffFilterRoleEl.value) params.set('role', staffFilterRoleEl.value);
+        if (staffFilterDepartmentEl.value.trim()) params.set('department', staffFilterDepartmentEl.value.trim());
+        if (staffFilterShiftEl.value) params.set('shiftPattern', staffFilterShiftEl.value);
+        if (staffFilterQueryEl.value.trim()) params.set('q', staffFilterQueryEl.value.trim());
+
+        let staffList = null;
+        try {
+          const data = await fetchJson(`/hospital/staff${params.toString() ? `?${params.toString()}` : ''}`);
+          staffList = data.staff || [];
+          setFormMessage(staffFilterMessageEl, `Showing ${staffList.length} staff members from the hospital API.`);
+        } catch (error) {
+          const term = staffFilterQueryEl.value.trim().toLowerCase();
+          staffList = (currentHospitalData.staff || []).filter((member) => {
+            const matchesRole = !staffFilterRoleEl.value || member.role === staffFilterRoleEl.value;
+            const matchesDepartment = !staffFilterDepartmentEl.value.trim() || String(member.department || '').toLowerCase().includes(staffFilterDepartmentEl.value.trim().toLowerCase());
+            const matchesShift = !staffFilterShiftEl.value || String(member.shiftPattern || '').toLowerCase() === staffFilterShiftEl.value.toLowerCase();
+            const matchesQuery = !term
+              || String(member.name || '').toLowerCase().includes(term)
+              || String(member.employeeId || '').toLowerCase().includes(term)
+              || String(member.specialty || '').toLowerCase().includes(term);
+            return matchesRole && matchesDepartment && matchesShift && matchesQuery;
+          });
+          setFormMessage(staffFilterMessageEl, `Backend filter unavailable. Showing ${staffList.length} locally filtered staff members.`);
+        }
+
+        renderStaffRoster(staffList);
+      } catch (error) {
+        setFormMessage(staffFilterMessageEl, error.message || 'Failed to apply staff filters.', true);
+      } finally {
+        staffFilterApplyEl.disabled = false;
+      }
+    }
+
+    function resetStaffFilters() {
+      staffFilterRoleEl.value = '';
+      staffFilterDepartmentEl.value = '';
+      staffFilterShiftEl.value = '';
+      staffFilterQueryEl.value = '';
+      renderStaffRoster(currentHospitalData.staff || []);
+      setFormMessage(staffFilterMessageEl, 'Staff filters cleared.');
+    }
+
     function resetClaimFilters() {
       claimFilterStatusEl.value = '';
       claimFilterRiskEl.value = '';
@@ -1519,14 +1833,15 @@
       setExecStatus('Unable to confirm backend yet.', true);
 
       try {
-        const [overviewRes, facilitiesRes, patientsRes, encountersRes, claimsRes, staffingRes, pharmacyRes] = await Promise.all([
+        const [overviewRes, facilitiesRes, patientsRes, encountersRes, claimsRes, staffingRes, pharmacyRes, staffRes] = await Promise.all([
           fetchJson('/hospital/overview'),
           fetchJson('/hospital/facilities'),
           fetchJson('/hospital/patients'),
           fetchJson('/hospital/encounters'),
           fetchJson('/hospital/claims'),
           fetchJson('/hospital/staffing'),
-          fetchJson('/hospital/pharmacy')
+          fetchJson('/hospital/pharmacy'),
+          fetchJson('/hospital/staff')
         ]);
 
         renderDashboard({
@@ -1539,7 +1854,8 @@
             claims: claimsRes.claims || fallbackData.claims.claims
           },
           staffing: staffingRes.staffing || fallbackData.staffing,
-          pharmacy: pharmacyRes.pharmacy || fallbackData.pharmacy
+          pharmacy: pharmacyRes.pharmacy || fallbackData.pharmacy,
+          staff: staffRes.staff || fallbackData.staff
         }, true);
 
         setExecStatus('Live hospital API connected. Occupancy, facility, claims, staffing, and pharmacy signals are now being read from the backend.');
@@ -1557,6 +1873,11 @@
     facilityUpdateSubmitEl.addEventListener('click', updateFacility);
     claimFilterApplyEl.addEventListener('click', applyClaimFilters);
     claimFilterResetEl.addEventListener('click', resetClaimFilters);
+    staffDetailIdEl.addEventListener('change', loadStaffDetail);
+    staffCreateSubmitEl.addEventListener('click', createStaffMember);
+    staffUpdateSubmitEl.addEventListener('click', updateStaffMember);
+    staffFilterApplyEl.addEventListener('click', applyStaffFilters);
+    staffFilterResetEl.addEventListener('click', resetStaffFilters);
     syncSessionUi();
     loadExecutiveDashboard();
   </script>

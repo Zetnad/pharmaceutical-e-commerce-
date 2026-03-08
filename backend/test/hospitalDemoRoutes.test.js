@@ -149,6 +149,51 @@ test('GET /api/hospital/encounters/:id returns encounter detail payload', async 
   expect(detailRes.body.encounter).toHaveProperty('triageNotes');
 });
 
+test('POST /api/hospital/staff requires admin role and creates staff member', async () => {
+  const financeToken = demoAuth.issue('finance.staff@demo.local', 60, { role: 'finance', name: 'Finance Staff' }).token;
+  const deniedRes = await request(app)
+    .post('/api/hospital/staff')
+    .set('Authorization', `Bearer ${financeToken}`)
+    .send({ name: 'Denied Staff', email: 'denied@demo.local', role: 'nurse' });
+  expect(deniedRes.statusCode).toBe(403);
+
+  const adminToken = demoAuth.issue('admin.staff@demo.local', 60, { role: 'admin', name: 'Staff Admin' }).token;
+  const okRes = await request(app)
+    .post('/api/hospital/staff')
+    .set('Authorization', `Bearer ${adminToken}`)
+    .send({
+      name: 'Executive Nurse',
+      email: 'executive.nurse@demo.local',
+      role: 'nurse',
+      department: 'Ward Operations',
+      facilityId: 'fac-main',
+      shiftPattern: 'day'
+    });
+  expect(okRes.statusCode).toBe(201);
+  expect(okRes.body.success).toBe(true);
+  expect(okRes.body.staff.role).toBe('nurse');
+});
+
+test('GET /api/hospital/staff supports search filtering', async () => {
+  const res = await request(app).get('/api/hospital/staff').query({ q: 'Kelvin' });
+  expect(res.statusCode).toBe(200);
+  expect(res.body.success).toBe(true);
+  expect(res.body.staff.some((member) => /kelvin/i.test(member.name))).toBe(true);
+});
+
+test('PUT /api/hospital/staff/:id updates a staff member', async () => {
+  const listRes = await request(app).get('/api/hospital/staff');
+  const staffId = listRes.body.staff[0].id;
+  const adminToken = demoAuth.issue('admin.staff.update@demo.local', 60, { role: 'admin', name: 'Update Admin' }).token;
+  const res = await request(app)
+    .put(`/api/hospital/staff/${staffId}`)
+    .set('Authorization', `Bearer ${adminToken}`)
+    .send({ department: 'Executive Medicine', shiftPattern: 'night', isActive: false });
+  expect(res.statusCode).toBe(200);
+  expect(res.body.success).toBe(true);
+  expect(res.body.staff.department).toBe('Executive Medicine');
+});
+
 test('GET /api/hospital/claims returns claims summary', async () => {
   const res = await request(app).get('/api/hospital/claims');
   expect(res.statusCode).toBe(200);
