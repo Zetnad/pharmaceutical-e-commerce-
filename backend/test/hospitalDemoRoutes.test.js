@@ -147,6 +147,7 @@ test('GET /api/hospital/encounters/:id returns encounter detail payload', async 
   expect(detailRes.body.success).toBe(true);
   expect(detailRes.body.encounter.id).toBe(encounterId);
   expect(detailRes.body.encounter).toHaveProperty('triageNotes');
+  expect(detailRes.body.encounter).toHaveProperty('admissionChecklist');
 });
 
 test('POST /api/hospital/staff requires admin role and creates staff member', async () => {
@@ -192,6 +193,43 @@ test('PUT /api/hospital/staff/:id updates a staff member', async () => {
   expect(res.statusCode).toBe(200);
   expect(res.body.success).toBe(true);
   expect(res.body.staff.department).toBe('Executive Medicine');
+});
+
+test('encounter notes, tasks, and checklist updates work with staff write auth', async () => {
+  const roleToken = demoAuth.issue('co.timeline@demo.local', 60, { role: 'clinical_officer', name: 'Timeline CO' }).token;
+  const encounterRes = await request(app).get('/api/hospital/encounters');
+  const encounterId = encounterRes.body.encounters[0].id;
+
+  const noteRes = await request(app)
+    .post(`/api/hospital/encounters/${encounterId}/notes`)
+    .set('Authorization', `Bearer ${roleToken}`)
+    .send({ noteType: 'progress', content: 'Patient reviewed and escalation documented.' });
+  expect(noteRes.statusCode).toBe(201);
+  expect(noteRes.body.success).toBe(true);
+  expect(Array.isArray(noteRes.body.encounter.notesTimeline)).toBe(true);
+
+  const taskRes = await request(app)
+    .post(`/api/hospital/encounters/${encounterId}/tasks`)
+    .set('Authorization', `Bearer ${roleToken}`)
+    .send({ title: 'Repeat vitals in 30 minutes', ownerRole: 'nurse', dueLabel: '30 min' });
+  expect(taskRes.statusCode).toBe(201);
+  expect(taskRes.body.success).toBe(true);
+  expect(Array.isArray(taskRes.body.encounter.careTasks)).toBe(true);
+  const taskId = taskRes.body.encounter.careTasks[taskRes.body.encounter.careTasks.length - 1].id;
+
+  const taskUpdateRes = await request(app)
+    .put(`/api/hospital/encounters/${encounterId}/tasks/${taskId}`)
+    .set('Authorization', `Bearer ${roleToken}`)
+    .send({ status: 'completed' });
+  expect(taskUpdateRes.statusCode).toBe(200);
+  expect(taskUpdateRes.body.success).toBe(true);
+
+  const checklistRes = await request(app)
+    .put(`/api/hospital/encounters/${encounterId}/checklists/admission/identity-verified`)
+    .set('Authorization', `Bearer ${roleToken}`)
+    .send({ completed: true });
+  expect(checklistRes.statusCode).toBe(200);
+  expect(checklistRes.body.success).toBe(true);
 });
 
 test('GET /api/hospital/claims returns claims summary', async () => {

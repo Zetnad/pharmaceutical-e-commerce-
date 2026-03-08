@@ -1,5 +1,41 @@
 const mongoose = require('mongoose');
 
+const noteSchema = new mongoose.Schema({
+  authorName: { type: String, trim: true, default: 'Unknown Staff' },
+  authorRole: {
+    type: String,
+    enum: ['doctor', 'nurse', 'clinical_officer', 'pharmacist', 'lab_technologist', 'radiographer', 'finance', 'admin', 'other'],
+    default: 'other'
+  },
+  noteType: {
+    type: String,
+    enum: ['triage', 'progress', 'nursing', 'handover', 'discharge', 'coordination'],
+    default: 'progress'
+  },
+  content: { type: String, required: true, trim: true }
+}, { timestamps: true });
+
+const taskSchema = new mongoose.Schema({
+  title: { type: String, required: true, trim: true },
+  ownerRole: {
+    type: String,
+    enum: ['doctor', 'nurse', 'clinical_officer', 'pharmacist', 'lab_technologist', 'radiographer', 'finance', 'admin', 'other'],
+    default: 'other'
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'in_progress', 'completed'],
+    default: 'pending'
+  },
+  dueLabel: { type: String, trim: true, default: '' }
+}, { timestamps: true });
+
+const checklistItemSchema = new mongoose.Schema({
+  key: { type: String, required: true, trim: true },
+  title: { type: String, required: true, trim: true },
+  completed: { type: Boolean, default: false }
+}, { _id: false });
+
 const encounterSchema = new mongoose.Schema({
   patient: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
   facility: { type: mongoose.Schema.Types.ObjectId, ref: 'Facility', required: true },
@@ -29,6 +65,10 @@ const encounterSchema = new mongoose.Schema({
     enum: ['self-pay', 'eligibility-confirmed', 'preauth-pending', 'preauth-approved', 'claim-submitted', 'claim-settled'],
     default: 'self-pay'
   },
+  notesTimeline: [noteSchema],
+  careTasks: [taskSchema],
+  admissionChecklist: [checklistItemSchema],
+  dischargeChecklist: [checklistItemSchema],
   admittedAt: Date,
   dischargedAt: Date
 }, { timestamps: true });

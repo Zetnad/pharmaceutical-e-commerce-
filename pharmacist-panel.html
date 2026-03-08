@@ -905,6 +905,68 @@
         <div class="checklist" id="encounter-detail-viewer"></div>
       </article>
     </section>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <article class="card">
+        <span class="label amber">Encounter timeline</span>
+        <h2>Progress notes and handover trail</h2>
+        <p class="subtext">Add structured encounter notes tied to the selected encounter, then review the timeline below.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="encounter-note-type">Note type</label>
+            <select id="encounter-note-type">
+              <option value="triage">Triage</option>
+              <option value="progress">Progress</option>
+              <option value="nursing">Nursing</option>
+              <option value="handover">Handover</option>
+              <option value="discharge">Discharge</option>
+              <option value="coordination">Coordination</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="encounter-note-content">Note content</label>
+            <textarea id="encounter-note-content">Enter a concise clinical or operational note for the selected encounter.</textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="encounter-note-submit" type="button">Add note</button>
+          </div>
+          <div class="form-message" id="encounter-note-message"></div>
+          <div class="checklist" id="encounter-notes-list"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label blue">Care tasks and checklists</span>
+        <h2>Admission, discharge, and care task control</h2>
+        <p class="subtext">Track the current encounter’s care tasks and toggle checklist completion without leaving the staff workspace.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="encounter-task-title">Task title</label>
+            <input id="encounter-task-title" type="text" placeholder="e.g. Repeat vitals in 30 minutes">
+          </div>
+          <div class="field">
+            <label for="encounter-task-owner">Owner role</label>
+            <select id="encounter-task-owner">
+              <option value="nurse">Nurse</option>
+              <option value="clinical_officer">Clinical Officer</option>
+              <option value="doctor">Doctor</option>
+              <option value="pharmacist">Pharmacist</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="encounter-task-due">Due label</label>
+            <input id="encounter-task-due" type="text" placeholder="e.g. 30 min / before discharge">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="encounter-task-submit" type="button">Add task</button>
+          </div>
+          <div class="form-message" id="encounter-task-message"></div>
+          <div class="checklist" id="encounter-tasks-list"></div>
+          <div class="checklist" id="admission-checklist-list"></div>
+          <div class="checklist" id="discharge-checklist-list"></div>
+        </div>
+      </article>
+    </section>
   </main>
 
   <script>
@@ -1027,6 +1089,19 @@
     const patientDetailSubmitEl = document.getElementById('patient-detail-submit');
     const patientDetailMessageEl = document.getElementById('patient-detail-message');
     const encounterDetailViewerEl = document.getElementById('encounter-detail-viewer');
+    const encounterNoteTypeEl = document.getElementById('encounter-note-type');
+    const encounterNoteContentEl = document.getElementById('encounter-note-content');
+    const encounterNoteSubmitEl = document.getElementById('encounter-note-submit');
+    const encounterNoteMessageEl = document.getElementById('encounter-note-message');
+    const encounterNotesListEl = document.getElementById('encounter-notes-list');
+    const encounterTaskTitleEl = document.getElementById('encounter-task-title');
+    const encounterTaskOwnerEl = document.getElementById('encounter-task-owner');
+    const encounterTaskDueEl = document.getElementById('encounter-task-due');
+    const encounterTaskSubmitEl = document.getElementById('encounter-task-submit');
+    const encounterTaskMessageEl = document.getElementById('encounter-task-message');
+    const encounterTasksListEl = document.getElementById('encounter-tasks-list');
+    const admissionChecklistListEl = document.getElementById('admission-checklist-list');
+    const dischargeChecklistListEl = document.getElementById('discharge-checklist-list');
 
     let currentHospitalData = JSON.parse(JSON.stringify(fallbackData));
 
@@ -1194,6 +1269,53 @@
       ]);
     }
 
+    function renderEncounterWorkflow(encounter) {
+      if (!encounter) {
+        encounterNotesListEl.innerHTML = `<div class="empty-state">Choose an encounter to view the note timeline.</div>`;
+        encounterTasksListEl.innerHTML = `<div class="empty-state">Choose an encounter to review care tasks.</div>`;
+        admissionChecklistListEl.innerHTML = `<div class="empty-state">Choose an encounter to review the admission checklist.</div>`;
+        dischargeChecklistListEl.innerHTML = `<div class="empty-state">Choose an encounter to review the discharge checklist.</div>`;
+        return;
+      }
+
+      const notes = encounter.notesTimeline || [];
+      encounterNotesListEl.innerHTML = notes.length ? notes.map((note) => `
+        <div class="check">
+          <strong>${escapeHtml(note.noteType || 'progress')} · ${escapeHtml(note.authorName || 'Unknown Staff')}</strong>
+          <p>${escapeHtml(note.content || '')}</p>
+        </div>
+      `).join('') : `<div class="empty-state">No notes recorded yet for this encounter.</div>`;
+
+      const tasks = encounter.careTasks || [];
+      encounterTasksListEl.innerHTML = tasks.length ? tasks.map((task) => `
+        <div class="check">
+          <strong>${escapeHtml(task.title)} · ${escapeHtml(task.status || 'pending')}</strong>
+          <p>${escapeHtml(task.ownerRole || 'other')} · ${escapeHtml(task.dueLabel || 'No due label')}</p>
+          <div class="btn-row" style="margin-top: 0.6rem;">
+            ${task.status !== 'completed' ? `<button class="btn btn-secondary encounter-task-action" data-task-id="${escapeHtml(task.id)}" data-task-status="completed" type="button">Mark completed</button>` : ''}
+            ${task.status !== 'in_progress' ? `<button class="btn btn-secondary encounter-task-action" data-task-id="${escapeHtml(task.id)}" data-task-status="in_progress" type="button">Mark in progress</button>` : ''}
+          </div>
+        </div>
+      `).join('') : `<div class="empty-state">No care tasks recorded yet for this encounter.</div>`;
+
+      const renderChecklistBlock = (element, title, list, listType) => {
+        element.innerHTML = `<div class="check"><strong>${escapeHtml(title)}</strong><p>Toggle completion for the selected encounter.</p></div>` + (list || []).map((item) => `
+          <div class="check">
+            <strong>${escapeHtml(item.title)}</strong>
+            <p>${item.completed ? 'Completed' : 'Pending completion'}</p>
+            <div class="btn-row" style="margin-top: 0.6rem;">
+              <button class="btn btn-secondary encounter-checklist-action" data-list-type="${escapeHtml(listType)}" data-item-key="${escapeHtml(item.key)}" data-completed="${item.completed ? 'false' : 'true'}" type="button">
+                ${item.completed ? 'Mark pending' : 'Mark complete'}
+              </button>
+            </div>
+          </div>
+        `).join('');
+      };
+
+      renderChecklistBlock(admissionChecklistListEl, 'Admission checklist', encounter.admissionChecklist, 'admission');
+      renderChecklistBlock(dischargeChecklistListEl, 'Discharge checklist', encounter.dischargeChecklist, 'discharge');
+    }
+
     async function loadPatientDetail() {
       const patientId = patientDetailIdEl.value;
       if (!patientId) return;
@@ -1221,6 +1343,7 @@
       const encounterId = encounterUpdateIdEl.value;
       if (!encounterId) {
         renderEncounterViewer(null);
+        renderEncounterWorkflow(null);
         return;
       }
 
@@ -1240,6 +1363,7 @@
       encounterUpdateTriageEl.value = encounter.triageNotes || '';
       encounterUpdateDiagnosisEl.value = encounter.diagnosisSummary || '';
       renderEncounterViewer(encounter);
+      renderEncounterWorkflow(encounter);
       setFormMessage(encounterUpdateMessageEl, '');
     }
 
@@ -1552,6 +1676,92 @@
       }
     }
 
+    async function addEncounterNote() {
+      encounterNoteSubmitEl.disabled = true;
+      setFormMessage(encounterNoteMessageEl, 'Adding note...');
+      try {
+        const encounterId = encounterUpdateIdEl.value;
+        if (!encounterId) throw new Error('Choose an encounter before adding a note.');
+        await fetchAuthorizedJson(`/hospital/encounters/${encounterId}/notes`, {
+          method: 'POST',
+          body: JSON.stringify({
+            noteType: encounterNoteTypeEl.value,
+            content: encounterNoteContentEl.value.trim()
+          })
+        });
+        setFormMessage(encounterNoteMessageEl, 'Encounter note added successfully.');
+        encounterNoteContentEl.value = '';
+        await loadEncounterDetail();
+      } catch (error) {
+        setFormMessage(encounterNoteMessageEl, error.message || 'Failed to add encounter note.', true);
+      } finally {
+        encounterNoteSubmitEl.disabled = false;
+      }
+    }
+
+    async function addEncounterTask() {
+      encounterTaskSubmitEl.disabled = true;
+      setFormMessage(encounterTaskMessageEl, 'Adding task...');
+      try {
+        const encounterId = encounterUpdateIdEl.value;
+        if (!encounterId) throw new Error('Choose an encounter before adding a task.');
+        await fetchAuthorizedJson(`/hospital/encounters/${encounterId}/tasks`, {
+          method: 'POST',
+          body: JSON.stringify({
+            title: encounterTaskTitleEl.value.trim(),
+            ownerRole: encounterTaskOwnerEl.value,
+            dueLabel: encounterTaskDueEl.value.trim()
+          })
+        });
+        setFormMessage(encounterTaskMessageEl, 'Encounter task added successfully.');
+        encounterTaskTitleEl.value = '';
+        encounterTaskDueEl.value = '';
+        await loadEncounterDetail();
+      } catch (error) {
+        setFormMessage(encounterTaskMessageEl, error.message || 'Failed to add encounter task.', true);
+      } finally {
+        encounterTaskSubmitEl.disabled = false;
+      }
+    }
+
+    async function handleTaskAction(event) {
+      const button = event.target.closest('.encounter-task-action');
+      if (!button) return;
+      const encounterId = encounterUpdateIdEl.value;
+      if (!encounterId) return;
+      button.disabled = true;
+      try {
+        await fetchAuthorizedJson(`/hospital/encounters/${encounterId}/tasks/${button.dataset.taskId}`, {
+          method: 'PUT',
+          body: JSON.stringify({ status: button.dataset.taskStatus })
+        });
+        await loadEncounterDetail();
+      } catch (error) {
+        setFormMessage(encounterTaskMessageEl, error.message || 'Failed to update task status.', true);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function handleChecklistAction(event) {
+      const button = event.target.closest('.encounter-checklist-action');
+      if (!button) return;
+      const encounterId = encounterUpdateIdEl.value;
+      if (!encounterId) return;
+      button.disabled = true;
+      try {
+        await fetchAuthorizedJson(`/hospital/encounters/${encounterId}/checklists/${button.dataset.listType}/${button.dataset.itemKey}`, {
+          method: 'PUT',
+          body: JSON.stringify({ completed: button.dataset.completed === 'true' })
+        });
+        await loadEncounterDetail();
+      } catch (error) {
+        setFormMessage(encounterTaskMessageEl, error.message || 'Failed to update checklist item.', true);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
     async function loadDashboard() {
       renderDashboard(fallbackData);
       setStaffStatus('Unable to confirm backend yet.', true);
@@ -1594,6 +1804,11 @@
     encounterSubmitEl.addEventListener('click', submitEncounter);
     encounterUpdateIdEl.addEventListener('change', loadEncounterDetail);
     encounterUpdateSubmitEl.addEventListener('click', updateEncounter);
+    encounterNoteSubmitEl.addEventListener('click', addEncounterNote);
+    encounterTaskSubmitEl.addEventListener('click', addEncounterTask);
+    encounterTasksListEl.addEventListener('click', handleTaskAction);
+    admissionChecklistListEl.addEventListener('click', handleChecklistAction);
+    dischargeChecklistListEl.addEventListener('click', handleChecklistAction);
     syncSessionUi();
     loadDashboard();
   </script>

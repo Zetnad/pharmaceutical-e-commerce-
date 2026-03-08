@@ -37,6 +37,18 @@ const parseArrayField = (value) => {
   return [];
 };
 
+const defaultAdmissionChecklist = () => ([
+  { key: 'identity-verified', title: 'Verify patient identity', completed: false },
+  { key: 'allergies-reviewed', title: 'Review allergies and alerts', completed: false },
+  { key: 'initial-vitals', title: 'Record initial vitals', completed: false }
+]);
+
+const defaultDischargeChecklist = () => ([
+  { key: 'summary-prepared', title: 'Prepare discharge summary', completed: false },
+  { key: 'medication-counseling', title: 'Complete medication counseling', completed: false },
+  { key: 'followup-booked', title: 'Arrange follow-up plan', completed: false }
+]);
+
 const serializePatient = (patient) => ({
   id: patient._id,
   mrn: patient.mrn,
@@ -138,6 +150,25 @@ const serializeEncounterDetail = (encounter) => ({
   patientMrn: encounter.patient?.mrn || null,
   triageNotes: encounter.triageNotes || '',
   diagnosisSummary: encounter.diagnosisSummary || '',
+  notesTimeline: (encounter.notesTimeline || []).map((note) => ({
+    id: note._id,
+    authorName: note.authorName,
+    authorRole: note.authorRole,
+    noteType: note.noteType,
+    content: note.content,
+    createdAt: note.createdAt
+  })),
+  careTasks: (encounter.careTasks || []).map((task) => ({
+    id: task._id,
+    title: task.title,
+    ownerRole: task.ownerRole,
+    status: task.status,
+    dueLabel: task.dueLabel,
+    createdAt: task.createdAt,
+    updatedAt: task.updatedAt
+  })),
+  admissionChecklist: encounter.admissionChecklist || [],
+  dischargeChecklist: encounter.dischargeChecklist || [],
   admittedAt: encounter.admittedAt || null,
   dischargedAt: encounter.dischargedAt || null,
   createdAt: encounter.createdAt,
@@ -561,7 +592,11 @@ exports.createEncounter = asyncHandler(async (req, res) => {
     status: status || 'registered',
     nextAction,
     claimStatus: claimStatus || 'self-pay',
-    triageNotes
+    triageNotes,
+    notesTimeline: [],
+    careTasks: [],
+    admissionChecklist: defaultAdmissionChecklist(),
+    dischargeChecklist: defaultDischargeChecklist()
   });
 
   if (patient.currentStatus === 'registered') {
@@ -627,6 +662,96 @@ exports.updateEncounter = asyncHandler(async (req, res) => {
   await encounter.populate('facility', 'name code');
   await encounter.populate('assignedTo', 'name role');
   sendSuccess(res, 200, 'Encounter updated successfully.', { encounter: serializeEncounter(encounter) });
+});
+
+// @route  POST /api/hospital/encounters/:id/notes
+exports.addEncounterNote = asyncHandler(async (req, res) => {
+  const encounter = await Encounter.findById(req.params.id)
+    .populate('patient', 'mrn firstName lastName')
+    .populate('facility', 'name code')
+    .populate('assignedTo', 'name role');
+  if (!encounter) return sendError(res, 404, 'Encounter not found.');
+
+  const { noteType, content } = req.body || {};
+  if (!content || !String(content).trim()) return sendError(res, 400, 'Note content is required.');
+
+  encounter.notesTimeline.push({
+    authorName: req.user?.name || 'Unknown Staff',
+    authorRole: req.user?.role || 'other',
+    noteType: noteType || 'progress',
+    content: String(content).trim()
+  });
+  await encounter.save();
+
+  sendSuccess(res, 201, 'Encounter note added successfully.', {
+    encounter: serializeEncounterDetail(encounter)
+  });
+});
+
+// @route  POST /api/hospital/encounters/:id/tasks
+exports.addEncounterTask = asyncHandler(async (req, res) => {
+  const encounter = await Encounter.findById(req.params.id)
+    .populate('patient', 'mrn firstName lastName')
+    .populate('facility', 'name code')
+    .populate('assignedTo', 'name role');
+  if (!encounter) return sendError(res, 404, 'Encounter not found.');
+
+  const { title, ownerRole, dueLabel } = req.body || {};
+  if (!title || !String(title).trim()) return sendError(res, 400, 'Task title is required.');
+
+  encounter.careTasks.push({
+    title: String(title).trim(),
+    ownerRole: ownerRole || 'other',
+    dueLabel: dueLabel || ''
+  });
+  await encounter.save();
+
+  sendSuccess(res, 201, 'Encounter task added successfully.', {
+    encounter: serializeEncounterDetail(encounter)
+  });
+});
+
+// @route  PUT /api/hospital/encounters/:id/tasks/:taskId
+exports.updateEncounterTask = asyncHandler(async (req, res) => {
+  const encounter = await Encounter.findById(req.params.id)
+    .populate('patient', 'mrn firstName lastName')
+    .populate('facility', 'name code')
+    .populate('assignedTo', 'name role');
+  if (!encounter) return sendError(res, 404, 'Encounter not found.');
+
+  const task = encounter.careTasks.id(req.params.taskId);
+  if (!task) return sendError(res, 404, 'Encounter task not found.');
+
+  const { title, ownerRole, status, dueLabel } = req.body || {};
+  if (title !== undefined) task.title = String(title).trim();
+  if (ownerRole !== undefined) task.ownerRole = ownerRole;
+  if (status !== undefined) task.status = status;
+  if (dueLabel !== undefined) task.dueLabel = dueLabel;
+  await encounter.save();
+
+  sendSuccess(res, 200, 'Encounter task updated successfully.', {
+    encounter: serializeEncounterDetail(encounter)
+  });
+});
+
+// @route  PUT /api/hospital/encounters/:id/checklists/:listType/:itemKey
+exports.updateEncounterChecklistItem = asyncHandler(async (req, res) => {
+  const encounter = await Encounter.findById(req.params.id)
+    .populate('patient', 'mrn firstName lastName')
+    .populate('facility', 'name code')
+    .populate('assignedTo', 'name role');
+  if (!encounter) return sendError(res, 404, 'Encounter not found.');
+
+  const listType = req.params.listType === 'discharge' ? 'dischargeChecklist' : 'admissionChecklist';
+  const item = (encounter[listType] || []).find((entry) => entry.key === req.params.itemKey);
+  if (!item) return sendError(res, 404, 'Checklist item not found.');
+
+  item.completed = Boolean(req.body?.completed);
+  await encounter.save();
+
+  sendSuccess(res, 200, 'Encounter checklist item updated successfully.', {
+    encounter: serializeEncounterDetail(encounter)
+  });
 });
 
 // @route  GET /api/hospital/staff

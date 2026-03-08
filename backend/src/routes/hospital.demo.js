@@ -317,6 +317,18 @@ const nextClaimNumber = () => {
   return `CLM-${highest + 1}`;
 };
 
+const defaultAdmissionChecklist = () => ([
+  { key: 'identity-verified', title: 'Verify patient identity', completed: false },
+  { key: 'allergies-reviewed', title: 'Review allergies and alerts', completed: false },
+  { key: 'initial-vitals', title: 'Record initial vitals', completed: false }
+]);
+
+const defaultDischargeChecklist = () => ([
+  { key: 'summary-prepared', title: 'Prepare discharge summary', completed: false },
+  { key: 'medication-counseling', title: 'Complete medication counseling', completed: false },
+  { key: 'followup-booked', title: 'Arrange follow-up plan', completed: false }
+]);
+
 router.get('/overview', (req, res) => {
   return res.json({
     success: true,
@@ -576,6 +588,10 @@ router.get('/encounters/:id', (req, res) => {
       patientMrn: patient?.mrn || null,
       triageNotes: encounter.triageNotes || '',
       diagnosisSummary: encounter.diagnosisSummary || '',
+      notesTimeline: encounter.notesTimeline || [],
+      careTasks: encounter.careTasks || [],
+      admissionChecklist: encounter.admissionChecklist || defaultAdmissionChecklist(),
+      dischargeChecklist: encounter.dischargeChecklist || defaultDischargeChecklist(),
       admittedAt: encounter.admittedAt || null,
       dischargedAt: encounter.dischargedAt || null
     }
@@ -604,7 +620,11 @@ router.post('/encounters', protectHospitalWrite, authorizeHospitalRoles('admin',
     nextAction: nextAction || 'Clinical review pending',
     claimStatus: claimStatus || 'self-pay',
     triageNotes: req.body.triageNotes || '',
-    diagnosisSummary: req.body.diagnosisSummary || ''
+    diagnosisSummary: req.body.diagnosisSummary || '',
+    notesTimeline: [],
+    careTasks: [],
+    admissionChecklist: defaultAdmissionChecklist(),
+    dischargeChecklist: defaultDischargeChecklist()
   };
   encounters.unshift(encounter);
   patient.currentStatus = ['admitted'].includes(encounter.status) ? 'admitted' : 'under-review';
@@ -635,6 +655,67 @@ router.put('/encounters/:id', protectHospitalWrite, authorizeHospitalRoles('admi
   }
 
   return res.json({ success: true, message: 'Encounter updated successfully.', encounter });
+});
+
+router.post('/encounters/:id/notes', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
+  const encounter = encounters.find((item) => item.id === req.params.id);
+  if (!encounter) return res.status(404).json({ success: false, message: 'Encounter not found.' });
+  if (!req.body?.content || !String(req.body.content).trim()) {
+    return res.status(400).json({ success: false, message: 'Note content is required.' });
+  }
+  if (!encounter.notesTimeline) encounter.notesTimeline = [];
+  encounter.notesTimeline.unshift({
+    id: `note-${Date.now()}`,
+    authorName: req.user?.name || 'Unknown Staff',
+    authorRole: req.user?.role || 'other',
+    noteType: req.body.noteType || 'progress',
+    content: String(req.body.content).trim(),
+    createdAt: new Date().toISOString()
+  });
+  return res.status(201).json({ success: true, message: 'Encounter note added successfully.', encounter });
+});
+
+router.post('/encounters/:id/tasks', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
+  const encounter = encounters.find((item) => item.id === req.params.id);
+  if (!encounter) return res.status(404).json({ success: false, message: 'Encounter not found.' });
+  if (!req.body?.title || !String(req.body.title).trim()) {
+    return res.status(400).json({ success: false, message: 'Task title is required.' });
+  }
+  if (!encounter.careTasks) encounter.careTasks = [];
+  encounter.careTasks.push({
+    id: `task-${Date.now()}`,
+    title: String(req.body.title).trim(),
+    ownerRole: req.body.ownerRole || 'other',
+    status: req.body.status || 'pending',
+    dueLabel: req.body.dueLabel || '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+  return res.status(201).json({ success: true, message: 'Encounter task added successfully.', encounter });
+});
+
+router.put('/encounters/:id/tasks/:taskId', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
+  const encounter = encounters.find((item) => item.id === req.params.id);
+  if (!encounter) return res.status(404).json({ success: false, message: 'Encounter not found.' });
+  const task = (encounter.careTasks || []).find((item) => item.id === req.params.taskId);
+  if (!task) return res.status(404).json({ success: false, message: 'Encounter task not found.' });
+  if (req.body.title !== undefined) task.title = String(req.body.title).trim();
+  if (req.body.ownerRole !== undefined) task.ownerRole = req.body.ownerRole;
+  if (req.body.status !== undefined) task.status = req.body.status;
+  if (req.body.dueLabel !== undefined) task.dueLabel = req.body.dueLabel;
+  task.updatedAt = new Date().toISOString();
+  return res.json({ success: true, message: 'Encounter task updated successfully.', encounter });
+});
+
+router.put('/encounters/:id/checklists/:listType/:itemKey', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
+  const encounter = encounters.find((item) => item.id === req.params.id);
+  if (!encounter) return res.status(404).json({ success: false, message: 'Encounter not found.' });
+  const listKey = req.params.listType === 'discharge' ? 'dischargeChecklist' : 'admissionChecklist';
+  if (!encounter[listKey]) encounter[listKey] = listKey === 'dischargeChecklist' ? defaultDischargeChecklist() : defaultAdmissionChecklist();
+  const item = encounter[listKey].find((entry) => entry.key === req.params.itemKey);
+  if (!item) return res.status(404).json({ success: false, message: 'Checklist item not found.' });
+  item.completed = Boolean(req.body?.completed);
+  return res.json({ success: true, message: 'Encounter checklist item updated successfully.', encounter });
 });
 
 router.get('/staff', (req, res) => {
