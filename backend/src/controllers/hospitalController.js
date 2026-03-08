@@ -76,6 +76,32 @@ const serializeClaim = (claim) => ({
   facilityName: claim.facility?.name || null
 });
 
+const serializePatientDetail = (patient) => ({
+  ...serializePatient(patient),
+  firstName: patient.firstName,
+  lastName: patient.lastName,
+  email: patient.email || null,
+  nationalId: patient.nationalId || null,
+  dateOfBirth: patient.dateOfBirth || null,
+  bloodGroup: patient.bloodGroup || null,
+  insuranceProfiles: patient.insuranceProfiles || [],
+  emergencyContact: patient.emergencyContact || null,
+  address: patient.address || {},
+  createdAt: patient.createdAt,
+  updatedAt: patient.updatedAt
+});
+
+const serializeEncounterDetail = (encounter) => ({
+  ...serializeEncounter(encounter),
+  patientMrn: encounter.patient?.mrn || null,
+  triageNotes: encounter.triageNotes || '',
+  diagnosisSummary: encounter.diagnosisSummary || '',
+  admittedAt: encounter.admittedAt || null,
+  dischargedAt: encounter.dischargedAt || null,
+  createdAt: encounter.createdAt,
+  updatedAt: encounter.updatedAt
+});
+
 // @route  GET /api/hospital/overview
 exports.getOverview = asyncHandler(async (req, res) => {
   const [facilities, totalPatients, totalClaims, totalStaff, recentEncounters] = await Promise.all([
@@ -208,6 +234,13 @@ exports.getPatients = asyncHandler(async (req, res) => {
     total: patients.length,
     patients: patients.map(serializePatient)
   });
+});
+
+// @route  GET /api/hospital/patients/:id
+exports.getPatient = asyncHandler(async (req, res) => {
+  const patient = await Patient.findById(req.params.id).populate('facility', 'name code type');
+  if (!patient) return sendError(res, 404, 'Patient not found.');
+  sendSuccess(res, 200, 'Hospital patient fetched.', { patient: serializePatientDetail(patient) });
 });
 
 // @route  POST /api/hospital/patients
@@ -355,6 +388,16 @@ exports.getEncounters = asyncHandler(async (req, res) => {
     total: encounters.length,
     encounters: encounters.map(serializeEncounter)
   });
+});
+
+// @route  GET /api/hospital/encounters/:id
+exports.getEncounter = asyncHandler(async (req, res) => {
+  const encounter = await Encounter.findById(req.params.id)
+    .populate('patient', 'mrn firstName lastName')
+    .populate('facility', 'name code')
+    .populate('assignedTo', 'name role');
+  if (!encounter) return sendError(res, 404, 'Encounter not found.');
+  sendSuccess(res, 200, 'Hospital encounter fetched.', { encounter: serializeEncounterDetail(encounter) });
 });
 
 // @route  POST /api/hospital/encounters

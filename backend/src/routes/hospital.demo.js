@@ -368,6 +368,27 @@ router.get('/patients', (req, res) => {
   });
 });
 
+router.get('/patients/:id', (req, res) => {
+  const patient = patients.find((item) => item.id === req.params.id);
+  if (!patient) return res.status(404).json({ success: false, message: 'Patient not found.' });
+  return res.json({
+    success: true,
+    message: 'Hospital patient fetched.',
+    patient: {
+      ...patient,
+      firstName: patient.name.split(' ')[0] || patient.name,
+      lastName: patient.name.split(' ').slice(1).join(' ') || '',
+      email: patient.email || null,
+      nationalId: patient.nationalId || null,
+      dateOfBirth: patient.dateOfBirth || null,
+      bloodGroup: patient.bloodGroup || null,
+      insuranceProfiles: patient.insurance ? [{ ...patient.insurance, isPrimary: true }] : [],
+      emergencyContact: patient.emergencyContact || null,
+      address: patient.address || {}
+    }
+  });
+});
+
 router.post('/patients', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
   const { name, gender, age, phone, visitType, department, facilityId, insuranceProvider, insuranceMemberNumber } = req.body || {};
 
@@ -416,7 +437,7 @@ router.put('/patients/:id', protectHospitalWrite, authorizeHospitalRoles('admin'
   const patient = patients.find((item) => item.id === req.params.id);
   if (!patient) return res.status(404).json({ success: false, message: 'Patient not found.' });
 
-  const { name, gender, age, phone, visitType, department, triageLevel, currentStatus, insuranceProvider, insuranceMemberNumber } = req.body || {};
+  const { name, gender, age, phone, visitType, department, triageLevel, currentStatus, insuranceProvider, insuranceMemberNumber, allergies } = req.body || {};
   if (name) patient.name = name;
   if (gender) patient.gender = gender;
   if (age != null) patient.age = Number(age);
@@ -425,6 +446,7 @@ router.put('/patients/:id', protectHospitalWrite, authorizeHospitalRoles('admin'
   if (department) patient.department = department;
   if (triageLevel) patient.triageLevel = triageLevel;
   if (currentStatus) patient.currentStatus = currentStatus;
+  if (Array.isArray(allergies)) patient.allergies = allergies;
   if (insuranceProvider) {
     patient.insurance = {
       provider: insuranceProvider,
@@ -449,6 +471,24 @@ router.get('/encounters', (req, res) => {
   });
 });
 
+router.get('/encounters/:id', (req, res) => {
+  const encounter = encounters.find((item) => item.id === req.params.id);
+  if (!encounter) return res.status(404).json({ success: false, message: 'Encounter not found.' });
+  const patient = patients.find((item) => item.id === encounter.patientId);
+  return res.json({
+    success: true,
+    message: 'Hospital encounter fetched.',
+    encounter: {
+      ...encounter,
+      patientMrn: patient?.mrn || null,
+      triageNotes: encounter.triageNotes || '',
+      diagnosisSummary: encounter.diagnosisSummary || '',
+      admittedAt: encounter.admittedAt || null,
+      dischargedAt: encounter.dischargedAt || null
+    }
+  });
+});
+
 router.post('/encounters', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
   const { patientId, facilityId, department, encounterType, assignedRole, status, nextAction, claimStatus } = req.body || {};
   if (!patientId || !facilityId || !department) {
@@ -469,7 +509,9 @@ router.post('/encounters', protectHospitalWrite, authorizeHospitalRoles('admin',
     assignedRole: assignedRole || null,
     status: status || 'registered',
     nextAction: nextAction || 'Clinical review pending',
-    claimStatus: claimStatus || 'self-pay'
+    claimStatus: claimStatus || 'self-pay',
+    triageNotes: req.body.triageNotes || '',
+    diagnosisSummary: req.body.diagnosisSummary || ''
   };
   encounters.unshift(encounter);
   patient.currentStatus = ['admitted'].includes(encounter.status) ? 'admitted' : 'under-review';
@@ -481,7 +523,7 @@ router.put('/encounters/:id', protectHospitalWrite, authorizeHospitalRoles('admi
   const encounter = encounters.find((item) => item.id === req.params.id);
   if (!encounter) return res.status(404).json({ success: false, message: 'Encounter not found.' });
 
-  const { department, encounterType, assignedTo, assignedRole, status, nextAction, claimStatus } = req.body || {};
+  const { department, encounterType, assignedTo, assignedRole, status, nextAction, claimStatus, triageNotes, diagnosisSummary } = req.body || {};
   if (department) encounter.department = department;
   if (encounterType) encounter.encounterType = encounterType;
   if (assignedTo !== undefined) encounter.assignedTo = assignedTo;
@@ -489,6 +531,8 @@ router.put('/encounters/:id', protectHospitalWrite, authorizeHospitalRoles('admi
   if (status) encounter.status = status;
   if (nextAction !== undefined) encounter.nextAction = nextAction;
   if (claimStatus) encounter.claimStatus = claimStatus;
+  if (triageNotes !== undefined) encounter.triageNotes = triageNotes;
+  if (diagnosisSummary !== undefined) encounter.diagnosisSummary = diagnosisSummary;
 
   const patient = patients.find((item) => item.id === encounter.patientId);
   if (patient && status) {

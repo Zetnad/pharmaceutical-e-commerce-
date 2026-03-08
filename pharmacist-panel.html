@@ -782,12 +782,21 @@
 
       <article class="card">
         <span class="label blue">Encounter update</span>
-        <h2>Update encounter status</h2>
-        <p class="subtext">Use a secured write action to move an encounter through the hospital workflow in-place.</p>
+        <h2>Update encounter detail</h2>
+        <p class="subtext">Load a live encounter record, review its detail fields, and push an in-place secured update.</p>
         <div class="form-grid">
           <div class="field">
             <label for="encounter-update-id">Encounter</label>
             <select id="encounter-update-id"></select>
+          </div>
+          <div class="field">
+            <label for="encounter-update-role">Assigned role</label>
+            <select id="encounter-update-role">
+              <option value="clinical_officer">Clinical Officer</option>
+              <option value="nurse">Nurse</option>
+              <option value="doctor">Doctor</option>
+              <option value="pharmacist">Pharmacist</option>
+            </select>
           </div>
           <div class="field">
             <label for="encounter-update-status">New status</label>
@@ -800,14 +809,100 @@
             </select>
           </div>
           <div class="field">
+            <label for="encounter-update-claim-status">Claim status</label>
+            <select id="encounter-update-claim-status">
+              <option value="self-pay">Self Pay</option>
+              <option value="eligibility-confirmed">Eligibility Confirmed</option>
+              <option value="preauth-pending">Preauth Pending</option>
+              <option value="preauth-approved">Preauth Approved</option>
+              <option value="claim-submitted">Claim Submitted</option>
+              <option value="claim-settled">Claim Settled</option>
+            </select>
+          </div>
+          <div class="field">
             <label for="encounter-update-action">Next action</label>
             <textarea id="encounter-update-action">Complete next clinical step.</textarea>
+          </div>
+          <div class="field">
+            <label for="encounter-update-triage">Triage notes</label>
+            <textarea id="encounter-update-triage">Enter or review triage notes.</textarea>
+          </div>
+          <div class="field">
+            <label for="encounter-update-diagnosis">Diagnosis summary</label>
+            <textarea id="encounter-update-diagnosis">Add diagnosis or clinical summary.</textarea>
           </div>
           <div class="btn-row">
             <button class="btn btn-primary" id="encounter-update-submit" type="button">Update encounter</button>
           </div>
           <div class="form-message" id="encounter-update-message"></div>
         </div>
+      </article>
+    </section>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <article class="card">
+        <span class="label green">Patient detail workspace</span>
+        <h2>View and update patient detail</h2>
+        <p class="subtext">Select a patient record to review triage context, allergies, status, and intake fields before updating.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="patient-detail-id">Patient</label>
+            <select id="patient-detail-id"></select>
+          </div>
+          <div class="field">
+            <label for="patient-detail-name">Full name</label>
+            <input id="patient-detail-name" type="text" placeholder="Patient name">
+          </div>
+          <div class="field">
+            <label for="patient-detail-phone">Phone</label>
+            <input id="patient-detail-phone" type="text" placeholder="+2547...">
+          </div>
+          <div class="field">
+            <label for="patient-detail-department">Department</label>
+            <input id="patient-detail-department" type="text" placeholder="Department">
+          </div>
+          <div class="field">
+            <label for="patient-detail-triage">Triage level</label>
+            <select id="patient-detail-triage">
+              <option value="pending">Pending</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="emergency">Emergency</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="patient-detail-status">Current status</label>
+            <select id="patient-detail-status">
+              <option value="registered">Registered</option>
+              <option value="waiting">Waiting</option>
+              <option value="queued">Queued</option>
+              <option value="under-review">Under Review</option>
+              <option value="admitted">Admitted</option>
+              <option value="discharged">Discharged</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="patient-detail-allergies">Allergies</label>
+            <textarea id="patient-detail-allergies" placeholder="Comma-separated allergies"></textarea>
+          </div>
+          <div class="field">
+            <label for="patient-detail-insurer">Insurance provider</label>
+            <input id="patient-detail-insurer" type="text" placeholder="Insurer">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="patient-detail-submit" type="button">Update patient</button>
+          </div>
+          <div class="form-message" id="patient-detail-message"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label blue">Encounter detail viewer</span>
+        <h2>Current selected encounter snapshot</h2>
+        <p class="subtext">This mirrors the encounter selected above so clinicians can confirm the loaded record before editing.</p>
+        <div class="checklist" id="encounter-detail-viewer"></div>
       </article>
     </section>
   </main>
@@ -836,14 +931,14 @@
         }
       },
       patients: [
-        { id: 'pt-1001', mrn: 'MH-1001', name: 'Amina Noor', triageLevel: 'medium', department: 'Outpatient', currentStatus: 'waiting', allergies: ['Penicillin'] },
-        { id: 'pt-1002', mrn: 'MH-1002', name: 'Peter Mwangi', triageLevel: 'high', department: 'Emergency', currentStatus: 'under-review', allergies: [] },
-        { id: 'pt-1003', mrn: 'MH-1003', name: 'Faith Akinyi', triageLevel: 'low', department: 'Maternity', currentStatus: 'queued', allergies: [] }
+        { id: 'pt-1001', mrn: 'MH-1001', name: 'Amina Noor', triageLevel: 'medium', department: 'Outpatient', currentStatus: 'waiting', allergies: ['Penicillin'], insurance: { provider: 'SHA', memberNumber: 'SHA-022311' } },
+        { id: 'pt-1002', mrn: 'MH-1002', name: 'Peter Mwangi', triageLevel: 'high', department: 'Emergency', currentStatus: 'under-review', allergies: [], insurance: { provider: 'AAR', memberNumber: 'AAR-918221' } },
+        { id: 'pt-1003', mrn: 'MH-1003', name: 'Faith Akinyi', triageLevel: 'low', department: 'Maternity', currentStatus: 'queued', allergies: [], insurance: { provider: 'Jubilee', memberNumber: 'JBL-554219' } }
       ],
       encounters: [
-        { id: 'enc-001', patientId: 'pt-1001', patientName: 'Amina Noor', department: 'Outpatient', assignedTo: 'Kelvin Mutua', assignedRole: 'clinical_officer', status: 'triage-complete', nextAction: 'Consultation and malaria screen' },
-        { id: 'enc-002', patientId: 'pt-1002', patientName: 'Peter Mwangi', department: 'Emergency', assignedTo: 'Dr. Leah Kimani', assignedRole: 'doctor', status: 'critical-review', nextAction: 'ECG, troponin, urgent physician review' },
-        { id: 'enc-003', patientId: 'pt-1003', patientName: 'Faith Akinyi', department: 'ANC', assignedTo: 'Agnes Muthoni', assignedRole: 'nurse', status: 'awaiting-vitals', nextAction: 'Routine ANC checks and labs' }
+        { id: 'enc-001', patientId: 'pt-1001', patientName: 'Amina Noor', department: 'Outpatient', assignedTo: 'Kelvin Mutua', assignedRole: 'clinical_officer', status: 'triage-complete', nextAction: 'Consultation and malaria screen', claimStatus: 'eligibility-confirmed', triageNotes: 'Fever and body aches for 2 days.', diagnosisSummary: '' },
+        { id: 'enc-002', patientId: 'pt-1002', patientName: 'Peter Mwangi', department: 'Emergency', assignedTo: 'Dr. Leah Kimani', assignedRole: 'doctor', status: 'critical-review', nextAction: 'ECG, troponin, urgent physician review', claimStatus: 'self-pay', triageNotes: 'Chest discomfort on exertion.', diagnosisSummary: '' },
+        { id: 'enc-003', patientId: 'pt-1003', patientName: 'Faith Akinyi', department: 'ANC', assignedTo: 'Agnes Muthoni', assignedRole: 'nurse', status: 'awaiting-vitals', nextAction: 'Routine ANC checks and labs', claimStatus: 'preauth-approved', triageNotes: 'Routine antenatal follow-up.', diagnosisSummary: '' }
       ],
       staff: [
         { name: 'Kelvin Mutua', role: 'clinical_officer', workload: 0.84 },
@@ -913,10 +1008,25 @@
     const encounterSubmitEl = document.getElementById('encounter-submit');
     const encounterMessageEl = document.getElementById('encounter-form-message');
     const encounterUpdateIdEl = document.getElementById('encounter-update-id');
+    const encounterUpdateRoleEl = document.getElementById('encounter-update-role');
     const encounterUpdateStatusEl = document.getElementById('encounter-update-status');
+    const encounterUpdateClaimStatusEl = document.getElementById('encounter-update-claim-status');
     const encounterUpdateActionEl = document.getElementById('encounter-update-action');
+    const encounterUpdateTriageEl = document.getElementById('encounter-update-triage');
+    const encounterUpdateDiagnosisEl = document.getElementById('encounter-update-diagnosis');
     const encounterUpdateSubmitEl = document.getElementById('encounter-update-submit');
     const encounterUpdateMessageEl = document.getElementById('encounter-update-message');
+    const patientDetailIdEl = document.getElementById('patient-detail-id');
+    const patientDetailNameEl = document.getElementById('patient-detail-name');
+    const patientDetailPhoneEl = document.getElementById('patient-detail-phone');
+    const patientDetailDepartmentEl = document.getElementById('patient-detail-department');
+    const patientDetailTriageEl = document.getElementById('patient-detail-triage');
+    const patientDetailStatusEl = document.getElementById('patient-detail-status');
+    const patientDetailAllergiesEl = document.getElementById('patient-detail-allergies');
+    const patientDetailInsurerEl = document.getElementById('patient-detail-insurer');
+    const patientDetailSubmitEl = document.getElementById('patient-detail-submit');
+    const patientDetailMessageEl = document.getElementById('patient-detail-message');
+    const encounterDetailViewerEl = document.getElementById('encounter-detail-viewer');
 
     let currentHospitalData = JSON.parse(JSON.stringify(fallbackData));
 
@@ -1013,11 +1123,15 @@
     }
 
     function fillSelect(element, items, valueGetter, labelGetter, placeholder = 'Select an option') {
+      const previousValue = element.value;
       element.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + items.map((item) => {
         const value = valueGetter(item);
         const label = labelGetter(item);
         return `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`;
       }).join('');
+      if (previousValue && items.some((item) => String(valueGetter(item)) === String(previousValue))) {
+        element.value = previousValue;
+      }
     }
 
     function populateActionForms(data) {
@@ -1026,9 +1140,107 @@
       fillSelect(encounterFacilityEl, facilities, (facility) => facility.id, (facility) => facility.name, 'Choose facility');
       fillSelect(encounterPatientEl, data.patients || [], (patient) => patient.id, (patient) => `${patient.name} (${patient.mrn})`, 'Choose patient');
       fillSelect(encounterUpdateIdEl, data.encounters || [], (encounter) => encounter.id, (encounter) => `${encounter.patientName || 'Patient'} · ${encounter.status}`, 'Choose encounter');
+      fillSelect(patientDetailIdEl, data.patients || [], (patient) => patient.id, (patient) => `${patient.name} (${patient.mrn})`, 'Choose patient');
 
       if (!patientFacilityEl.value && facilities[0]) patientFacilityEl.value = facilities[0].id;
       if (!encounterFacilityEl.value && facilities[0]) encounterFacilityEl.value = facilities[0].id;
+      if (!patientDetailIdEl.value && data.patients?.[0]) patientDetailIdEl.value = data.patients[0].id;
+      if (!encounterUpdateIdEl.value && data.encounters?.[0]) encounterUpdateIdEl.value = data.encounters[0].id;
+    }
+
+    function fallbackPatientDetail(patientId) {
+      const patient = currentHospitalData.patients.find((item) => item.id === patientId);
+      if (!patient) return null;
+      return {
+        ...patient,
+        insuranceProfiles: patient.insurance ? [{ ...patient.insurance, isPrimary: true }] : [],
+        emergencyContact: null
+      };
+    }
+
+    function fallbackEncounterDetail(encounterId) {
+      const encounter = currentHospitalData.encounters.find((item) => item.id === encounterId);
+      if (!encounter) return null;
+      const patient = currentHospitalData.patients.find((item) => item.id === encounter.patientId);
+      return {
+        ...encounter,
+        patientMrn: patient?.mrn || null
+      };
+    }
+
+    function renderEncounterViewer(encounter) {
+      if (!encounter) {
+        encounterDetailViewerEl.innerHTML = `<div class="empty-state">Choose an encounter to view its detail snapshot.</div>`;
+        return;
+      }
+
+      renderChecklist(encounterDetailViewerEl, [
+        {
+          title: `${encounter.patientName || 'Patient'} · ${encounter.patientMrn || 'No MRN'}`,
+          description: `${formatRole(encounter.assignedRole || 'unassigned')} · ${encounter.status || 'pending'} · ${encounter.department || 'General'}`
+        },
+        {
+          title: 'Next action',
+          description: encounter.nextAction || 'No next action recorded.'
+        },
+        {
+          title: 'Triage notes',
+          description: encounter.triageNotes || 'No triage note recorded.'
+        },
+        {
+          title: 'Diagnosis summary',
+          description: encounter.diagnosisSummary || 'No diagnosis summary recorded.'
+        }
+      ]);
+    }
+
+    async function loadPatientDetail() {
+      const patientId = patientDetailIdEl.value;
+      if (!patientId) return;
+
+      let patient = null;
+      try {
+        const data = await fetchJson(`/hospital/patients/${patientId}`);
+        patient = data.patient;
+      } catch (error) {
+        patient = fallbackPatientDetail(patientId);
+      }
+
+      if (!patient) return;
+      patientDetailNameEl.value = patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim();
+      patientDetailPhoneEl.value = patient.phone || '';
+      patientDetailDepartmentEl.value = patient.department || '';
+      patientDetailTriageEl.value = patient.triageLevel || 'pending';
+      patientDetailStatusEl.value = patient.currentStatus || 'registered';
+      patientDetailAllergiesEl.value = (patient.allergies || []).join(', ');
+      patientDetailInsurerEl.value = patient.insuranceProfiles?.[0]?.provider || patient.insurance?.provider || '';
+      setFormMessage(patientDetailMessageEl, '');
+    }
+
+    async function loadEncounterDetail() {
+      const encounterId = encounterUpdateIdEl.value;
+      if (!encounterId) {
+        renderEncounterViewer(null);
+        return;
+      }
+
+      let encounter = null;
+      try {
+        const data = await fetchJson(`/hospital/encounters/${encounterId}`);
+        encounter = data.encounter;
+      } catch (error) {
+        encounter = fallbackEncounterDetail(encounterId);
+      }
+
+      if (!encounter) return;
+      encounterUpdateRoleEl.value = encounter.assignedRole || 'clinical_officer';
+      encounterUpdateStatusEl.value = encounter.status || 'active';
+      encounterUpdateClaimStatusEl.value = encounter.claimStatus || 'self-pay';
+      encounterUpdateActionEl.value = encounter.nextAction || '';
+      encounterUpdateTriageEl.value = encounter.triageNotes || '';
+      encounterUpdateDiagnosisEl.value = encounter.diagnosisSummary || '';
+      renderEncounterViewer(encounter);
+      setFormMessage(encounterUpdateMessageEl, '');
     }
 
     function renderStats(data) {
@@ -1205,6 +1417,8 @@
       renderStaffing(data);
       renderAi(data);
       populateActionForms(data);
+      loadPatientDetail();
+      loadEncounterDetail();
     }
 
     async function startDemoSession() {
@@ -1256,6 +1470,35 @@
       }
     }
 
+    async function updatePatientDetail() {
+      patientDetailSubmitEl.disabled = true;
+      setFormMessage(patientDetailMessageEl, 'Updating patient detail...');
+      try {
+        const patientId = patientDetailIdEl.value;
+        if (!patientId) throw new Error('Choose a patient to update.');
+        const data = await fetchAuthorizedJson(`/hospital/patients/${patientId}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            name: patientDetailNameEl.value.trim(),
+            phone: patientDetailPhoneEl.value.trim(),
+            department: patientDetailDepartmentEl.value.trim(),
+            triageLevel: patientDetailTriageEl.value,
+            currentStatus: patientDetailStatusEl.value,
+            allergies: patientDetailAllergiesEl.value.split(',').map((item) => item.trim()).filter(Boolean),
+            insuranceProvider: patientDetailInsurerEl.value.trim() || undefined
+          })
+        });
+        setFormMessage(patientDetailMessageEl, `${data.patient.name} updated successfully.`);
+        await loadDashboard();
+        patientDetailIdEl.value = data.patient.id;
+        await loadPatientDetail();
+      } catch (error) {
+        setFormMessage(patientDetailMessageEl, error.message || 'Failed to update patient.', true);
+      } finally {
+        patientDetailSubmitEl.disabled = false;
+      }
+    }
+
     async function submitEncounter() {
       encounterSubmitEl.disabled = true;
       setFormMessage(encounterMessageEl, 'Creating encounter...');
@@ -1290,12 +1533,18 @@
         const data = await fetchAuthorizedJson(`/hospital/encounters/${encounterId}`, {
           method: 'PUT',
           body: JSON.stringify({
+            assignedRole: encounterUpdateRoleEl.value,
             status: encounterUpdateStatusEl.value,
-            nextAction: encounterUpdateActionEl.value.trim()
+            claimStatus: encounterUpdateClaimStatusEl.value,
+            nextAction: encounterUpdateActionEl.value.trim(),
+            triageNotes: encounterUpdateTriageEl.value.trim(),
+            diagnosisSummary: encounterUpdateDiagnosisEl.value.trim()
           })
         });
         setFormMessage(encounterUpdateMessageEl, `Encounter ${data.encounter.encounterNumber || ''} updated to ${data.encounter.status}.`);
         await loadDashboard();
+        encounterUpdateIdEl.value = data.encounter.id;
+        await loadEncounterDetail();
       } catch (error) {
         setFormMessage(encounterUpdateMessageEl, error.message || 'Failed to update encounter.', true);
       } finally {
@@ -1340,7 +1589,10 @@
     sessionStartEl.addEventListener('click', startDemoSession);
     sessionClearEl.addEventListener('click', clearSession);
     patientSubmitEl.addEventListener('click', submitPatient);
+    patientDetailIdEl.addEventListener('change', loadPatientDetail);
+    patientDetailSubmitEl.addEventListener('click', updatePatientDetail);
     encounterSubmitEl.addEventListener('click', submitEncounter);
+    encounterUpdateIdEl.addEventListener('change', loadEncounterDetail);
     encounterUpdateSubmitEl.addEventListener('click', updateEncounter);
     syncSessionUi();
     loadDashboard();

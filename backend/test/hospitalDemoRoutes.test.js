@@ -36,6 +36,16 @@ test('GET /api/hospital/facilities returns facility list', async () => {
   expect(res.body.facilities.length).toBeGreaterThan(0);
 });
 
+test('GET /api/hospital/patients/:id returns patient detail payload', async () => {
+  const listRes = await request(app).get('/api/hospital/patients');
+  const patientId = listRes.body.patients[0].id;
+  const res = await request(app).get(`/api/hospital/patients/${patientId}`);
+  expect(res.statusCode).toBe(200);
+  expect(res.body.success).toBe(true);
+  expect(res.body.patient.id).toBe(patientId);
+  expect(res.body.patient.insuranceProfiles).toBeDefined();
+});
+
 test('POST /api/hospital/patients registers a patient', async () => {
   const issued = demoAuth.issue('nurse@demo.local', 60, { role: 'nurse', name: 'Demo Nurse' });
   const res = await request(app)
@@ -109,6 +119,16 @@ test('PUT /api/hospital/encounters/:id updates encounter status', async () => {
 
   expect(updateRes.statusCode).toBe(200);
   expect(updateRes.body.encounter.status).toBe('discharged');
+});
+
+test('GET /api/hospital/encounters/:id returns encounter detail payload', async () => {
+  const res = await request(app).get('/api/hospital/encounters');
+  const encounterId = res.body.encounters[0].id;
+  const detailRes = await request(app).get(`/api/hospital/encounters/${encounterId}`);
+  expect(detailRes.statusCode).toBe(200);
+  expect(detailRes.body.success).toBe(true);
+  expect(detailRes.body.encounter.id).toBe(encounterId);
+  expect(detailRes.body.encounter).toHaveProperty('triageNotes');
 });
 
 test('GET /api/hospital/claims returns claims summary', async () => {
