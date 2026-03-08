@@ -1,4 +1,5 @@
 const express = require('express');
+const { protectHospitalWrite, authorizeHospitalRoles } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -300,6 +301,22 @@ const nextMrnNumber = () => {
   return `MH-${highest + 1}`;
 };
 
+const nextEncounterNumber = () => {
+  const highest = encounters.reduce((max, encounter) => {
+    const value = Number(String(encounter.encounterNumber || encounter.id || '').split('-')[1] || 0);
+    return Math.max(max, value);
+  }, 1000);
+  return `ENC-${highest + 1}`;
+};
+
+const nextClaimNumber = () => {
+  const highest = claims.reduce((max, claim) => {
+    const value = Number(String(claim.claimNumber || claim.id || '').split('-')[1] || 0);
+    return Math.max(max, value);
+  }, 1000);
+  return `CLM-${highest + 1}`;
+};
+
 router.get('/overview', (req, res) => {
   return res.json({
     success: true,
@@ -351,7 +368,7 @@ router.get('/patients', (req, res) => {
   });
 });
 
-router.post('/patients', (req, res) => {
+router.post('/patients', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
   const { name, gender, age, phone, visitType, department, facilityId, insuranceProvider, insuranceMemberNumber } = req.body || {};
 
   if (!name || !visitType || !department || !facilityId) {
@@ -395,6 +412,29 @@ router.post('/patients', (req, res) => {
   });
 });
 
+router.put('/patients/:id', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
+  const patient = patients.find((item) => item.id === req.params.id);
+  if (!patient) return res.status(404).json({ success: false, message: 'Patient not found.' });
+
+  const { name, gender, age, phone, visitType, department, triageLevel, currentStatus, insuranceProvider, insuranceMemberNumber } = req.body || {};
+  if (name) patient.name = name;
+  if (gender) patient.gender = gender;
+  if (age != null) patient.age = Number(age);
+  if (phone !== undefined) patient.phone = phone;
+  if (visitType) patient.visitType = visitType;
+  if (department) patient.department = department;
+  if (triageLevel) patient.triageLevel = triageLevel;
+  if (currentStatus) patient.currentStatus = currentStatus;
+  if (insuranceProvider) {
+    patient.insurance = {
+      provider: insuranceProvider,
+      memberNumber: insuranceMemberNumber || null
+    };
+  }
+
+  return res.json({ success: true, message: 'Patient updated successfully.', patient });
+});
+
 router.get('/encounters', (req, res) => {
   const { status, department } = req.query;
   let result = [...encounters];
@@ -407,6 +447,57 @@ router.get('/encounters', (req, res) => {
     total: result.length,
     encounters: result
   });
+});
+
+router.post('/encounters', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
+  const { patientId, facilityId, department, encounterType, assignedRole, status, nextAction, claimStatus } = req.body || {};
+  if (!patientId || !facilityId || !department) {
+    return res.status(400).json({ success: false, message: 'patientId, facilityId, and department are required.' });
+  }
+
+  const patient = patients.find((item) => item.id === patientId);
+  if (!patient) return res.status(404).json({ success: false, message: 'Patient not found.' });
+
+  const encounter = {
+    id: `enc-${Date.now()}`,
+    encounterNumber: nextEncounterNumber(),
+    patientId,
+    patientName: patient.name,
+    encounterType: encounterType || 'outpatient',
+    department,
+    assignedTo: req.body.assignedTo || null,
+    assignedRole: assignedRole || null,
+    status: status || 'registered',
+    nextAction: nextAction || 'Clinical review pending',
+    claimStatus: claimStatus || 'self-pay'
+  };
+  encounters.unshift(encounter);
+  patient.currentStatus = ['admitted'].includes(encounter.status) ? 'admitted' : 'under-review';
+
+  return res.status(201).json({ success: true, message: 'Encounter created successfully.', encounter });
+});
+
+router.put('/encounters/:id', protectHospitalWrite, authorizeHospitalRoles('admin', 'doctor', 'nurse', 'clinical_officer'), (req, res) => {
+  const encounter = encounters.find((item) => item.id === req.params.id);
+  if (!encounter) return res.status(404).json({ success: false, message: 'Encounter not found.' });
+
+  const { department, encounterType, assignedTo, assignedRole, status, nextAction, claimStatus } = req.body || {};
+  if (department) encounter.department = department;
+  if (encounterType) encounter.encounterType = encounterType;
+  if (assignedTo !== undefined) encounter.assignedTo = assignedTo;
+  if (assignedRole) encounter.assignedRole = assignedRole;
+  if (status) encounter.status = status;
+  if (nextAction !== undefined) encounter.nextAction = nextAction;
+  if (claimStatus) encounter.claimStatus = claimStatus;
+
+  const patient = patients.find((item) => item.id === encounter.patientId);
+  if (patient && status) {
+    if (status === 'admitted') patient.currentStatus = 'admitted';
+    else if (['discharged', 'closed'].includes(status)) patient.currentStatus = 'discharged';
+    else patient.currentStatus = 'under-review';
+  }
+
+  return res.json({ success: true, message: 'Encounter updated successfully.', encounter });
 });
 
 router.get('/staff', (req, res) => {
@@ -438,6 +529,44 @@ router.get('/claims', (req, res) => {
     summary,
     claims
   });
+});
+
+router.post('/claims', protectHospitalWrite, authorizeHospitalRoles('admin', 'finance'), (req, res) => {
+  const { patientId, payer, amount, status, stage, denialRisk, notes } = req.body || {};
+  const patient = patients.find((item) => item.id === patientId);
+  if (!patient || !payer || amount == null) {
+    return res.status(400).json({ success: false, message: 'patientId, payer, and amount are required.' });
+  }
+
+  const claim = {
+    id: `clm-${Date.now()}`,
+    claimNumber: nextClaimNumber(),
+    patientName: patient.name,
+    payer,
+    amount: Number(amount),
+    status: status || 'draft',
+    stage: stage || 'eligibility-check',
+    denialRisk: denialRisk || 'low',
+    note: notes || ''
+  };
+  claims.unshift(claim);
+
+  return res.status(201).json({ success: true, message: 'Claim created successfully.', claim });
+});
+
+router.put('/claims/:id', protectHospitalWrite, authorizeHospitalRoles('admin', 'finance'), (req, res) => {
+  const claim = claims.find((item) => item.id === req.params.id);
+  if (!claim) return res.status(404).json({ success: false, message: 'Claim not found.' });
+
+  const { payer, amount, status, stage, denialRisk, notes } = req.body || {};
+  if (payer !== undefined) claim.payer = payer;
+  if (amount != null) claim.amount = Number(amount);
+  if (status) claim.status = status;
+  if (stage) claim.stage = stage;
+  if (denialRisk) claim.denialRisk = denialRisk;
+  if (notes !== undefined) claim.note = notes;
+
+  return res.json({ success: true, message: 'Claim updated successfully.', claim });
 });
 
 router.get('/pharmacy', (req, res) => {

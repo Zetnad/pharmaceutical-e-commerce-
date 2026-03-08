@@ -393,6 +393,60 @@
       line-height: 1.6;
     }
 
+    .form-grid {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .field label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--bg);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 0.8rem 0.9rem;
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .field textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(13, 158, 110, 0.08);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    .session-summary,
+    .form-message {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
     .dashboard-status {
       margin: 0 0 1rem;
       padding: 0.95rem 1rem;
@@ -499,6 +553,84 @@
 
     <div class="dashboard-status" id="exec-status">Loading executive hospital metrics...</div>
 
+    <section class="grid-2" style="margin-bottom: 1rem;">
+      <article class="card">
+        <span class="label purple">Executive access</span>
+        <h2>Finance or admin session</h2>
+        <p class="subtext">Secured write actions for claims are available through a demo finance/admin token or a real JWT user in DB-backed mode.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="exec-session-role">Role</label>
+            <select id="exec-session-role">
+              <option value="finance">Finance</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="exec-session-name">Display name</label>
+            <input id="exec-session-name" type="text" value="Grace Naliaka" placeholder="Finance lead">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="exec-session-start" type="button">Start demo session</button>
+            <button class="btn btn-secondary" id="exec-session-clear" type="button">Clear session</button>
+          </div>
+          <div class="session-summary" id="exec-session-summary">No authenticated executive write session yet.</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label amber">Claim creation</span>
+        <h2>Create claim or authorization case</h2>
+        <p class="subtext">Open a new claim from the executive dashboard using the secured hospital claims endpoint.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="claim-patient">Patient</label>
+            <select id="claim-patient"></select>
+          </div>
+          <div class="field">
+            <label for="claim-encounter">Encounter (optional)</label>
+            <select id="claim-encounter"></select>
+          </div>
+          <div class="field">
+            <label for="claim-facility">Facility</label>
+            <select id="claim-facility"></select>
+          </div>
+          <div class="field">
+            <label for="claim-payer">Payer</label>
+            <input id="claim-payer" type="text" value="SHA">
+          </div>
+          <div class="field">
+            <label for="claim-amount">Amount (KES)</label>
+            <input id="claim-amount" type="number" value="18000" min="0">
+          </div>
+          <div class="field">
+            <label for="claim-status">Status</label>
+            <select id="claim-status">
+              <option value="draft">Draft</option>
+              <option value="submitted">Submitted</option>
+              <option value="pending-authorization">Pending Authorization</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-risk">Denial risk</label>
+            <select id="claim-risk">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-notes">Notes</label>
+            <textarea id="claim-notes">Supporting documents uploaded and awaiting review.</textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="claim-submit" type="button">Create claim</button>
+          </div>
+          <div class="form-message" id="claim-form-message"></div>
+        </div>
+      </article>
+    </section>
+
     <section class="stats" id="exec-stats"></section>
 
     <section class="grid-2" style="margin-bottom: 1rem;">
@@ -563,10 +695,63 @@
         <div class="stack" id="delivery-progress"></div>
       </article>
     </section>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <article class="card">
+        <span class="label blue">Claim update</span>
+        <h2>Update claim status</h2>
+        <p class="subtext">Move a claim through draft, authorization, partial payment, denial follow-up, or settlement stages.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="claim-update-id">Claim</label>
+            <select id="claim-update-id"></select>
+          </div>
+          <div class="field">
+            <label for="claim-update-status">Status</label>
+            <select id="claim-update-status">
+              <option value="submitted">Submitted</option>
+              <option value="pending-authorization">Pending Authorization</option>
+              <option value="partially-paid">Partially Paid</option>
+              <option value="paid">Paid</option>
+              <option value="denied">Denied</option>
+              <option value="appealed">Appealed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-update-stage">Stage</label>
+            <select id="claim-update-stage">
+              <option value="claim-scrub-complete">Claim Scrub Complete</option>
+              <option value="waiting-supporting-documents">Waiting Supporting Documents</option>
+              <option value="denial-follow-up">Denial Follow-up</option>
+              <option value="settled">Settled</option>
+              <option value="appeal-review">Appeal Review</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-update-risk">Denial risk</label>
+            <select id="claim-update-risk">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-update-notes">Notes</label>
+            <textarea id="claim-update-notes">Status updated from command center.</textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="claim-update-submit" type="button">Update claim</button>
+          </div>
+          <div class="form-message" id="claim-update-message"></div>
+        </div>
+      </article>
+    </section>
   </main>
 
   <script>
     const API_URL = `${window.location.protocol}//${window.location.hostname || "localhost"}:5000/api`;
+    const STORAGE_TOKEN_KEY = 'medihubHospitalDemoToken';
+    const STORAGE_PROFILE_KEY = 'medihubHospitalDemoProfile';
 
     const fallbackData = {
       overview: {
@@ -586,6 +771,15 @@
         { name: 'MediHub Main Hospital', type: 'hospital', location: 'Nairobi', beds: 180, occupancyRate: 0.88, patientsToday: 284, claimsAcceptanceRate: 0.94, staffingAlerts: 2, priority: 'ICU night cover' },
         { name: 'Riverside Specialist Clinic', type: 'clinic', location: 'Nairobi', beds: 24, occupancyRate: 0.41, patientsToday: 92, claimsAcceptanceRate: 0.96, staffingAlerts: 0, priority: 'Scale imaging slots' },
         { name: 'Community Maternity Centre', type: 'maternity-centre', location: 'Kiambu', beds: 42, occupancyRate: 0.76, patientsToday: 36, claimsAcceptanceRate: 0.85, staffingAlerts: 1, priority: 'Midwife locum + payer follow-up' }
+      ],
+      patients: [
+        { id: 'pt-1001', mrn: 'MH-1001', name: 'Amina Noor', facilityId: 'fac-main' },
+        { id: 'pt-1002', mrn: 'MH-1002', name: 'Peter Mwangi', facilityId: 'fac-main' },
+        { id: 'pt-1003', mrn: 'MH-1003', name: 'Faith Akinyi', facilityId: 'fac-maternity' }
+      ],
+      encounters: [
+        { id: 'enc-001', encounterNumber: 'ENC-1001', patientId: 'pt-1001', patientName: 'Amina Noor' },
+        { id: 'enc-002', encounterNumber: 'ENC-1002', patientId: 'pt-1002', patientName: 'Peter Mwangi' }
       ],
       claims: {
         summary: { totalClaims: 3, submitted: 1, pendingAuthorization: 1, denialFollowUp: 1 },
@@ -623,6 +817,30 @@
     const pharmacyEl = document.getElementById('pharmacy-stack');
     const aiGovernanceEl = document.getElementById('ai-governance-grid');
     const deliveryProgressEl = document.getElementById('delivery-progress');
+    const execSessionRoleEl = document.getElementById('exec-session-role');
+    const execSessionNameEl = document.getElementById('exec-session-name');
+    const execSessionSummaryEl = document.getElementById('exec-session-summary');
+    const execSessionStartEl = document.getElementById('exec-session-start');
+    const execSessionClearEl = document.getElementById('exec-session-clear');
+    const claimPatientEl = document.getElementById('claim-patient');
+    const claimEncounterEl = document.getElementById('claim-encounter');
+    const claimFacilityEl = document.getElementById('claim-facility');
+    const claimPayerEl = document.getElementById('claim-payer');
+    const claimAmountEl = document.getElementById('claim-amount');
+    const claimStatusEl = document.getElementById('claim-status');
+    const claimRiskEl = document.getElementById('claim-risk');
+    const claimNotesEl = document.getElementById('claim-notes');
+    const claimSubmitEl = document.getElementById('claim-submit');
+    const claimMessageEl = document.getElementById('claim-form-message');
+    const claimUpdateIdEl = document.getElementById('claim-update-id');
+    const claimUpdateStatusEl = document.getElementById('claim-update-status');
+    const claimUpdateStageEl = document.getElementById('claim-update-stage');
+    const claimUpdateRiskEl = document.getElementById('claim-update-risk');
+    const claimUpdateNotesEl = document.getElementById('claim-update-notes');
+    const claimUpdateSubmitEl = document.getElementById('claim-update-submit');
+    const claimUpdateMessageEl = document.getElementById('claim-update-message');
+
+    let currentHospitalData = JSON.parse(JSON.stringify(fallbackData));
 
     function escapeHtml(value) {
       return String(value)
@@ -648,6 +866,39 @@
       return 'green';
     }
 
+    function getStoredProfile() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_PROFILE_KEY) || 'null');
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function getStoredToken() {
+      return localStorage.getItem(STORAGE_TOKEN_KEY) || '';
+    }
+
+    function persistSession(token, profile) {
+      localStorage.setItem(STORAGE_TOKEN_KEY, token);
+      localStorage.setItem(STORAGE_PROFILE_KEY, JSON.stringify(profile));
+      syncSessionUi();
+    }
+
+    function clearSession() {
+      localStorage.removeItem(STORAGE_TOKEN_KEY);
+      localStorage.removeItem(STORAGE_PROFILE_KEY);
+      syncSessionUi();
+    }
+
+    function syncSessionUi() {
+      const profile = getStoredProfile();
+      if (profile) {
+        execSessionSummaryEl.textContent = `Authenticated as ${profile.name} (${String(profile.role).replace(/_/g, ' ')}). Claims write actions are enabled.`;
+      } else {
+        execSessionSummaryEl.textContent = 'No authenticated executive write session yet.';
+      }
+    }
+
     async function fetchJson(path) {
       const response = await fetch(`${API_URL}${path}`);
       const data = await response.json();
@@ -657,8 +908,38 @@
       return data;
     }
 
+    async function fetchAuthorizedJson(path, options = {}) {
+      const token = getStoredToken();
+      if (!token) {
+        throw new Error('Start a finance or admin demo session before submitting write actions.');
+      }
+
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        ...(options.headers || {})
+      };
+      const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || `Failed to submit ${path}`);
+      }
+      return data;
+    }
+
     function setExecStatus(message, isFallback = false) {
       execStatusEl.textContent = isFallback ? `${message} Showing local fallback view.` : message;
+    }
+
+    function setFormMessage(element, message, isError = false) {
+      element.textContent = message;
+      element.style.color = isError ? '#b91c1c' : '';
+    }
+
+    function fillSelect(element, items, valueGetter, labelGetter, placeholder = 'Select an option') {
+      element.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + items.map((item) => `
+        <option value="${escapeHtml(valueGetter(item))}">${escapeHtml(labelGetter(item))}</option>
+      `).join('');
     }
 
     function renderStats(data) {
@@ -826,7 +1107,17 @@
       ]);
     }
 
+    function populateClaimForms(data) {
+      fillSelect(claimFacilityEl, data.facilities || [], (facility) => facility.id, (facility) => facility.name, 'Choose facility');
+      fillSelect(claimPatientEl, data.patients || [], (patient) => patient.id, (patient) => `${patient.name} (${patient.mrn || 'No MRN'})`, 'Choose patient');
+      fillSelect(claimEncounterEl, data.encounters || [], (encounter) => encounter.id, (encounter) => `${encounter.encounterNumber || encounter.id} · ${encounter.patientName || 'Patient'}`, 'No encounter selected');
+      fillSelect(claimUpdateIdEl, data.claims.claims || [], (claim) => claim.id, (claim) => `${claim.claimNumber || claim.id} · ${claim.payer} · ${claim.status}`, 'Choose claim');
+
+      if (!claimFacilityEl.value && data.facilities?.[0]) claimFacilityEl.value = data.facilities[0].id;
+    }
+
     function renderDashboard(data, liveConnected) {
+      currentHospitalData = data;
       renderStats(data);
       renderScorecard(data);
       renderPriorities(data);
@@ -835,6 +1126,78 @@
       renderPharmacy(data);
       renderAi(data);
       renderDeliveryProgress(liveConnected);
+      populateClaimForms(data);
+    }
+
+    async function startDemoSession() {
+      execSessionStartEl.disabled = true;
+      try {
+        const role = execSessionRoleEl.value;
+        const name = execSessionNameEl.value.trim() || 'Executive User';
+        const email = `${role}.${name.toLowerCase().replace(/[^a-z0-9]+/g, '.')}@demo.local`;
+        const response = await fetch(`${API_URL}/auth/demo-login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name, role, password: 'demo123', remember: true })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || 'Failed to start demo session.');
+        persistSession(data.token, data.profile);
+      } catch (error) {
+        execSessionSummaryEl.textContent = error.message || 'Unable to start demo session.';
+      } finally {
+        execSessionStartEl.disabled = false;
+      }
+    }
+
+    async function submitClaim() {
+      claimSubmitEl.disabled = true;
+      setFormMessage(claimMessageEl, 'Creating claim...');
+      try {
+        const data = await fetchAuthorizedJson('/hospital/claims', {
+          method: 'POST',
+          body: JSON.stringify({
+            patientId: claimPatientEl.value,
+            encounterId: claimEncounterEl.value || undefined,
+            facilityId: claimFacilityEl.value,
+            payer: claimPayerEl.value.trim(),
+            amount: Number(claimAmountEl.value || 0),
+            status: claimStatusEl.value,
+            denialRisk: claimRiskEl.value,
+            notes: claimNotesEl.value.trim()
+          })
+        });
+        setFormMessage(claimMessageEl, `Claim ${data.claim.claimNumber || ''} created successfully.`);
+        await loadExecutiveDashboard();
+      } catch (error) {
+        setFormMessage(claimMessageEl, error.message || 'Failed to create claim.', true);
+      } finally {
+        claimSubmitEl.disabled = false;
+      }
+    }
+
+    async function updateClaim() {
+      claimUpdateSubmitEl.disabled = true;
+      setFormMessage(claimUpdateMessageEl, 'Updating claim...');
+      try {
+        const claimId = claimUpdateIdEl.value;
+        if (!claimId) throw new Error('Choose a claim to update.');
+        const data = await fetchAuthorizedJson(`/hospital/claims/${claimId}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            status: claimUpdateStatusEl.value,
+            stage: claimUpdateStageEl.value,
+            denialRisk: claimUpdateRiskEl.value,
+            notes: claimUpdateNotesEl.value.trim()
+          })
+        });
+        setFormMessage(claimUpdateMessageEl, `Claim ${data.claim.claimNumber || ''} updated to ${data.claim.status}.`);
+        await loadExecutiveDashboard();
+      } catch (error) {
+        setFormMessage(claimUpdateMessageEl, error.message || 'Failed to update claim.', true);
+      } finally {
+        claimUpdateSubmitEl.disabled = false;
+      }
     }
 
     async function loadExecutiveDashboard() {
@@ -842,9 +1205,11 @@
       setExecStatus('Unable to confirm backend yet.', true);
 
       try {
-        const [overviewRes, facilitiesRes, claimsRes, staffingRes, pharmacyRes] = await Promise.all([
+        const [overviewRes, facilitiesRes, patientsRes, encountersRes, claimsRes, staffingRes, pharmacyRes] = await Promise.all([
           fetchJson('/hospital/overview'),
           fetchJson('/hospital/facilities'),
+          fetchJson('/hospital/patients'),
+          fetchJson('/hospital/encounters'),
           fetchJson('/hospital/claims'),
           fetchJson('/hospital/staffing'),
           fetchJson('/hospital/pharmacy')
@@ -853,6 +1218,8 @@
         renderDashboard({
           overview: overviewRes.overview || fallbackData.overview,
           facilities: facilitiesRes.facilities || fallbackData.facilities,
+          patients: patientsRes.patients || fallbackData.patients,
+          encounters: encountersRes.encounters || fallbackData.encounters,
           claims: {
             summary: claimsRes.summary || fallbackData.claims.summary,
             claims: claimsRes.claims || fallbackData.claims.claims
@@ -867,6 +1234,11 @@
       }
     }
 
+    execSessionStartEl.addEventListener('click', startDemoSession);
+    execSessionClearEl.addEventListener('click', clearSession);
+    claimSubmitEl.addEventListener('click', submitClaim);
+    claimUpdateSubmitEl.addEventListener('click', updateClaim);
+    syncSessionUi();
     loadExecutiveDashboard();
   </script>
 </body>

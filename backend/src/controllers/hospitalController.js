@@ -32,6 +32,50 @@ const parseName = (name = '') => {
 
 const staffRoles = ['doctor', 'nurse', 'clinical_officer', 'pharmacist', 'lab_technologist', 'radiographer', 'finance', 'hr', 'admin'];
 
+const serializePatient = (patient) => ({
+  id: patient._id,
+  mrn: patient.mrn,
+  name: `${patient.firstName} ${patient.lastName}`.trim(),
+  gender: patient.gender,
+  phone: patient.phone,
+  visitType: patient.visitType,
+  triageLevel: patient.triageLevel,
+  department: patient.department,
+  facilityId: patient.facility?._id || patient.facility,
+  facilityName: patient.facility?.name || null,
+  insurance: patient.insuranceProfiles?.[0] || null,
+  currentStatus: patient.currentStatus,
+  allergies: patient.allergies || []
+});
+
+const serializeEncounter = (encounter) => ({
+  id: encounter._id,
+  encounterNumber: encounter.encounterNumber,
+  patientId: encounter.patient?._id || encounter.patient || null,
+  patientName: encounter.patient?.firstName ? `${encounter.patient.firstName} ${encounter.patient.lastName}`.trim() : null,
+  encounterType: encounter.encounterType,
+  department: encounter.department,
+  facilityId: encounter.facility?._id || encounter.facility,
+  facilityName: encounter.facility?.name || null,
+  assignedTo: encounter.assignedTo?.name || null,
+  assignedRole: encounter.assignedRole,
+  status: encounter.status,
+  nextAction: encounter.nextAction,
+  claimStatus: encounter.claimStatus
+});
+
+const serializeClaim = (claim) => ({
+  id: claim._id,
+  claimNumber: claim.claimNumber,
+  patientName: claim.patient?.firstName ? `${claim.patient.firstName} ${claim.patient.lastName}`.trim() : null,
+  payer: claim.payer,
+  amount: claim.amount,
+  status: claim.status,
+  stage: claim.stage,
+  denialRisk: claim.denialRisk,
+  facilityName: claim.facility?.name || null
+});
+
 // @route  GET /api/hospital/overview
 exports.getOverview = asyncHandler(async (req, res) => {
   const [facilities, totalPatients, totalClaims, totalStaff, recentEncounters] = await Promise.all([
@@ -162,21 +206,7 @@ exports.getPatients = asyncHandler(async (req, res) => {
   const patients = await Patient.find(query).sort('-createdAt').populate('facility', 'name code type');
   sendSuccess(res, 200, 'Hospital patients fetched.', {
     total: patients.length,
-    patients: patients.map((patient) => ({
-      id: patient._id,
-      mrn: patient.mrn,
-      name: `${patient.firstName} ${patient.lastName}`.trim(),
-      gender: patient.gender,
-      phone: patient.phone,
-      visitType: patient.visitType,
-      triageLevel: patient.triageLevel,
-      department: patient.department,
-      facilityId: patient.facility?._id || patient.facility,
-      facilityName: patient.facility?.name || null,
-      insurance: patient.insuranceProfiles?.[0] || null,
-      currentStatus: patient.currentStatus,
-      allergies: patient.allergies || []
-    }))
+    patients: patients.map(serializePatient)
   });
 });
 
@@ -242,7 +272,69 @@ exports.createPatient = asyncHandler(async (req, res) => {
     }
   }
 
-  sendSuccess(res, 201, 'Patient registered successfully.', { patient });
+  await patient.populate('facility', 'name code type');
+  sendSuccess(res, 201, 'Patient registered successfully.', { patient: serializePatient(patient) });
+});
+
+// @route  PUT /api/hospital/patients/:id
+exports.updatePatient = asyncHandler(async (req, res) => {
+  const patient = await Patient.findById(req.params.id).populate('facility', 'name code type');
+  if (!patient) return sendError(res, 404, 'Patient not found.');
+
+  const {
+    firstName,
+    lastName,
+    name,
+    gender,
+    dateOfBirth,
+    phone,
+    email,
+    nationalId,
+    visitType,
+    department,
+    triageLevel,
+    currentStatus,
+    facilityId,
+    insuranceProvider,
+    insuranceMemberNumber,
+    planName,
+    allergies
+  } = req.body || {};
+
+  if (name && !firstName && !lastName) {
+    const parsed = parseName(name);
+    patient.firstName = parsed.firstName;
+    patient.lastName = parsed.lastName;
+  }
+  if (firstName) patient.firstName = firstName;
+  if (lastName) patient.lastName = lastName;
+  if (gender) patient.gender = gender;
+  if (dateOfBirth) patient.dateOfBirth = dateOfBirth;
+  if (phone !== undefined) patient.phone = phone;
+  if (email !== undefined) patient.email = email;
+  if (nationalId !== undefined) patient.nationalId = nationalId;
+  if (visitType) patient.visitType = visitType;
+  if (department) patient.department = department;
+  if (triageLevel) patient.triageLevel = triageLevel;
+  if (currentStatus) patient.currentStatus = currentStatus;
+  if (Array.isArray(allergies)) patient.allergies = allergies;
+  if (facilityId) {
+    const facility = await Facility.findById(facilityId);
+    if (!facility) return sendError(res, 400, 'Invalid facilityId.');
+    patient.facility = facility._id;
+  }
+  if (insuranceProvider) {
+    patient.insuranceProfiles = [{
+      provider: insuranceProvider,
+      memberNumber: insuranceMemberNumber || null,
+      planName: planName || null,
+      isPrimary: true
+    }];
+  }
+
+  await patient.save();
+  await patient.populate('facility', 'name code type');
+  sendSuccess(res, 200, 'Patient updated successfully.', { patient: serializePatient(patient) });
 });
 
 // @route  GET /api/hospital/encounters
@@ -261,21 +353,7 @@ exports.getEncounters = asyncHandler(async (req, res) => {
 
   sendSuccess(res, 200, 'Hospital encounters fetched.', {
     total: encounters.length,
-    encounters: encounters.map((encounter) => ({
-      id: encounter._id,
-      encounterNumber: encounter.encounterNumber,
-      patientId: encounter.patient?._id || null,
-      patientName: encounter.patient ? `${encounter.patient.firstName} ${encounter.patient.lastName}`.trim() : null,
-      encounterType: encounter.encounterType,
-      department: encounter.department,
-      facilityId: encounter.facility?._id || encounter.facility,
-      facilityName: encounter.facility?.name || null,
-      assignedTo: encounter.assignedTo?.name || null,
-      assignedRole: encounter.assignedRole,
-      status: encounter.status,
-      nextAction: encounter.nextAction,
-      claimStatus: encounter.claimStatus
-    }))
+    encounters: encounters.map(serializeEncounter)
   });
 });
 
@@ -330,7 +408,64 @@ exports.createEncounter = asyncHandler(async (req, res) => {
     await patient.save();
   }
 
-  sendSuccess(res, 201, 'Encounter created successfully.', { encounter });
+  await encounter.populate('patient', 'mrn firstName lastName');
+  await encounter.populate('facility', 'name code');
+  await encounter.populate('assignedTo', 'name role');
+  sendSuccess(res, 201, 'Encounter created successfully.', { encounter: serializeEncounter(encounter) });
+});
+
+// @route  PUT /api/hospital/encounters/:id
+exports.updateEncounter = asyncHandler(async (req, res) => {
+  const encounter = await Encounter.findById(req.params.id)
+    .populate('patient', 'mrn firstName lastName currentStatus')
+    .populate('facility', 'name code')
+    .populate('assignedTo', 'name role');
+  if (!encounter) return sendError(res, 404, 'Encounter not found.');
+
+  const {
+    department,
+    encounterType,
+    assignedToId,
+    assignedRole,
+    status,
+    nextAction,
+    claimStatus,
+    triageNotes,
+    diagnosisSummary
+  } = req.body || {};
+
+  if (department) encounter.department = department;
+  if (encounterType) encounter.encounterType = encounterType;
+  if (assignedToId) {
+    const assignedUser = await User.findById(assignedToId);
+    if (!assignedUser) return sendError(res, 404, 'Assigned staff user not found.');
+    encounter.assignedTo = assignedUser._id;
+    encounter.assignedRole = assignedRole || assignedUser.role;
+  } else if (assignedRole) {
+    encounter.assignedRole = assignedRole;
+  }
+  if (status) encounter.status = status;
+  if (nextAction !== undefined) encounter.nextAction = nextAction;
+  if (claimStatus) encounter.claimStatus = claimStatus;
+  if (triageNotes !== undefined) encounter.triageNotes = triageNotes;
+  if (diagnosisSummary !== undefined) encounter.diagnosisSummary = diagnosisSummary;
+  if (status === 'admitted' && !encounter.admittedAt) encounter.admittedAt = new Date();
+  if (status === 'discharged') encounter.dischargedAt = new Date();
+
+  await encounter.save();
+
+  const patient = await Patient.findById(encounter.patient?._id || encounter.patient);
+  if (patient && status) {
+    if (status === 'admitted') patient.currentStatus = 'admitted';
+    if (['discharged', 'closed'].includes(status)) patient.currentStatus = 'discharged';
+    if (['active', 'critical-review', 'triage-complete', 'awaiting-vitals'].includes(status)) patient.currentStatus = 'under-review';
+    await patient.save();
+  }
+
+  await encounter.populate('patient', 'mrn firstName lastName');
+  await encounter.populate('facility', 'name code');
+  await encounter.populate('assignedTo', 'name role');
+  sendSuccess(res, 200, 'Encounter updated successfully.', { encounter: serializeEncounter(encounter) });
 });
 
 // @route  GET /api/hospital/staff
@@ -364,17 +499,7 @@ exports.getClaims = asyncHandler(async (req, res) => {
 
   sendSuccess(res, 200, 'Hospital claims fetched.', {
     summary,
-    claims: claims.map((claim) => ({
-      id: claim._id,
-      claimNumber: claim.claimNumber,
-      patientName: claim.patient ? `${claim.patient.firstName} ${claim.patient.lastName}`.trim() : null,
-      payer: claim.payer,
-      amount: claim.amount,
-      status: claim.status,
-      stage: claim.stage,
-      denialRisk: claim.denialRisk,
-      facilityName: claim.facility?.name || null
-    }))
+    claims: claims.map(serializeClaim)
   });
 });
 
@@ -410,7 +535,39 @@ exports.createClaim = asyncHandler(async (req, res) => {
     submittedAt: ['submitted', 'pending-authorization', 'partially-paid', 'paid'].includes(status) ? new Date() : undefined
   });
 
-  sendSuccess(res, 201, 'Claim created successfully.', { claim });
+  await claim.populate('patient', 'mrn firstName lastName');
+  await claim.populate('facility', 'name code');
+  sendSuccess(res, 201, 'Claim created successfully.', { claim: serializeClaim(claim) });
+});
+
+// @route  PUT /api/hospital/claims/:id
+exports.updateClaim = asyncHandler(async (req, res) => {
+  const claim = await Claim.findById(req.params.id)
+    .populate('patient', 'mrn firstName lastName')
+    .populate('facility', 'name code');
+  if (!claim) return sendError(res, 404, 'Claim not found.');
+
+  const { payer, memberNumber, amount, status, stage, denialRisk, notes } = req.body || {};
+  if (payer !== undefined) claim.payer = payer;
+  if (memberNumber !== undefined) claim.memberNumber = memberNumber;
+  if (amount != null) claim.amount = Number(amount);
+  if (status) {
+    claim.status = status;
+    if (['submitted', 'pending-authorization', 'partially-paid', 'paid'].includes(status) && !claim.submittedAt) {
+      claim.submittedAt = new Date();
+    }
+    if (status === 'paid') {
+      claim.settledAt = new Date();
+    }
+  }
+  if (stage) claim.stage = stage;
+  if (denialRisk) claim.denialRisk = denialRisk;
+  if (notes !== undefined) claim.notes = notes;
+
+  await claim.save();
+  await claim.populate('patient', 'mrn firstName lastName');
+  await claim.populate('facility', 'name code');
+  sendSuccess(res, 200, 'Claim updated successfully.', { claim: serializeClaim(claim) });
 });
 
 // @route  GET /api/hospital/pharmacy

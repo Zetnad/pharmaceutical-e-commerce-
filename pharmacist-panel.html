@@ -417,6 +417,60 @@
       line-height: 1.6;
     }
 
+    .form-grid {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .field label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--bg);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 0.8rem 0.9rem;
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .field textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(13, 158, 110, 0.08);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    .session-summary,
+    .form-message {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
     .dashboard-status {
       margin: 0 0 1rem;
       padding: 0.9rem 1rem;
@@ -524,6 +578,75 @@
 
     <div class="dashboard-status" id="staff-status">Loading live hospital operations data...</div>
 
+    <section class="grid-2" style="margin-bottom: 1rem;">
+      <article class="card">
+        <span class="label blue">Staff access</span>
+        <h2>Demo staff session</h2>
+        <p class="subtext">Use a demo role session to unlock secured write actions such as patient registration and encounter updates.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="staff-session-role">Role</label>
+            <select id="staff-session-role">
+              <option value="nurse">Nurse</option>
+              <option value="clinical_officer">Clinical Officer</option>
+              <option value="doctor">Doctor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staff-session-name">Display name</label>
+            <input id="staff-session-name" type="text" value="Agnes Muthoni" placeholder="Staff name">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="staff-session-start" type="button">Start demo session</button>
+            <button class="btn btn-secondary" id="staff-session-clear" type="button">Clear session</button>
+          </div>
+          <div class="session-summary" id="staff-session-summary">No authenticated write session yet.</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label green">Patient intake</span>
+        <h2>Register a patient</h2>
+        <p class="subtext">This form creates a patient through the secured hospital API and refreshes the queue when successful.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="patient-name">Patient name</label>
+            <input id="patient-name" type="text" placeholder="e.g. Janet Otieno">
+          </div>
+          <div class="field">
+            <label for="patient-phone">Phone</label>
+            <input id="patient-phone" type="text" placeholder="+2547...">
+          </div>
+          <div class="field">
+            <label for="patient-visit-type">Visit type</label>
+            <select id="patient-visit-type">
+              <option value="OPD">OPD</option>
+              <option value="Emergency">Emergency</option>
+              <option value="ANC">ANC</option>
+              <option value="IPD">IPD</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="patient-department">Department</label>
+            <input id="patient-department" type="text" value="Outpatient">
+          </div>
+          <div class="field">
+            <label for="patient-facility">Facility</label>
+            <select id="patient-facility"></select>
+          </div>
+          <div class="field">
+            <label for="patient-insurer">Insurance provider</label>
+            <input id="patient-insurer" type="text" value="SHA">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="patient-submit" type="button">Register patient</button>
+          </div>
+          <div class="form-message" id="patient-form-message"></div>
+        </div>
+      </article>
+    </section>
+
     <section class="stats" id="staff-stats"></section>
 
     <section class="grid-2" style="margin-bottom: 1rem;">
@@ -599,13 +722,108 @@
         <div class="checklist" id="ai-operations"></div>
       </article>
     </section>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <article class="card">
+        <span class="label amber">Encounter creation</span>
+        <h2>Create a new encounter</h2>
+        <p class="subtext">Create a structured encounter linked to a patient and facility using the live hospital route set.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="encounter-patient">Patient</label>
+            <select id="encounter-patient"></select>
+          </div>
+          <div class="field">
+            <label for="encounter-facility">Facility</label>
+            <select id="encounter-facility"></select>
+          </div>
+          <div class="field">
+            <label for="encounter-type">Encounter type</label>
+            <select id="encounter-type">
+              <option value="outpatient">Outpatient</option>
+              <option value="emergency">Emergency</option>
+              <option value="maternity">Maternity</option>
+              <option value="inpatient">Inpatient</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="encounter-department">Department</label>
+            <input id="encounter-department" type="text" value="Outpatient">
+          </div>
+          <div class="field">
+            <label for="encounter-role">Assigned role</label>
+            <select id="encounter-role">
+              <option value="clinical_officer">Clinical Officer</option>
+              <option value="nurse">Nurse</option>
+              <option value="doctor">Doctor</option>
+              <option value="pharmacist">Pharmacist</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="encounter-status">Status</label>
+            <select id="encounter-status">
+              <option value="registered">Registered</option>
+              <option value="triage-complete">Triage Complete</option>
+              <option value="active">Active</option>
+              <option value="critical-review">Critical Review</option>
+              <option value="admitted">Admitted</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="encounter-next-action">Next action</label>
+            <textarea id="encounter-next-action">Clinical review pending.</textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="encounter-submit" type="button">Create encounter</button>
+          </div>
+          <div class="form-message" id="encounter-form-message"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label blue">Encounter update</span>
+        <h2>Update encounter status</h2>
+        <p class="subtext">Use a secured write action to move an encounter through the hospital workflow in-place.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="encounter-update-id">Encounter</label>
+            <select id="encounter-update-id"></select>
+          </div>
+          <div class="field">
+            <label for="encounter-update-status">New status</label>
+            <select id="encounter-update-status">
+              <option value="active">Active</option>
+              <option value="critical-review">Critical Review</option>
+              <option value="admitted">Admitted</option>
+              <option value="discharged">Discharged</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="encounter-update-action">Next action</label>
+            <textarea id="encounter-update-action">Complete next clinical step.</textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="encounter-update-submit" type="button">Update encounter</button>
+          </div>
+          <div class="form-message" id="encounter-update-message"></div>
+        </div>
+      </article>
+    </section>
   </main>
 
   <script>
     const API_URL = `${window.location.protocol}//${window.location.hostname || "localhost"}:5000/api`;
+    const STORAGE_TOKEN_KEY = 'medihubHospitalDemoToken';
+    const STORAGE_PROFILE_KEY = 'medihubHospitalDemoProfile';
 
     const fallbackData = {
       overview: {
+        facilities: [
+          { id: 'fac-main', name: 'MediHub Main Hospital' },
+          { id: 'fac-clinic', name: 'Riverside Specialist Clinic' },
+          { id: 'fac-maternity', name: 'Community Maternity Centre' }
+        ],
         kpis: {
           totalPatientsToday: 412,
           occupancyRate: 0.84,
@@ -618,14 +836,14 @@
         }
       },
       patients: [
-        { mrn: 'MH-1001', name: 'Amina Noor', triageLevel: 'medium', department: 'Outpatient', currentStatus: 'waiting', allergies: ['Penicillin'] },
-        { mrn: 'MH-1002', name: 'Peter Mwangi', triageLevel: 'high', department: 'Emergency', currentStatus: 'under-review', allergies: [] },
-        { mrn: 'MH-1003', name: 'Faith Akinyi', triageLevel: 'low', department: 'Maternity', currentStatus: 'queued', allergies: [] }
+        { id: 'pt-1001', mrn: 'MH-1001', name: 'Amina Noor', triageLevel: 'medium', department: 'Outpatient', currentStatus: 'waiting', allergies: ['Penicillin'] },
+        { id: 'pt-1002', mrn: 'MH-1002', name: 'Peter Mwangi', triageLevel: 'high', department: 'Emergency', currentStatus: 'under-review', allergies: [] },
+        { id: 'pt-1003', mrn: 'MH-1003', name: 'Faith Akinyi', triageLevel: 'low', department: 'Maternity', currentStatus: 'queued', allergies: [] }
       ],
       encounters: [
-        { patientId: 'pt-1001', patientName: 'Amina Noor', department: 'Outpatient', assignedTo: 'Kelvin Mutua', assignedRole: 'clinical_officer', status: 'triage-complete', nextAction: 'Consultation and malaria screen' },
-        { patientId: 'pt-1002', patientName: 'Peter Mwangi', department: 'Emergency', assignedTo: 'Dr. Leah Kimani', assignedRole: 'doctor', status: 'critical-review', nextAction: 'ECG, troponin, urgent physician review' },
-        { patientId: 'pt-1003', patientName: 'Faith Akinyi', department: 'ANC', assignedTo: 'Agnes Muthoni', assignedRole: 'nurse', status: 'awaiting-vitals', nextAction: 'Routine ANC checks and labs' }
+        { id: 'enc-001', patientId: 'pt-1001', patientName: 'Amina Noor', department: 'Outpatient', assignedTo: 'Kelvin Mutua', assignedRole: 'clinical_officer', status: 'triage-complete', nextAction: 'Consultation and malaria screen' },
+        { id: 'enc-002', patientId: 'pt-1002', patientName: 'Peter Mwangi', department: 'Emergency', assignedTo: 'Dr. Leah Kimani', assignedRole: 'doctor', status: 'critical-review', nextAction: 'ECG, troponin, urgent physician review' },
+        { id: 'enc-003', patientId: 'pt-1003', patientName: 'Faith Akinyi', department: 'ANC', assignedTo: 'Agnes Muthoni', assignedRole: 'nurse', status: 'awaiting-vitals', nextAction: 'Routine ANC checks and labs' }
       ],
       staff: [
         { name: 'Kelvin Mutua', role: 'clinical_officer', workload: 0.84 },
@@ -672,6 +890,35 @@
     const staffingBodyEl = document.getElementById('staffing-table-body');
     const aiOperationsEl = document.getElementById('ai-operations');
     const staffStatusEl = document.getElementById('staff-status');
+    const sessionRoleEl = document.getElementById('staff-session-role');
+    const sessionNameEl = document.getElementById('staff-session-name');
+    const sessionSummaryEl = document.getElementById('staff-session-summary');
+    const sessionStartEl = document.getElementById('staff-session-start');
+    const sessionClearEl = document.getElementById('staff-session-clear');
+    const patientNameEl = document.getElementById('patient-name');
+    const patientPhoneEl = document.getElementById('patient-phone');
+    const patientVisitTypeEl = document.getElementById('patient-visit-type');
+    const patientDepartmentEl = document.getElementById('patient-department');
+    const patientFacilityEl = document.getElementById('patient-facility');
+    const patientInsurerEl = document.getElementById('patient-insurer');
+    const patientSubmitEl = document.getElementById('patient-submit');
+    const patientMessageEl = document.getElementById('patient-form-message');
+    const encounterPatientEl = document.getElementById('encounter-patient');
+    const encounterFacilityEl = document.getElementById('encounter-facility');
+    const encounterTypeEl = document.getElementById('encounter-type');
+    const encounterDepartmentEl = document.getElementById('encounter-department');
+    const encounterRoleEl = document.getElementById('encounter-role');
+    const encounterStatusEl = document.getElementById('encounter-status');
+    const encounterActionEl = document.getElementById('encounter-next-action');
+    const encounterSubmitEl = document.getElementById('encounter-submit');
+    const encounterMessageEl = document.getElementById('encounter-form-message');
+    const encounterUpdateIdEl = document.getElementById('encounter-update-id');
+    const encounterUpdateStatusEl = document.getElementById('encounter-update-status');
+    const encounterUpdateActionEl = document.getElementById('encounter-update-action');
+    const encounterUpdateSubmitEl = document.getElementById('encounter-update-submit');
+    const encounterUpdateMessageEl = document.getElementById('encounter-update-message');
+
+    let currentHospitalData = JSON.parse(JSON.stringify(fallbackData));
 
     function escapeHtml(value) {
       return String(value)
@@ -699,6 +946,39 @@
       staffStatusEl.textContent = isFallback ? `${message} Showing local fallback view.` : message;
     }
 
+    function getStoredProfile() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_PROFILE_KEY) || 'null');
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function getStoredToken() {
+      return localStorage.getItem(STORAGE_TOKEN_KEY) || '';
+    }
+
+    function persistSession(token, profile) {
+      localStorage.setItem(STORAGE_TOKEN_KEY, token);
+      localStorage.setItem(STORAGE_PROFILE_KEY, JSON.stringify(profile));
+      syncSessionUi();
+    }
+
+    function clearSession() {
+      localStorage.removeItem(STORAGE_TOKEN_KEY);
+      localStorage.removeItem(STORAGE_PROFILE_KEY);
+      syncSessionUi();
+    }
+
+    function syncSessionUi() {
+      const profile = getStoredProfile();
+      if (profile) {
+        sessionSummaryEl.textContent = `Authenticated as ${profile.name} (${formatRole(profile.role)}). Write-enabled hospital actions are available.`;
+      } else {
+        sessionSummaryEl.textContent = 'No authenticated write session yet.';
+      }
+    }
+
     async function fetchJson(path) {
       const response = await fetch(`${API_URL}${path}`);
       const data = await response.json();
@@ -706,6 +986,49 @@
         throw new Error(data.message || `Failed to load ${path}`);
       }
       return data;
+    }
+
+    async function fetchAuthorizedJson(path, options = {}) {
+      const token = getStoredToken();
+      if (!token) {
+        throw new Error('Start a demo staff session before submitting write actions.');
+      }
+
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        ...(options.headers || {})
+      };
+      const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || `Failed to submit ${path}`);
+      }
+      return data;
+    }
+
+    function setFormMessage(element, message, isError = false) {
+      element.textContent = message;
+      element.style.color = isError ? '#b91c1c' : '';
+    }
+
+    function fillSelect(element, items, valueGetter, labelGetter, placeholder = 'Select an option') {
+      element.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + items.map((item) => {
+        const value = valueGetter(item);
+        const label = labelGetter(item);
+        return `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`;
+      }).join('');
+    }
+
+    function populateActionForms(data) {
+      const facilities = data.overview.facilities || [];
+      fillSelect(patientFacilityEl, facilities, (facility) => facility.id, (facility) => facility.name, 'Choose facility');
+      fillSelect(encounterFacilityEl, facilities, (facility) => facility.id, (facility) => facility.name, 'Choose facility');
+      fillSelect(encounterPatientEl, data.patients || [], (patient) => patient.id, (patient) => `${patient.name} (${patient.mrn})`, 'Choose patient');
+      fillSelect(encounterUpdateIdEl, data.encounters || [], (encounter) => encounter.id, (encounter) => `${encounter.patientName || 'Patient'} · ${encounter.status}`, 'Choose encounter');
+
+      if (!patientFacilityEl.value && facilities[0]) patientFacilityEl.value = facilities[0].id;
+      if (!encounterFacilityEl.value && facilities[0]) encounterFacilityEl.value = facilities[0].id;
     }
 
     function renderStats(data) {
@@ -874,12 +1197,110 @@
     }
 
     function renderDashboard(data) {
+      currentHospitalData = data;
       renderStats(data);
       renderQueue(data);
       renderWorkload(data);
       renderDetailSections(data);
       renderStaffing(data);
       renderAi(data);
+      populateActionForms(data);
+    }
+
+    async function startDemoSession() {
+      sessionStartEl.disabled = true;
+      try {
+        const role = sessionRoleEl.value;
+        const name = sessionNameEl.value.trim() || 'Demo Staff';
+        const email = `${role}.${name.toLowerCase().replace(/[^a-z0-9]+/g, '.')}@demo.local`;
+        const response = await fetch(`${API_URL}/auth/demo-login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name, role, password: 'demo123', remember: true })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Failed to start demo session.');
+        }
+        persistSession(data.token, data.profile);
+      } catch (error) {
+        sessionSummaryEl.textContent = error.message || 'Unable to start demo session.';
+      } finally {
+        sessionStartEl.disabled = false;
+      }
+    }
+
+    async function submitPatient() {
+      patientSubmitEl.disabled = true;
+      setFormMessage(patientMessageEl, 'Submitting patient registration...');
+      try {
+        const data = await fetchAuthorizedJson('/hospital/patients', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: patientNameEl.value.trim(),
+            phone: patientPhoneEl.value.trim(),
+            visitType: patientVisitTypeEl.value,
+            department: patientDepartmentEl.value.trim(),
+            facilityId: patientFacilityEl.value,
+            insuranceProvider: patientInsurerEl.value.trim() || 'self-pay'
+          })
+        });
+        setFormMessage(patientMessageEl, `${data.patient.name} registered successfully.`);
+        patientNameEl.value = '';
+        patientPhoneEl.value = '';
+        await loadDashboard();
+      } catch (error) {
+        setFormMessage(patientMessageEl, error.message || 'Failed to register patient.', true);
+      } finally {
+        patientSubmitEl.disabled = false;
+      }
+    }
+
+    async function submitEncounter() {
+      encounterSubmitEl.disabled = true;
+      setFormMessage(encounterMessageEl, 'Creating encounter...');
+      try {
+        const data = await fetchAuthorizedJson('/hospital/encounters', {
+          method: 'POST',
+          body: JSON.stringify({
+            patientId: encounterPatientEl.value,
+            facilityId: encounterFacilityEl.value,
+            encounterType: encounterTypeEl.value,
+            department: encounterDepartmentEl.value.trim(),
+            assignedRole: encounterRoleEl.value,
+            status: encounterStatusEl.value,
+            nextAction: encounterActionEl.value.trim()
+          })
+        });
+        setFormMessage(encounterMessageEl, `Encounter ${data.encounter.encounterNumber || ''} created successfully.`);
+        await loadDashboard();
+      } catch (error) {
+        setFormMessage(encounterMessageEl, error.message || 'Failed to create encounter.', true);
+      } finally {
+        encounterSubmitEl.disabled = false;
+      }
+    }
+
+    async function updateEncounter() {
+      encounterUpdateSubmitEl.disabled = true;
+      setFormMessage(encounterUpdateMessageEl, 'Updating encounter...');
+      try {
+        const encounterId = encounterUpdateIdEl.value;
+        if (!encounterId) throw new Error('Choose an encounter to update.');
+        const data = await fetchAuthorizedJson(`/hospital/encounters/${encounterId}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            status: encounterUpdateStatusEl.value,
+            nextAction: encounterUpdateActionEl.value.trim()
+          })
+        });
+        setFormMessage(encounterUpdateMessageEl, `Encounter ${data.encounter.encounterNumber || ''} updated to ${data.encounter.status}.`);
+        await loadDashboard();
+      } catch (error) {
+        setFormMessage(encounterUpdateMessageEl, error.message || 'Failed to update encounter.', true);
+      } finally {
+        encounterUpdateSubmitEl.disabled = false;
+      }
     }
 
     async function loadDashboard() {
@@ -916,6 +1337,12 @@
       }
     }
 
+    sessionStartEl.addEventListener('click', startDemoSession);
+    sessionClearEl.addEventListener('click', clearSession);
+    patientSubmitEl.addEventListener('click', submitPatient);
+    encounterSubmitEl.addEventListener('click', submitEncounter);
+    encounterUpdateSubmitEl.addEventListener('click', updateEncounter);
+    syncSessionUi();
     loadDashboard();
   </script>
 </body>

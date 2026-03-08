@@ -32,14 +32,20 @@ function saveToDisk() {
   } catch (e) { console.warn('demoAuth save failed', e); }
 }
 
-function issue(email, ttlSeconds = 3600) {
+function issue(email, ttlSeconds = 3600, options = {}) {
   const t = `demo-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const issuedAt = Date.now();
   const expiresAt = issuedAt + ttlSeconds * 1000;
-  const meta = { email, issuedAt, expiresAt };
+  const meta = {
+    email,
+    name: options.name || email || 'Demo User',
+    role: options.role || 'admin',
+    issuedAt,
+    expiresAt
+  };
   store.set(t, meta);
   saveToDisk();
-  console.log(`[demoAuth] issued token for ${email} expiresAt=${new Date(expiresAt).toISOString()}`);
+  console.log(`[demoAuth] issued ${meta.role} token for ${email} expiresAt=${new Date(expiresAt).toISOString()}`);
   return { token: t, issuedAt, expiresAt };
 }
 
@@ -70,10 +76,11 @@ function getProfile(token) {
   const meta = store.get(token);
   if (!meta) return null;
   return {
-    id: 'demo-admin',
-    name: meta.email || 'Demo Admin',
+    id: `demo-${meta.role || 'admin'}`,
+    _id: `demo-${meta.role || 'admin'}`,
+    name: meta.name || meta.email || 'Demo User',
     email: meta.email || 'demo@local',
-    role: 'admin',
+    role: meta.role || 'admin',
     demo: true,
     issuedAt: meta.issuedAt,
     expiresAt: meta.expiresAt

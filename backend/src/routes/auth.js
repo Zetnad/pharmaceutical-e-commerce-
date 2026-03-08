@@ -6,14 +6,23 @@ const demoAuth = require('../config/demoAuth');
 
 // Demo admin login (only used when server runs in demo mode)
 router.post('/demo-login', (req, res) => {
-	const { email, password } = req.body || {};
+	const { email, password, role, name } = req.body || {};
 	const demoPassword = process.env.DEMO_ADMIN_PASSWORD || 'demo123';
 	// basic check — accept any email but require demo password
 	if (!password || password !== demoPassword) return res.status(401).json({ success: false, message: 'Invalid demo credentials' });
 	const remember = req.body.remember === true || req.body.remember === 'true';
 	const ttl = remember ? 7 * 24 * 3600 : 3600; // 7 days vs 1 hour
-	const issued = demoAuth.issue(email || 'demo@local', ttl);
-	return res.json({ success: true, message: 'Demo admin token issued', token: issued.token, issuedAt: issued.issuedAt, expiresAt: issued.expiresAt });
+	const allowedRoles = ['admin', 'doctor', 'nurse', 'clinical_officer', 'pharmacist', 'finance', 'hr'];
+	const demoRole = allowedRoles.includes(role) ? role : 'admin';
+	const issued = demoAuth.issue(email || `${demoRole}@demo.local`, ttl, { role: demoRole, name: name || email || 'Demo Staff' });
+	return res.json({
+		success: true,
+		message: 'Demo staff token issued',
+		token: issued.token,
+		profile: demoAuth.getProfile(issued.token),
+		issuedAt: issued.issuedAt,
+		expiresAt: issued.expiresAt
+	});
 });
 
 router.post('/register', register);
