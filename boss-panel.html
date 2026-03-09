@@ -1,1386 +1,1885 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MediHub Boss Panel — Super Admin</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap"
-        rel="stylesheet" />
-    <style>
-        :root {
-            --emerald: #0d9e6e;
-            --emerald-dark: #076b4a;
-            --emerald-light: #d1fae5;
-            --navy: #0b1120;
-            --navy-mid: #132135;
-            --navy-soft: #1e3a5f;
-            --cream: #fdfaf5;
-            --text-primary: #0b1120;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --white: #fff;
-            --red: #e05252;
-            --gold: #e8a838;
-            --blue: #3b82f6;
-            --purple: #8b5cf6;
-            --radius: 14px
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box
-        }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: #f0f2f5;
-            color: var(--text-primary);
-            display: flex;
-            height: 100vh;
-            overflow: hidden
-        }
-
-        /* ── Sidebar ── */
-        .sidebar {
-            width: 270px;
-            background: linear-gradient(180deg, #0b1120 0%, #132135 100%);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-            overflow-y: auto
-        }
-
-        .sidebar-header {
-            padding: 1.8rem 1.6rem 1.2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, .06)
-        }
-
-        .brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.45rem;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            gap: 10px
-        }
-
-        .brand em {
-            color: var(--emerald);
-            font-style: normal
-        }
-
-        .brand-badge {
-            font-size: .55rem;
-            background: var(--emerald);
-            color: #fff;
-            padding: 2px 8px;
-            border-radius: 50px;
-            font-weight: 600;
-            letter-spacing: .06em
-        }
-
-        .sidebar-nav {
-            padding: 1rem .8rem;
-            flex: 1
-        }
-
-        .nav-label {
-            font-size: .65rem;
-            text-transform: uppercase;
-            color: #475569;
-            letter-spacing: .1em;
-            padding: .8rem .8rem .4rem;
-            font-weight: 600
-        }
-
-        .nav-item {
-            padding: 10px 14px;
-            margin-bottom: 2px;
-            border-radius: 10px;
-            color: #94a3b8;
-            cursor: pointer;
-            transition: all .2s;
-            font-weight: 500;
-            font-size: .88rem;
-            display: flex;
-            align-items: center;
-            gap: 10px
-        }
-
-        .nav-item:hover,
-        .nav-item.active {
-            background: rgba(13, 158, 110, .12);
-            color: #d1fae5
-        }
-
-        .nav-item .icon {
-            width: 20px;
-            text-align: center;
-            font-size: 1rem
-        }
-
-        .nav-item .badge-count {
-            margin-left: auto;
-            background: var(--red);
-            color: #fff;
-            font-size: .65rem;
-            padding: 2px 7px;
-            border-radius: 50px;
-            font-weight: 600
-        }
-
-        .sidebar-footer {
-            padding: 1rem 1.4rem;
-            border-top: 1px solid rgba(255, 255, 255, .06)
-        }
-
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px
-        }
-
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: .85rem;
-            color: #fff
-        }
-
-        .admin-info .name {
-            font-size: .85rem;
-            font-weight: 600;
-            color: #fff
-        }
-
-        .admin-info .role {
-            font-size: .7rem;
-            color: #64748b
-        }
-
-        .logout-btn {
-            padding: 10px;
-            text-align: center;
-            color: var(--red);
-            cursor: pointer;
-            font-weight: 600;
-            border: 1px solid rgba(224, 82, 82, .2);
-            border-radius: 8px;
-            font-size: .82rem;
-            transition: all .2s
-        }
-
-        .logout-btn:hover {
-            background: rgba(224, 82, 82, .1)
-        }
-
-        /* ── Main Content ── */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            background: #f0f2f5
-        }
-
-        .top-bar {
-            background: #fff;
-            padding: 1rem 2.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 10
-        }
-
-        .top-bar h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--navy)
-        }
-
-        .top-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            padding: 8px 16px;
-            gap: 8px;
-            width: 260px
-        }
-
-        .search-box input {
-            border: none;
-            background: none;
-            outline: none;
-            font-family: inherit;
-            font-size: .85rem;
-            flex: 1;
-            color: var(--text-primary)
-        }
-
-        .notif-bell {
-            position: relative;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.1rem
-        }
-
-        .notif-bell .dot {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 8px;
-            height: 8px;
-            background: var(--red);
-            border-radius: 50%;
-            border: 2px solid #fff
-        }
-
-        .content-area {
-            padding: 2rem 2.5rem
-        }
-
-        /* ── Views ── */
-        .view {
-            display: none
-        }
-
-        .view.active {
-            display: block;
-            animation: fadeIn .3s ease
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
-        }
-
-        /* ── Stats Cards ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.2rem;
-            margin-bottom: 2rem
-        }
-
-        .stat-card {
-            background: #fff;
-            padding: 1.4rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-            transition: all .2s
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, .06)
-        }
-
-        .stat-card .accent {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px
-        }
-
-        .stat-card:nth-child(1) .accent {
-            background: var(--emerald)
-        }
-
-        .stat-card:nth-child(2) .accent {
-            background: var(--blue)
-        }
-
-        .stat-card:nth-child(3) .accent {
-            background: var(--gold)
-        }
-
-        .stat-card:nth-child(4) .accent {
-            background: var(--purple)
-        }
-
-        .stat-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: .8rem
-        }
-
-        .stat-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem
-        }
-
-        .stat-trend {
-            font-size: .72rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            gap: 3px
-        }
-
-        .trend-up {
-            background: #d1fae5;
-            color: #065f46
-        }
-
-        .trend-down {
-            background: #fee2e2;
-            color: #991b1b
-        }
-
-        .stat-lbl {
-            font-size: .75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: .04em;
-            margin-bottom: 4px
-        }
-
-        .stat-val {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--navy);
-            font-family: 'DM Mono', monospace
-        }
-
-        .stat-sub {
-            font-size: .72rem;
-            color: var(--text-muted);
-            margin-top: 4px
-        }
-
-        .sparkline {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 30px;
-            margin-top: 8px
-        }
-
-        .sparkline .bar {
-            width: 6px;
-            border-radius: 3px;
-            transition: height .3s
-        }
-
-        /* ── Cards & Tables ── */
-        .card {
-            background: #fff;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            overflow: hidden;
-            margin-bottom: 1.5rem
-        }
-
-        .card-header {
-            padding: 1.1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            font-weight: 600;
-            font-size: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center
-        }
-
-        .card-header .subtitle {
-            font-size: .78rem;
-            color: var(--text-muted);
-            font-weight: 400
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse
-        }
-
-        th {
-            background: #f8fafc;
-            padding: 11px 15px;
-            text-align: left;
-            font-size: .73rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border)
-        }
-
-        td {
-            padding: 13px 15px;
-            border-bottom: 1px solid var(--border);
-            font-size: .87rem;
-            vertical-align: middle
-        }
-
-        tr:last-child td {
-            border-bottom: none
-        }
-
-        tr:hover {
-            background: #f8fafc
-        }
-
-        .badge {
-            padding: 4px 10px;
-            border-radius: 50px;
-            font-size: .72rem;
-            font-weight: 600
-        }
-
-        .b-verified,
-        .b-active {
-            background: var(--emerald-light);
-            color: var(--emerald-dark)
-        }
-
-        .b-pending {
-            background: #fef3c7;
-            color: #b45309
-        }
-
-        .b-suspended {
-            background: #fee2e2;
-            color: #991b1b
-        }
-
-        .b-pro {
-            background: #dbeafe;
-            color: #1e40af
-        }
-
-        .b-enterprise {
-            background: #ede9fe;
-            color: #6d28d9
-        }
-
-        /* ── Buttons ── */
-        .btn-sm {
-            padding: 6px 14px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: .78rem;
-            font-weight: 500;
-            font-family: inherit;
-            transition: all .15s
-        }
-
-        .btn-primary {
-            background: var(--navy);
-            color: #fff
-        }
-
-        .btn-primary:hover {
-            background: var(--navy-soft)
-        }
-
-        .btn-outline {
-            background: #fff;
-            border: 1px solid var(--border);
-            color: var(--text-primary)
-        }
-
-        .btn-outline:hover {
-            border-color: var(--navy)
-        }
-
-        .btn-success {
-            background: var(--emerald);
-            color: #fff
-        }
-
-        .btn-success:hover {
-            background: var(--emerald-dark)
-        }
-
-        .btn-danger {
-            background: var(--red);
-            color: #fff;
-            opacity: .9
-        }
-
-        .btn-danger:hover {
-            opacity: 1
-        }
-
-        /* ── Dashboard Grid ── */
-        .dash-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.5rem
-        }
-
-        .dash-grid-equal {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-top: 1.5rem
-        }
-
-        /* ── Chart placeholder ── */
-        .chart-area {
-            padding: 1.5rem;
-            position: relative;
-            height: 220px
-        }
-
-        .chart-bars {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            height: 180px;
-            padding-top: 10px
-        }
-
-        .chart-bar-wrap {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px
-        }
-
-        .chart-bar {
-            width: 100%;
-            border-radius: 6px 6px 0 0;
-            transition: height .5s ease;
-            min-height: 4px
-        }
-
-        .chart-bar.primary {
-            background: linear-gradient(180deg, var(--emerald), var(--emerald-dark))
-        }
-
-        .chart-bar.secondary {
-            background: linear-gradient(180deg, #60a5fa, #3b82f6)
-        }
-
-        .chart-label {
-            font-size: .65rem;
-            color: var(--text-muted);
-            font-weight: 500
-        }
-
-        /* ── Activity Feed ── */
-        .activity-feed {
-            padding: 1rem 1.5rem
-        }
-
-        .activity-item {
-            display: flex;
-            gap: 12px;
-            padding: 10px 0;
-            border-bottom: 1px solid #f1f5f9
-        }
-
-        .activity-item:last-child {
-            border-bottom: none
-        }
-
-        .activity-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-top: 6px;
-            flex-shrink: 0
-        }
-
-        .activity-dot.green {
-            background: var(--emerald)
-        }
-
-        .activity-dot.blue {
-            background: var(--blue)
-        }
-
-        .activity-dot.gold {
-            background: var(--gold)
-        }
-
-        .activity-dot.red {
-            background: var(--red)
-        }
-
-        .activity-text {
-            font-size: .82rem;
-            color: var(--text-primary);
-            line-height: 1.4
-        }
-
-        .activity-time {
-            font-size: .7rem;
-            color: var(--text-muted);
-            margin-top: 2px
-        }
-
-        /* ── Compliance Cards ── */
-        .compliance-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.2rem;
-            padding: 1.5rem
-        }
-
-        .compliance-card {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 1.2rem;
-            border: 1px solid #e2e8f0
-        }
-
-        .compliance-card h4 {
-            font-size: .9rem;
-            margin-bottom: .5rem;
-            display: flex;
-            align-items: center;
-            gap: 8px
-        }
-
-        .compliance-card p {
-            font-size: .78rem;
-            color: var(--text-muted);
-            line-height: 1.5
-        }
-
-        .compliance-status {
-            font-size: .7rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 50px;
-            margin-top: .8rem;
-            display: inline-block
-        }
-
-        .c-pass {
-            background: #d1fae5;
-            color: #065f46
-        }
-
-        .c-warn {
-            background: #fef3c7;
-            color: #b45309
-        }
-
-        .c-fail {
-            background: #fee2e2;
-            color: #991b1b
-        }
-
-        /* ── Modals ── */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .5);
-            backdrop-filter: blur(4px);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000
-        }
-
-        .modal.active {
-            display: flex
-        }
-
-        .m-card {
-            background: #fff;
-            padding: 2rem;
-            border-radius: var(--radius);
-            width: 440px;
-            max-height: 80vh;
-            overflow-y: auto
-        }
-
-        .m-card h3 {
-            margin-bottom: 1rem;
-            font-family: 'Playfair Display', serif
-        }
-
-        .form-group {
-            margin-bottom: 1rem
-        }
-
-        .form-group label {
-            display: block;
-            font-size: .78rem;
-            font-weight: 600;
-            margin-bottom: 5px
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: .88rem
-        }
-
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical
-        }
-
-        .m-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 1.5rem;
-            justify-content: flex-end
-        }
-
-        /* ── Notification Items ── */
-        .notif-item {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #f1f5f9;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            transition: background .15s;
-            cursor: pointer
-        }
-
-        .notif-item:hover {
-            background: #f8fafc
-        }
-
-        .notif-item.unread {
-            background: #f0fdf4
-        }
-
-        .notif-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .9rem;
-            flex-shrink: 0
-        }
-
-        .notif-body {
-            flex: 1
-        }
-
-        .notif-body strong {
-            font-size: .85rem
-        }
-
-        .notif-body p {
-            font-size: .78rem;
-            color: var(--text-muted);
-            margin-top: 2px
-        }
-
-        .notif-time {
-            font-size: .68rem;
-            color: var(--text-muted);
-            white-space: nowrap
-        }
-
-        /* ── Settings ── */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            padding: 1.5rem
-        }
-
-        .setting-card {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid #e2e8f0
-        }
-
-        .setting-card h4 {
-            font-size: .95rem;
-            margin-bottom: .5rem;
-            color: var(--navy)
-        }
-
-        .setting-card p {
-            font-size: .8rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            line-height: 1.5
-        }
-
-        .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #e2e8f0
-        }
-
-        .toggle-row:last-child {
-            border-bottom: none
-        }
-
-        .toggle-row span {
-            font-size: .82rem
-        }
-
-        .toggle {
-            width: 44px;
-            height: 24px;
-            border-radius: 50px;
-            background: #cbd5e1;
-            position: relative;
-            cursor: pointer;
-            transition: background .2s
-        }
-
-        .toggle.on {
-            background: var(--emerald)
-        }
-
-        .toggle::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #fff;
-            transition: transform .2s;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .15)
-        }
-
-        .toggle.on::after {
-            transform: translateX(20px)
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediHub HMS Command Center</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+  <style>
+    :root {
+      --bg: #08111f;
+      --bg-soft: #122037;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --line: #dce5ef;
+      --text: #0f172a;
+      --muted: #5d6b7d;
+      --brand: #0d9e6e;
+      --brand-dark: #077a56;
+      --brand-soft: #d8f6eb;
+      --blue-soft: #dbeafe;
+      --amber-soft: #fef3c7;
+      --red-soft: #fee2e2;
+      --purple-soft: #ede9fe;
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: #edf2f7;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 300px;
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      color: #fff;
+      padding: 1.4rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.4rem 0.55rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .pill {
+      width: 30px;
+      height: 16px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      position: relative;
+    }
+
+    .pill::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2px;
+      height: 11px;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .brand span {
+      font-size: 0.75rem;
+      color: #90a5bf;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .nav-label {
+      color: #6d829d;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.55rem 0.7rem;
+      font-weight: 700;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      color: #d8e2ef;
+      padding: 0.82rem 0.9rem;
+      border-radius: 14px;
+      margin-bottom: 0.25rem;
+      cursor: pointer;
+      font-size: 0.92rem;
+      font-weight: 600;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: rgba(13, 158, 110, 0.15);
+      transform: translateX(2px);
+    }
+
+    .nav-item em {
+      font-style: normal;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 0.14rem 0.45rem;
+      font-size: 0.72rem;
+    }
+
+    .profile {
+      margin-top: auto;
+      padding: 1rem;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .profile strong {
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .profile span,
+    .profile p {
+      font-size: 0.84rem;
+      color: #adc0d6;
+      line-height: 1.6;
+    }
+
+    .main {
+      flex: 1;
+      padding: 1.2rem;
+      overflow: auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .topbar h1 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      letter-spacing: -0.03em;
+      color: var(--bg);
+    }
+
+    .topbar p {
+      color: var(--muted);
+      margin-top: 0.3rem;
+      line-height: 1.7;
+      max-width: 68ch;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.86rem 1.15rem;
+      border-radius: 999px;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(13, 158, 110, 0.22);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--text);
+      border-color: rgba(15, 23, 42, 0.1);
+    }
+
+    .stats,
+    .grid-3,
+    .grid-2 {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .stats {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      margin-bottom: 1rem;
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow);
+      padding: 1.25rem;
+    }
+
+    .label {
+      display: inline-block;
+      margin-bottom: 0.75rem;
+      padding: 0.3rem 0.62rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .green { background: var(--brand-soft); color: var(--brand-dark); }
+    .blue { background: var(--blue-soft); color: #1d4ed8; }
+    .amber { background: var(--amber-soft); color: #a16207; }
+    .red { background: var(--red-soft); color: #b91c1c; }
+    .purple { background: var(--purple-soft); color: #6d28d9; }
+
+    .stat strong {
+      display: block;
+      font-size: 1.85rem;
+      color: var(--bg);
+      margin-bottom: 0.2rem;
+    }
+
+    .stat span {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      color: var(--bg);
+      margin-bottom: 0.9rem;
+    }
+
+    .subtext {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.65;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.82rem 0.5rem;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.3rem 0.62rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .chip.green { background: var(--brand-soft); color: var(--brand-dark); }
+    .chip.amber { background: var(--amber-soft); color: #a16207; }
+    .chip.red { background: var(--red-soft); color: #b91c1c; }
+    .chip.blue { background: var(--blue-soft); color: #1d4ed8; }
+
+    .branch-name {
+      font-weight: 800;
+      display: block;
+      margin-bottom: 0.18rem;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .stack {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .item {
+      padding: 0.95rem 1rem;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid rgba(15, 23, 42, 0.07);
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 0.28rem;
+      font-size: 0.95rem;
+    }
+
+    .bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #e6edf5;
+      margin-top: 0.7rem;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      border-radius: inherit;
+    }
+
+    .risk-grid {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .risk {
+      padding: 1rem;
+      border-radius: 18px;
+      border: 1px solid rgba(15, 23, 42, 0.07);
+      background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+    }
+
+    .risk strong {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.95rem;
+    }
+
+    .risk p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .field label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--bg);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 0.8rem 0.9rem;
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .field textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(13, 158, 110, 0.08);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    .session-summary,
+    .form-message {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .dashboard-status {
+      margin: 0 0 1rem;
+      padding: 0.95rem 1rem;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      padding: 0.95rem 0;
+    }
+
+    @media (max-width: 1300px) {
+      .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 980px) {
+      body {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="brand">Boss<em>Panel</em> <span class="brand-badge">SUPER ADMIN</span></div>
-        </div>
-        <div class="sidebar-nav">
-            <div class="nav-label">Main</div>
-            <div class="nav-item active" onclick="switchTab('dashboard')"><span class="icon">📊</span> Dashboard</div>
-            <div class="nav-item" onclick="switchTab('tenants')"><span class="icon">🏪</span> Tenants <span
-                    class="badge-count">24</span></div>
-            <div class="nav-item" onclick="switchTab('analytics')"><span class="icon">📈</span> Analytics</div>
-            <div class="nav-item" onclick="switchTab('revenue')"><span class="icon">💰</span> Revenue</div>
-            <div class="nav-label">Platform</div>
-            <div class="nav-item" onclick="switchTab('domains')"><span class="icon">🌐</span> Domains</div>
-            <div class="nav-item" onclick="switchTab('compliance')"><span class="icon">🛡️</span> Compliance</div>
-            <div class="nav-item" onclick="switchTab('notifications')"><span class="icon">🔔</span> Notifications <span
-                    class="badge-count">5</span></div>
-            <div class="nav-label">System</div>
-            <div class="nav-item" onclick="switchTab('settings')"><span class="icon">⚙️</span> Settings</div>
-        </div>
-        <div class="sidebar-footer">
-            <div class="admin-profile">
-                <div class="avatar">SA</div>
-                <div class="admin-info">
-                    <div class="name" id="admin-name">Super Admin</div>
-                    <div class="role">Platform Owner</div>
-                </div>
-            </div>
-            <div class="logout-btn" onclick="logout()">🔒 Secure Logout</div>
-        </div>
-    </aside>
-
-    <!-- Main Area -->
-    <main class="main-content">
-        <div class="top-bar">
-            <h1 id="page-title">Platform Dashboard</h1>
-            <div class="top-bar-right">
-                <div class="search-box"><span>🔍</span><input type="text" placeholder="Search tenants, orders..." />
-                </div>
-                <div class="notif-bell" onclick="switchTab('notifications')">🔔<span class="dot"></span></div>
-            </div>
-        </div>
-        <div class="content-area">
-
-            <!-- ═══ DASHBOARD VIEW ═══ -->
-            <div id="dashboard" class="view active">
-                <div class="stats-grid" id="stats-grid"></div>
-                <div class="dash-grid">
-                    <div class="card">
-                        <div class="card-header">Revenue Overview (Last 12 Months)<span class="subtitle">Platform
-                                MRR</span></div>
-                        <div class="chart-area">
-                            <div class="chart-bars" id="revenue-chart"></div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">Live Activity Feed</div>
-                        <div class="activity-feed" id="activity-feed"></div>
-                    </div>
-                </div>
-                <div class="dash-grid-equal">
-                    <div class="card">
-                        <div class="card-header">Recent Orders Across Platform</div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Pharmacy</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-orders-list"></tbody>
-                        </table>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">Top Performing Pharmacies</div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Pharmacy</th>
-                                    <th>Revenue</th>
-                                    <th>Orders</th>
-                                    <th>Rating</th>
-                                </tr>
-                            </thead>
-                            <tbody id="top-pharmacies"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ═══ TENANTS VIEW ═══ -->
-            <div id="tenants" class="view">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-                    <div>
-                        <h2 style="font-size:1.1rem;color:var(--navy)">All Tenant Pharmacies</h2>
-                        <p style="font-size:.82rem;color:var(--text-muted)">Manage all registered pharmacy tenants</p>
-                    </div>
-                    <button class="btn-sm btn-success" onclick="openModal('addTenantModal')">+ Add Tenant</button>
-                </div>
-                <div class="card">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Pharmacy</th>
-                                <th>Owner</th>
-                                <th>Email</th>
-                                <th>Plan</th>
-                                <th>Status</th>
-                                <th>Revenue</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tenants-list"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ═══ ANALYTICS VIEW ═══ -->
-            <div id="analytics" class="view">
-                <div class="stats-grid" id="analytics-stats"></div>
-                <div class="dash-grid">
-                    <div class="card">
-                        <div class="card-header">Order Volume Trend</div>
-                        <div class="chart-area">
-                            <div class="chart-bars" id="orders-chart"></div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">Tenant Growth</div>
-                        <div class="chart-area">
-                            <div class="chart-bars" id="growth-chart"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">Product Category Distribution</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Products</th>
-                                <th>Orders</th>
-                                <th>Revenue</th>
-                                <th>Trend</th>
-                            </tr>
-                        </thead>
-                        <tbody id="categories-list"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ═══ REVENUE VIEW ═══ -->
-            <div id="revenue" class="view">
-                <div class="stats-grid" id="revenue-stats"></div>
-                <div class="card">
-                    <div class="card-header">Revenue by Tenant<span class="subtitle">Subscription + Commission</span>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Pharmacy</th>
-                                <th>Plan</th>
-                                <th>Subscription</th>
-                                <th>Commission</th>
-                                <th>Total Revenue</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="revenue-list"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ═══ DOMAINS VIEW ═══ -->
-            <div id="domains" class="view">
-                <div class="card">
-                    <div class="card-header">Domain Routing Configuration</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Pharmacy</th>
-                                <th>Subdomain</th>
-                                <th>Custom Domain</th>
-                                <th>SSL</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="domains-list"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ═══ COMPLIANCE VIEW ═══ -->
-            <div id="compliance" class="view">
-                <div class="card">
-                    <div class="card-header">Platform Compliance & Verification</div>
-                    <div class="compliance-grid" id="compliance-grid"></div>
-                </div>
-                <div class="card">
-                    <div class="card-header">Pending License Verification Queue</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Pharmacy</th>
-                                <th>License #</th>
-                                <th>Submitted</th>
-                                <th>Expiry</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="license-queue"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ═══ NOTIFICATIONS VIEW ═══ -->
-            <div id="notifications" class="view">
-                <div class="card">
-                    <div class="card-header">Notifications & Alerts<button class="btn-sm btn-outline"
-                            onclick="markAllRead()">Mark all read</button></div>
-                    <div id="notifications-list"></div>
-                </div>
-            </div>
-
-            <!-- ═══ SETTINGS VIEW ═══ -->
-            <div id="settings" class="view">
-                <div class="card">
-                    <div class="card-header">System Settings</div>
-                    <div class="settings-grid" id="settings-grid"></div>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- Modals -->
-    <div class="modal" id="domainModal">
-        <div class="m-card">
-            <h3>Configure Domains</h3><input type="hidden" id="d-tenant-id" />
-            <div class="form-group"><label>Subdomain Prefix</label><input type="text" id="d-sub"
-                    placeholder="e.g. johnspharmacy" /></div>
-            <div class="form-group"><label>Custom Domain (CNAME)</label><input type="text" id="d-custom"
-                    placeholder="e.g. www.johnspharmacy.ke" /></div>
-            <div class="m-actions"><button class="btn-sm btn-outline"
-                    onclick="closeModal('domainModal')">Cancel</button><button class="btn-sm btn-primary"
-                    onclick="saveDomains()">Save Routing</button></div>
-        </div>
-    </div>
-    <div class="modal" id="statusModal">
-        <div class="m-card">
-            <h3>Manage Tenant</h3><input type="hidden" id="s-tenant-id" />
-            <div class="form-group"><label>Status</label><select id="s-status">
-                    <option value="verified">Active / Verified</option>
-                    <option value="suspended">Suspended</option>
-                </select></div>
-            <div class="form-group"><label>Subscription Plan</label><select id="s-plan">
-                    <option value="starter">Starter</option>
-                    <option value="growth">Growth</option>
-                    <option value="enterprise">Enterprise</option>
-                </select></div>
-            <div class="m-actions"><button class="btn-sm btn-outline"
-                    onclick="closeModal('statusModal')">Cancel</button><button class="btn-sm btn-primary"
-                    onclick="saveStatusPlan()">Save</button></div>
-        </div>
-    </div>
-    <div class="modal" id="addTenantModal">
-        <div class="m-card">
-            <h3>Add New Tenant</h3>
-            <div class="form-group"><label>Pharmacy Name</label><input type="text"
-                    placeholder="e.g. LifeCare Pharmacy" /></div>
-            <div class="form-group"><label>Owner Email</label><input type="email" placeholder="owner@example.com" />
-            </div>
-            <div class="form-group"><label>Plan</label><select>
-                    <option>Starter</option>
-                    <option>Growth</option>
-                    <option>Enterprise</option>
-                </select></div>
-            <div class="m-actions"><button class="btn-sm btn-outline"
-                    onclick="closeModal('addTenantModal')">Cancel</button><button class="btn-sm btn-success"
-                    onclick="closeModal('addTenantModal')">Create Tenant</button></div>
-        </div>
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="pill"></span>
+      <div>
+        <strong>MediHub HMS</strong>
+        <span>Command Center</span>
+      </div>
     </div>
 
-    <script>
-        const API_URL = 'http://localhost:5000/api';
-        let token = localStorage.getItem('token');
-
-        /* ── Demo Data ── */
-        const DEMO = {
-            tenants: [
-                { id: 't1', name: 'LifeCare Pharmacy', owner: 'Dr. James Mwangi', email: 'james@lifecare.co.ke', plan: 'enterprise', status: 'verified', revenue: 485000, orders: 342, rating: 4.9, subdomain: 'lifecare', customDomain: 'www.lifecarepharmacy.co.ke', license: 'PPB/2024/1847', licenseExpiry: '2026-08-15' },
-                { id: 't2', name: 'MediPlus Health', owner: 'Dr. Susan Wanjiku', email: 'susan@mediplus.ke', plan: 'growth', status: 'verified', revenue: 312000, orders: 256, rating: 4.7, subdomain: 'mediplus', customDomain: '', license: 'PPB/2024/2103', licenseExpiry: '2026-11-20' },
-                { id: 't3', name: 'GreenLeaf Chemist', owner: 'Dr. Peter Ochieng', email: 'peter@greenleaf.ke', plan: 'growth', status: 'verified', revenue: 278000, orders: 198, rating: 4.6, subdomain: 'greenleaf', customDomain: 'www.greenleafchemist.ke', license: 'PPB/2024/1592', licenseExpiry: '2026-05-10' },
-                { id: 't4', name: 'CareFirst Pharmacy', owner: 'Dr. Amina Hassan', email: 'amina@carefirst.ke', plan: 'starter', status: 'verified', revenue: 145000, orders: 134, rating: 4.5, subdomain: 'carefirst', customDomain: '', license: 'PPB/2024/2287', licenseExpiry: '2027-01-30' },
-                { id: 't5', name: 'PharmaHub Express', owner: 'Dr. David Kimani', email: 'david@pharmahub.ke', plan: 'enterprise', status: 'verified', revenue: 520000, orders: 410, rating: 4.8, subdomain: 'pharmahub', customDomain: 'www.pharmahubexpress.co.ke', license: 'PPB/2024/1234', licenseExpiry: '2026-09-25' },
-                { id: 't6', name: 'Nairobi Wellness', owner: 'Dr. Grace Njeri', email: 'grace@nairobiwellness.ke', plan: 'growth', status: 'pending', revenue: 0, orders: 0, rating: 0, subdomain: '', customDomain: '', license: 'PPB/2024/3001', licenseExpiry: '2027-03-15' },
-                { id: 't7', name: 'Downtown Chemist', owner: 'Dr. Michael Otieno', email: 'michael@downtown.ke', plan: 'starter', status: 'verified', revenue: 98000, orders: 87, rating: 4.3, subdomain: 'downtown', customDomain: '', license: 'PPB/2024/1789', licenseExpiry: '2026-06-01' },
-                { id: 't8', name: 'Apollo Pharmacy KE', owner: 'Dr. Fatima Ali', email: 'fatima@apollo.ke', plan: 'enterprise', status: 'suspended', revenue: 340000, orders: 298, rating: 4.4, subdomain: 'apollo', customDomain: 'www.apollopharmacy.ke', license: 'PPB/2024/2456', licenseExpiry: '2025-12-31' },
-            ],
-            orders: [
-                { id: 'ORD-7829', pharmacy: 'LifeCare Pharmacy', customer: 'John Doe', amount: 4500, status: 'delivered', date: '2026-02-25' },
-                { id: 'ORD-7828', pharmacy: 'PharmaHub Express', customer: 'Jane Smith', amount: 2800, status: 'processing', date: '2026-02-25' },
-                { id: 'ORD-7827', pharmacy: 'MediPlus Health', customer: 'Alice Kamau', amount: 6200, status: 'delivered', date: '2026-02-24' },
-                { id: 'ORD-7826', pharmacy: 'GreenLeaf Chemist', customer: 'Bob Njoroge', amount: 1950, status: 'pending', date: '2026-02-24' },
-                { id: 'ORD-7825', pharmacy: 'CareFirst Pharmacy', customer: 'Mary Wangari', amount: 3400, status: 'shipped', date: '2026-02-24' },
-                { id: 'ORD-7824', pharmacy: 'Downtown Chemist', customer: 'Peter Odhiambo', amount: 8100, status: 'delivered', date: '2026-02-23' },
-            ],
-            revenueMonths: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
-            revenueData: [180, 220, 195, 310, 340, 380, 420, 460, 510, 490, 540, 620],
-            orderData: [120, 145, 130, 190, 210, 240, 280, 310, 290, 340, 380, 420],
-            growthData: [2, 3, 3, 5, 4, 6, 8, 7, 9, 10, 12, 14],
-            categories: [
-                { name: 'Prescription Medicines', products: 1240, orders: 3400, revenue: 'KSh 8.2M', trend: '+12%' },
-                { name: 'Over-the-Counter', products: 890, orders: 5600, revenue: 'KSh 4.1M', trend: '+18%' },
-                { name: 'Medical Devices', products: 340, orders: 1200, revenue: 'KSh 3.5M', trend: '+8%' },
-                { name: 'Supplements & Vitamins', products: 560, orders: 2800, revenue: 'KSh 2.1M', trend: '+25%' },
-                { name: 'Personal Care', products: 420, orders: 1900, revenue: 'KSh 1.4M', trend: '+15%' },
-                { name: 'Baby & Maternal', products: 280, orders: 1100, revenue: 'KSh 1.1M', trend: '+22%' },
-            ],
-            activities: [
-                { text: '<strong>LifeCare Pharmacy</strong> completed 15 new orders today', time: '2 min ago', color: 'green' },
-                { text: '<strong>Nairobi Wellness</strong> submitted license verification', time: '18 min ago', color: 'blue' },
-                { text: '<strong>Apollo Pharmacy</strong> subscription payment overdue', time: '1 hour ago', color: 'red' },
-                { text: '<strong>PharmaHub Express</strong> upgraded to Enterprise plan', time: '2 hours ago', color: 'gold' },
-                { text: '<strong>MediPlus Health</strong> added 24 new products', time: '3 hours ago', color: 'green' },
-                { text: 'New compliance audit scheduled for March 2026', time: '5 hours ago', color: 'blue' },
-                { text: '<strong>GreenLeaf Chemist</strong> reached 200 orders milestone', time: '8 hours ago', color: 'gold' },
-            ],
-            notifications: [
-                { icon: '🏪', bg: '#d1fae5', title: 'New Tenant Application', msg: 'Nairobi Wellness submitted pharmacy registration with PPB license.', time: '18 min ago', unread: true },
-                { icon: '⚠️', bg: '#fef3c7', title: 'Payment Overdue', msg: 'Apollo Pharmacy KE enterprise subscription payment 15 days overdue.', time: '1 hour ago', unread: true },
-                { icon: '📋', bg: '#dbeafe', title: 'License Expiring Soon', msg: 'Apollo Pharmacy KE license PPB/2024/2456 expires Dec 31, 2025.', time: '3 hours ago', unread: true },
-                { icon: '🎉', bg: '#ede9fe', title: 'Plan Upgrade', msg: 'PharmaHub Express upgraded from Growth to Enterprise plan.', time: '5 hours ago', unread: true },
-                { icon: '✅', bg: '#d1fae5', title: 'Compliance Audit Passed', msg: 'LifeCare Pharmacy passed Q4 controlled substances audit.', time: '1 day ago', unread: true },
-                { icon: '📊', bg: '#dbeafe', title: 'Monthly Report Ready', msg: 'January 2026 platform analytics report is available for download.', time: '2 days ago', unread: false },
-                { icon: '🔒', bg: '#fee2e2', title: 'Security Alert', msg: '3 failed login attempts detected on admin portal from unknown IP.', time: '3 days ago', unread: false },
-            ]
-        };
-
-        /* ── Tab Switching ── */
-        function switchTab(tabId) {
-            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-            const titles = { dashboard: 'Platform Dashboard', tenants: 'Tenant Management', analytics: 'Platform Analytics', revenue: 'Revenue & Billing', domains: 'Domain Controller', compliance: 'Compliance & Verification', notifications: 'Notifications', settings: 'System Settings' };
-            document.getElementById('page-title').innerText = titles[tabId] || tabId;
-        }
-
-        /* ── Render Dashboard ── */
-        function renderDashboard() {
-            const totalRev = DEMO.tenants.reduce((s, t) => s + t.revenue, 0);
-            const totalOrders = DEMO.tenants.reduce((s, t) => s + t.orders, 0);
-            const active = DEMO.tenants.filter(t => t.status === 'verified').length;
-            const pending = DEMO.tenants.filter(t => t.status === 'pending').length;
-            document.getElementById('stats-grid').innerHTML = [
-                { lbl: 'Total Tenants', val: DEMO.tenants.length, trend: '+3', up: true, sub: `${active} active, ${pending} pending`, icon: '🏪', color: '#d1fae5', bars: [30, 45, 35, 50, 42, 55, 60, 48, 65, 70, 58, 75] },
-                { lbl: 'Total Revenue', val: 'KSh ' + totalRev.toLocaleString(), trend: '+18%', up: true, sub: 'Monthly recurring revenue', icon: '💰', color: '#dbeafe', bars: [20, 30, 25, 40, 35, 50, 45, 55, 60, 52, 65, 72] },
-                { lbl: 'Platform Orders', val: totalOrders.toLocaleString(), trend: '+24%', up: true, sub: 'Across all tenant stores', icon: '📦', color: '#fef3c7', bars: [25, 35, 28, 42, 38, 52, 48, 58, 62, 55, 68, 78] },
-                { lbl: 'Pending Approvals', val: pending, trend: pending > 2 ? '+' + pending : '', up: false, sub: 'License verifications needed', icon: '⏳', color: '#ede9fe', bars: [10, 8, 12, 6, 9, 5, 8, 4, 7, 3, 6, 4] }
-            ].map(s => `<div class="stat-card"><div class="accent"></div><div class="stat-top"><div class="stat-icon" style="background:${s.color}">${s.icon}</div>${s.trend ? `<span class="stat-trend ${s.up ? 'trend-up' : 'trend-down'}">${s.up ? '↑' : '↓'} ${s.trend}</span>` : ''}</div><div class="stat-lbl">${s.lbl}</div><div class="stat-val">${s.val}</div><div class="stat-sub">${s.sub}</div><div class="sparkline">${s.bars.map(b => `<div class="bar" style="height:${b}%;background:${s.up ? 'var(--emerald)' : 'var(--red)'};opacity:.5"></div>`).join('')}</div></div>`).join('');
-
-            // Revenue chart
-            const maxR = Math.max(...DEMO.revenueData);
-            document.getElementById('revenue-chart').innerHTML = DEMO.revenueMonths.map((m, i) => `<div class="chart-bar-wrap"><div class="chart-bar primary" style="height:${(DEMO.revenueData[i] / maxR) * 100}%"></div><div class="chart-label">${m}</div></div>`).join('');
-
-            // Activity feed
-            document.getElementById('activity-feed').innerHTML = DEMO.activities.map(a => `<div class="activity-item"><div class="activity-dot ${a.color}"></div><div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div></div>`).join('');
-
-            // Recent orders
-            document.getElementById('recent-orders-list').innerHTML = DEMO.orders.map(o => `<tr><td><span style="font-family:'DM Mono';color:var(--emerald)">${o.id}</span></td><td>${o.pharmacy}</td><td>KSh ${o.amount.toLocaleString()}</td><td><span class="badge b-${o.status === 'delivered' ? 'verified' : 'pending'}">${o.status}</span></td></tr>`).join('');
-
-            // Top pharmacies
-            document.getElementById('top-pharmacies').innerHTML = DEMO.tenants.filter(t => t.status === 'verified').sort((a, b) => b.revenue - a.revenue).slice(0, 5).map(t => `<tr><td><strong>${t.name}</strong></td><td>KSh ${t.revenue.toLocaleString()}</td><td>${t.orders}</td><td>⭐ ${t.rating}</td></tr>`).join('');
-        }
-
-        /* ── Render Tenants ── */
-        function renderTenants() {
-            document.getElementById('tenants-list').innerHTML = DEMO.tenants.map(t => `<tr><td><strong>${t.name}</strong></td><td>${t.owner}</td><td>${t.email}</td><td><span class="badge b-${t.plan === 'enterprise' ? 'enterprise' : t.plan === 'growth' ? 'pro' : 'active'}">${t.plan}</span></td><td><span class="badge b-${t.status}">${t.status}</span></td><td>KSh ${t.revenue.toLocaleString()}</td><td>${t.status === 'pending' ? `<button class="btn-sm btn-success" onclick="approveTenant('${t.id}')">Approve</button>` : `<button class="btn-sm btn-outline" onclick="openStatusModal('${t.id}','${t.status}','${t.plan}')">Manage</button>`}</td></tr>`).join('');
-        }
-
-        /* ── Analytics ── */
-        function renderAnalytics() {
-            const totalProducts = DEMO.categories.reduce((s, c) => s + c.products, 0);
-            const totalCatOrders = DEMO.categories.reduce((s, c) => s + c.orders, 0);
-            document.getElementById('analytics-stats').innerHTML = [
-                { lbl: 'Total Products', val: totalProducts.toLocaleString(), icon: '📦', color: '#d1fae5' },
-                { lbl: 'Total Orders', val: totalCatOrders.toLocaleString(), icon: '🛒', color: '#dbeafe' },
-                { lbl: 'Avg Order Value', val: 'KSh 3,450', icon: '📊', color: '#fef3c7' },
-                { lbl: 'Conversion Rate', val: '4.8%', icon: '🎯', color: '#ede9fe' }
-            ].map(s => `<div class="stat-card"><div class="accent"></div><div class="stat-top"><div class="stat-icon" style="background:${s.color}">${s.icon}</div></div><div class="stat-lbl">${s.lbl}</div><div class="stat-val">${s.val}</div></div>`).join('');
-
-            const maxO = Math.max(...DEMO.orderData);
-            document.getElementById('orders-chart').innerHTML = DEMO.revenueMonths.map((m, i) => `<div class="chart-bar-wrap"><div class="chart-bar secondary" style="height:${(DEMO.orderData[i] / maxO) * 100}%"></div><div class="chart-label">${m}</div></div>`).join('');
-            const maxG = Math.max(...DEMO.growthData);
-            document.getElementById('growth-chart').innerHTML = DEMO.revenueMonths.map((m, i) => `<div class="chart-bar-wrap"><div class="chart-bar primary" style="height:${(DEMO.growthData[i] / maxG) * 100}%"></div><div class="chart-label">${m}</div></div>`).join('');
-            document.getElementById('categories-list').innerHTML = DEMO.categories.map(c => `<tr><td><strong>${c.name}</strong></td><td>${c.products}</td><td>${c.orders.toLocaleString()}</td><td>${c.revenue}</td><td><span class="stat-trend trend-up">↑ ${c.trend}</span></td></tr>`).join('');
-        }
-
-        /* ── Revenue ── */
-        function renderRevenue() {
-            const planPrices = { starter: 2999, growth: 7999, enterprise: 19999 };
-            const totalSub = DEMO.tenants.filter(t => t.status === 'verified').reduce((s, t) => s + planPrices[t.plan], 0);
-            const totalComm = DEMO.tenants.reduce((s, t) => s + Math.round(t.revenue * .05), 0);
-            document.getElementById('revenue-stats').innerHTML = [
-                { lbl: 'Subscription Revenue', val: 'KSh ' + totalSub.toLocaleString(), icon: '💳', color: '#d1fae5' },
-                { lbl: 'Commission Revenue (5%)', val: 'KSh ' + totalComm.toLocaleString(), icon: '📈', color: '#dbeafe' },
-                { lbl: 'Total Platform Revenue', val: 'KSh ' + (totalSub + totalComm).toLocaleString(), icon: '💰', color: '#fef3c7' },
-                { lbl: 'Active Subscriptions', val: DEMO.tenants.filter(t => t.status === 'verified').length, icon: '✅', color: '#ede9fe' }
-            ].map(s => `<div class="stat-card"><div class="accent"></div><div class="stat-top"><div class="stat-icon" style="background:${s.color}">${s.icon}</div></div><div class="stat-lbl">${s.lbl}</div><div class="stat-val">${s.val}</div></div>`).join('');
-            document.getElementById('revenue-list').innerHTML = DEMO.tenants.map(t => { const sub = planPrices[t.plan] || 0; const comm = Math.round(t.revenue * .05); return `<tr><td><strong>${t.name}</strong></td><td><span class="badge b-${t.plan === 'enterprise' ? 'enterprise' : t.plan === 'growth' ? 'pro' : 'active'}">${t.plan}</span></td><td>KSh ${sub.toLocaleString()}/mo</td><td>KSh ${comm.toLocaleString()}</td><td>KSh ${(sub + comm).toLocaleString()}</td><td><span class="badge b-${t.status}">${t.status}</span></td></tr>`; }).join('');
-        }
-
-        /* ── Domains ── */
-        function renderDomains() {
-            document.getElementById('domains-list').innerHTML = DEMO.tenants.filter(t => t.status !== 'pending').map(t => `<tr><td><strong>${t.name}</strong></td><td><span style="font-family:'DM Mono';color:var(--emerald-dark)">${t.subdomain ? t.subdomain + '.medihub.com' : '<em>Not set</em>'}</span></td><td><span style="font-family:'DM Mono';color:var(--navy-soft)">${t.customDomain || '<em>Not set</em>'}</span></td><td>${t.subdomain ? '<span class="badge b-verified">🔒 Active</span>' : '<span class="badge b-pending">Pending</span>'}</td><td><button class="btn-sm btn-outline" onclick="openDomainModal('${t.id}','${t.subdomain || ''}','${t.customDomain || ''}')">Edit</button></td></tr>`).join('');
-        }
-
-        /* ── Compliance ── */
-        function renderCompliance() {
-            document.getElementById('compliance-grid').innerHTML = [
-                { title: '🛡️ PPB License Verification', desc: 'All tenant pharmacies must hold valid Pharmacy and Poisons Board licenses. Automated expiry tracking enabled.', status: 'All Verified', cls: 'c-pass' },
-                { title: '📋 Controlled Substances', desc: 'Schedule tracking for controlled prescription drugs. Quarterly audit compliance across all tenants.', status: 'Audit Due Mar 2026', cls: 'c-warn' },
-                { title: '🔒 Data Protection (DPA 2019)', desc: 'Kenya Data Protection Act compliance. All tenant data encrypted at rest and in transit.', status: 'Compliant', cls: 'c-pass' },
-                { title: '💊 Drug Interaction Alerts', desc: 'AI-powered drug interaction checking system active across all tenant storefronts.', status: 'Active', cls: 'c-pass' },
-                { title: '📦 Cold Chain Compliance', desc: 'Temperature-sensitive medication storage and shipping compliance monitoring.', status: '1 Violation Flagged', cls: 'c-fail' },
-                { title: '🏥 Good Distribution Practice', desc: 'GDP compliance for pharmaceutical distribution. Annual certification required.', status: 'Certified', cls: 'c-pass' }
-            ].map(c => `<div class="compliance-card"><h4>${c.title}</h4><p>${c.desc}</p><span class="compliance-status ${c.cls}">${c.status}</span></div>`).join('');
-
-            document.getElementById('license-queue').innerHTML = DEMO.tenants.map(t => `<tr><td><strong>${t.name}</strong></td><td><span style="font-family:'DM Mono'">${t.license}</span></td><td>${t.status === 'pending' ? 'Pending' : 'Verified'}</td><td>${t.licenseExpiry}</td><td><span class="badge ${new Date(t.licenseExpiry) < new Date('2026-06-01') ? 'b-pending' : 'b-verified'}">${new Date(t.licenseExpiry) < new Date('2026-06-01') ? 'Expiring' : 'Valid'}</span></td><td><button class="btn-sm btn-outline">Review</button></td></tr>`).join('');
-        }
-
-        /* ── Notifications ── */
-        function renderNotifications() {
-            document.getElementById('notifications-list').innerHTML = DEMO.notifications.map(n => `<div class="notif-item ${n.unread ? 'unread' : ''}"><div class="notif-icon" style="background:${n.bg}">${n.icon}</div><div class="notif-body"><strong>${n.title}</strong><p>${n.msg}</p></div><div class="notif-time">${n.time}</div></div>`).join('');
-        }
-        function markAllRead() { DEMO.notifications.forEach(n => n.unread = false); renderNotifications(); }
-
-        /* ── Settings ── */
-        function renderSettings() {
-            document.getElementById('settings-grid').innerHTML = `
-    <div class="setting-card"><h4>🔐 Security Settings</h4><p>Configure platform security policies</p>
-        <div class="toggle-row"><span>Two-Factor Authentication</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-        <div class="toggle-row"><span>IP Whitelisting</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
-        <div class="toggle-row"><span>Session Timeout (30 min)</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+    <div>
+      <div class="nav-label">Executive views</div>
+      <div class="nav-item active"><span>Enterprise overview</span><em>Now</em></div>
+      <div class="nav-item"><span>Facility performance</span><em>3</em></div>
+      <div class="nav-item"><span>Revenue cycle</span><em>14</em></div>
+      <div class="nav-item"><span>Insurance denials</span><em>6</em></div>
+      <div class="nav-item"><span>HR and payroll</span><em>5</em></div>
+      <div class="nav-item"><span>Pharmacy supply risk</span><em>8</em></div>
     </div>
-    <div class="setting-card"><h4>📧 Email Notifications</h4><p>Manage email alert preferences</p>
-        <div class="toggle-row"><span>New Tenant Applications</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-        <div class="toggle-row"><span>Payment Alerts</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-        <div class="toggle-row"><span>Compliance Warnings</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+
+    <div>
+      <div class="nav-label">Governance</div>
+      <div class="nav-item"><span>AI governance</span><em>4</em></div>
+      <div class="nav-item"><span>Clinical safety</span><em>3</em></div>
+      <div class="nav-item"><span>Audit and access</span><em>2</em></div>
+      <div class="nav-item"><span>Expansion roadmap</span><em>Q3</em></div>
     </div>
-    <div class="setting-card"><h4>💰 Commission Settings</h4><p>Platform commission structure</p>
-        <div class="toggle-row"><span>Default Commission Rate</span><strong>5%</strong></div>
-        <div class="toggle-row"><span>Enterprise Discount</span><strong>3%</strong></div>
-        <div class="toggle-row"><span>Auto-billing</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+
+    <div class="profile">
+      <strong>Executive owner: Dr. Leah Kimani</strong>
+      <span>Group COO · Multi-branch operations</span>
+      <p>Monitoring occupancy, claim conversion, staffing exposure, medicine risk, and AI adoption across three facilities.</p>
     </div>
-    <div class="setting-card"><h4>🌐 Platform Branding</h4><p>Customize platform appearance</p>
-        <div class="toggle-row"><span>Dark Mode</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
-        <div class="toggle-row"><span>Maintenance Mode</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
-        <div class="toggle-row"><span>API Rate Limiting</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-    </div>`;
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Hospital executive command center</h1>
+        <p>
+          This view is now wired to the hospital backend so executive KPIs, facilities, claims, staffing, and pharmacy
+          risk indicators can reflect live HMS data.
+        </p>
+      </div>
+      <div class="actions">
+        <a class="btn btn-secondary" href="index.html">Back to homepage</a>
+        <a class="btn btn-primary" href="pharmacist-panel.html">Open staff workspace</a>
+      </div>
+    </div>
+
+    <div class="dashboard-status" id="exec-status">Loading executive hospital metrics...</div>
+
+    <section class="grid-2" style="margin-bottom: 1rem;">
+      <article class="card">
+        <span class="label purple">Executive access</span>
+        <h2>Finance or admin session</h2>
+        <p class="subtext">Secured write actions for claims are available through a demo finance/admin token or a real JWT user in DB-backed mode.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="exec-session-role">Role</label>
+            <select id="exec-session-role">
+              <option value="finance">Finance</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="exec-session-name">Display name</label>
+            <input id="exec-session-name" type="text" value="Grace Naliaka" placeholder="Finance lead">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="exec-session-start" type="button">Start demo session</button>
+            <button class="btn btn-secondary" id="exec-session-clear" type="button">Clear session</button>
+          </div>
+          <div class="session-summary" id="exec-session-summary">No authenticated executive write session yet.</div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label amber">Claim creation</span>
+        <h2>Create claim or authorization case</h2>
+        <p class="subtext">Open a new claim from the executive dashboard using the secured hospital claims endpoint.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="claim-patient">Patient</label>
+            <select id="claim-patient"></select>
+          </div>
+          <div class="field">
+            <label for="claim-encounter">Encounter (optional)</label>
+            <select id="claim-encounter"></select>
+          </div>
+          <div class="field">
+            <label for="claim-facility">Facility</label>
+            <select id="claim-facility"></select>
+          </div>
+          <div class="field">
+            <label for="claim-payer">Payer</label>
+            <input id="claim-payer" type="text" value="SHA">
+          </div>
+          <div class="field">
+            <label for="claim-amount">Amount (KES)</label>
+            <input id="claim-amount" type="number" value="18000" min="0">
+          </div>
+          <div class="field">
+            <label for="claim-status">Status</label>
+            <select id="claim-status">
+              <option value="draft">Draft</option>
+              <option value="submitted">Submitted</option>
+              <option value="pending-authorization">Pending Authorization</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-risk">Denial risk</label>
+            <select id="claim-risk">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-notes">Notes</label>
+            <textarea id="claim-notes">Supporting documents uploaded and awaiting review.</textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="claim-submit" type="button">Create claim</button>
+          </div>
+          <div class="form-message" id="claim-form-message"></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="stats" id="exec-stats"></section>
+
+    <section class="grid-2" style="margin-bottom: 1rem;">
+      <article class="card">
+        <span class="label blue">Branch performance</span>
+        <h2>Facility scorecard</h2>
+        <p class="subtext">Leadership needs one view across hospitals and clinics with operational, financial, and staffing indicators side by side.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Facility</th>
+              <th>Occupancy / load</th>
+              <th>Claims</th>
+              <th>Staffing</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody id="facility-scorecard-body"></tbody>
+        </table>
+      </article>
+
+      <article class="card">
+        <span class="label green">Executive priorities</span>
+        <h2>What leadership should act on today</h2>
+        <div class="stack" id="exec-priorities"></div>
+      </article>
+    </section>
+
+    <section class="grid-3" style="margin-bottom: 1rem;">
+      <article class="card">
+        <span class="label amber">Revenue cycle</span>
+        <h2>Claims and collections health</h2>
+        <div class="stack" id="revenue-cycle-stack"></div>
+      </article>
+
+      <article class="card">
+        <span class="label purple">Workforce and payroll</span>
+        <h2>Staffing pressure and payroll inputs</h2>
+        <div class="stack" id="workforce-stack"></div>
+      </article>
+
+      <article class="card">
+        <span class="label blue">Pharmacy and stores</span>
+        <h2>Supply chain control</h2>
+        <div class="stack" id="pharmacy-stack"></div>
+      </article>
+    </section>
+
+    <section class="grid-2">
+      <article class="card">
+        <span class="label red">AI governance</span>
+        <h2>Governed AI operating model</h2>
+        <p class="subtext">
+          The hospital API now drives this section too, keeping AI oversight aligned with approved use cases and review expectations.
+        </p>
+        <div class="risk-grid" id="ai-governance-grid"></div>
+      </article>
+
+      <article class="card">
+        <span class="label green">Delivery progress</span>
+        <h2>Current platform transformation status</h2>
+        <div class="stack" id="delivery-progress"></div>
+      </article>
+    </section>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <article class="card">
+        <span class="label blue">Claim update</span>
+        <h2>Update claim status</h2>
+        <p class="subtext">Move a claim through draft, authorization, partial payment, denial follow-up, or settlement stages.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="claim-update-id">Claim</label>
+            <select id="claim-update-id"></select>
+          </div>
+          <div class="field">
+            <label for="claim-update-status">Status</label>
+            <select id="claim-update-status">
+              <option value="submitted">Submitted</option>
+              <option value="pending-authorization">Pending Authorization</option>
+              <option value="partially-paid">Partially Paid</option>
+              <option value="paid">Paid</option>
+              <option value="denied">Denied</option>
+              <option value="appealed">Appealed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-update-stage">Stage</label>
+            <select id="claim-update-stage">
+              <option value="claim-scrub-complete">Claim Scrub Complete</option>
+              <option value="waiting-supporting-documents">Waiting Supporting Documents</option>
+              <option value="denial-follow-up">Denial Follow-up</option>
+              <option value="settled">Settled</option>
+              <option value="appeal-review">Appeal Review</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-update-risk">Denial risk</label>
+            <select id="claim-update-risk">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-update-notes">Notes</label>
+            <textarea id="claim-update-notes">Status updated from command center.</textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="claim-update-submit" type="button">Update claim</button>
+          </div>
+          <div class="form-message" id="claim-update-message"></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <article class="card">
+        <span class="label green">Facility management</span>
+        <h2>Create or update facility operations</h2>
+        <p class="subtext">Admin users can manage facility structure and core operational metrics from the command center.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="facility-detail-id">Existing facility</label>
+            <select id="facility-detail-id"></select>
+          </div>
+          <div class="field">
+            <label for="facility-name">Facility name</label>
+            <input id="facility-name" type="text" placeholder="Facility name">
+          </div>
+          <div class="field">
+            <label for="facility-code">Facility code</label>
+            <input id="facility-code" type="text" placeholder="e.g. MMH">
+          </div>
+          <div class="field">
+            <label for="facility-type">Facility type</label>
+            <select id="facility-type">
+              <option value="hospital">Hospital</option>
+              <option value="clinic">Clinic</option>
+              <option value="maternity-centre">Maternity Centre</option>
+              <option value="diagnostic-centre">Diagnostic Centre</option>
+              <option value="medical-centre">Medical Centre</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="facility-city">City</label>
+            <input id="facility-city" type="text" placeholder="City">
+          </div>
+          <div class="field">
+            <label for="facility-county">County</label>
+            <input id="facility-county" type="text" placeholder="County">
+          </div>
+          <div class="field">
+            <label for="facility-beds">Total beds</label>
+            <input id="facility-beds" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-occupied">Occupied beds</label>
+            <input id="facility-occupied" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-patients-today">Patients today</label>
+            <input id="facility-patients-today" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-claims-rate">Claims acceptance rate</label>
+            <input id="facility-claims-rate" type="number" min="0" max="1" step="0.01" value="0.9">
+          </div>
+          <div class="field">
+            <label for="facility-payroll">Projected payroll (KES)</label>
+            <input id="facility-payroll" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-overtime">Overtime exposure (KES)</label>
+            <input id="facility-overtime" type="number" min="0" value="0">
+          </div>
+          <div class="field">
+            <label for="facility-departments">Departments</label>
+            <textarea id="facility-departments" placeholder="Comma-separated departments"></textarea>
+          </div>
+          <div class="field">
+            <label for="facility-services">Services</label>
+            <textarea id="facility-services" placeholder="Comma-separated services"></textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="facility-create-submit" type="button">Create facility</button>
+            <button class="btn btn-secondary" id="facility-update-submit" type="button">Update facility</button>
+          </div>
+          <div class="form-message" id="facility-form-message"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label amber">Claim lifecycle board</span>
+        <h2>Filter and review claims</h2>
+        <p class="subtext">Use payer, status, denial-risk, or search filters to focus the revenue-cycle queue.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="claim-filter-status">Status</label>
+            <select id="claim-filter-status">
+              <option value="">All statuses</option>
+              <option value="draft">Draft</option>
+              <option value="submitted">Submitted</option>
+              <option value="pending-authorization">Pending Authorization</option>
+              <option value="partially-paid">Partially Paid</option>
+              <option value="paid">Paid</option>
+              <option value="denied">Denied</option>
+              <option value="appealed">Appealed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-filter-risk">Denial risk</label>
+            <select id="claim-filter-risk">
+              <option value="">All risk levels</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="claim-filter-payer">Payer</label>
+            <input id="claim-filter-payer" type="text" placeholder="e.g. SHA">
+          </div>
+          <div class="field">
+            <label for="claim-filter-query">Search</label>
+            <input id="claim-filter-query" type="text" placeholder="Patient, claim number, or payer">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="claim-filter-apply" type="button">Apply filters</button>
+            <button class="btn btn-secondary" id="claim-filter-reset" type="button">Reset filters</button>
+          </div>
+          <div class="form-message" id="claim-filter-message"></div>
+          <div class="stack" id="claim-lifecycle-list"></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid-2" style="margin-top: 1rem;">
+      <article class="card">
+        <span class="label purple">Staff management</span>
+        <h2>Create or update staff assignments</h2>
+        <p class="subtext">Admins can maintain staff profiles, department placement, facility assignment, role, specialty, and shift pattern from here.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="staff-detail-id">Existing staff member</label>
+            <select id="staff-detail-id"></select>
+          </div>
+          <div class="field">
+            <label for="staff-name">Full name</label>
+            <input id="staff-name" type="text" placeholder="Staff name">
+          </div>
+          <div class="field">
+            <label for="staff-email">Email</label>
+            <input id="staff-email" type="email" placeholder="staff@medihub.com">
+          </div>
+          <div class="field">
+            <label for="staff-phone">Phone</label>
+            <input id="staff-phone" type="text" placeholder="+2547...">
+          </div>
+          <div class="field">
+            <label for="staff-role">Role</label>
+            <select id="staff-role">
+              <option value="doctor">Doctor</option>
+              <option value="nurse">Nurse</option>
+              <option value="clinical_officer">Clinical Officer</option>
+              <option value="pharmacist">Pharmacist</option>
+              <option value="lab_technologist">Lab Technologist</option>
+              <option value="radiographer">Radiographer</option>
+              <option value="finance">Finance</option>
+              <option value="hr">HR</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staff-facility-name">Facility</label>
+            <input id="staff-facility-name" type="text" placeholder="Facility name">
+          </div>
+          <div class="field">
+            <label for="staff-department">Department</label>
+            <input id="staff-department" type="text" placeholder="Department">
+          </div>
+          <div class="field">
+            <label for="staff-specialty">Specialty</label>
+            <input id="staff-specialty" type="text" placeholder="Specialty">
+          </div>
+          <div class="field">
+            <label for="staff-license">License number</label>
+            <input id="staff-license" type="text" placeholder="License number">
+          </div>
+          <div class="field">
+            <label for="staff-employee-id">Employee ID</label>
+            <input id="staff-employee-id" type="text" placeholder="Employee ID">
+          </div>
+          <div class="field">
+            <label for="staff-shift">Shift pattern</label>
+            <select id="staff-shift">
+              <option value="day">Day</option>
+              <option value="night">Night</option>
+              <option value="weekend">Weekend</option>
+              <option value="rotational">Rotational</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staff-active">Active status</label>
+            <select id="staff-active">
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="staff-create-submit" type="button">Create staff member</button>
+            <button class="btn btn-secondary" id="staff-update-submit" type="button">Update staff member</button>
+          </div>
+          <div class="form-message" id="staff-form-message"></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="label blue">Staff roster board</span>
+        <h2>Filter and review staff assignments</h2>
+        <p class="subtext">Filter the current staff roster by role, department, shift, or search term to review coverage and assignments.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="staff-filter-role">Role</label>
+            <select id="staff-filter-role">
+              <option value="">All roles</option>
+              <option value="doctor">Doctor</option>
+              <option value="nurse">Nurse</option>
+              <option value="clinical_officer">Clinical Officer</option>
+              <option value="pharmacist">Pharmacist</option>
+              <option value="lab_technologist">Lab Technologist</option>
+              <option value="radiographer">Radiographer</option>
+              <option value="finance">Finance</option>
+              <option value="hr">HR</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staff-filter-department">Department</label>
+            <input id="staff-filter-department" type="text" placeholder="Department">
+          </div>
+          <div class="field">
+            <label for="staff-filter-shift">Shift</label>
+            <select id="staff-filter-shift">
+              <option value="">All shifts</option>
+              <option value="day">Day</option>
+              <option value="night">Night</option>
+              <option value="weekend">Weekend</option>
+              <option value="rotational">Rotational</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staff-filter-query">Search</label>
+            <input id="staff-filter-query" type="text" placeholder="Name, employee ID, specialty">
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="staff-filter-apply" type="button">Apply filters</button>
+            <button class="btn btn-secondary" id="staff-filter-reset" type="button">Reset filters</button>
+          </div>
+          <div class="form-message" id="staff-filter-message"></div>
+          <div class="stack" id="staff-roster-list"></div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const API_URL = `${window.location.protocol}//${window.location.hostname || "localhost"}:5000/api`;
+    const STORAGE_TOKEN_KEY = 'medihubHospitalDemoToken';
+    const STORAGE_PROFILE_KEY = 'medihubHospitalDemoProfile';
+
+    const fallbackData = {
+      overview: {
+        kpis: {
+          totalPatientsToday: 412,
+          occupancyRate: 0.84,
+          claimsAcceptanceRate: 0.91,
+          criticalStockAlerts: 3,
+          rosterGaps: 3,
+          totalClaims: 3
+        },
+        aiGovernance: {
+          approvedUseCases: ['ambient_documentation', 'triage_support', 'claims_readiness', 'medication_safety']
+        }
+      },
+      facilities: [
+        { id: 'fac-main', code: 'MMH', name: 'MediHub Main Hospital', type: 'hospital', location: 'Nairobi', totalBeds: 180, occupiedBeds: 158, beds: 180, occupancyRate: 0.88, patientsToday: 284, claimsAcceptanceRate: 0.94, staffingAlerts: 2, priority: 'ICU night cover', departments: ['Emergency', 'Medicine', 'Surgery'], services: ['Emergency', 'Medicine', 'Surgery', 'Maternity'] },
+        { id: 'fac-clinic', code: 'RSC', name: 'Riverside Specialist Clinic', type: 'clinic', location: 'Nairobi', totalBeds: 24, occupiedBeds: 10, beds: 24, occupancyRate: 0.41, patientsToday: 92, claimsAcceptanceRate: 0.96, staffingAlerts: 0, priority: 'Scale imaging slots', departments: ['Outpatient', 'Imaging'], services: ['Outpatient', 'Imaging', 'Day Procedures'] },
+        { id: 'fac-maternity', code: 'CMC', name: 'Community Maternity Centre', type: 'maternity-centre', location: 'Kiambu', totalBeds: 42, occupiedBeds: 32, beds: 42, occupancyRate: 0.76, patientsToday: 36, claimsAcceptanceRate: 0.85, staffingAlerts: 1, priority: 'Midwife locum + payer follow-up', departments: ['ANC', 'Delivery', 'Newborn Care'], services: ['ANC', 'Delivery', 'Newborn Care'] }
+      ],
+      patients: [
+        { id: 'pt-1001', mrn: 'MH-1001', name: 'Amina Noor', facilityId: 'fac-main' },
+        { id: 'pt-1002', mrn: 'MH-1002', name: 'Peter Mwangi', facilityId: 'fac-main' },
+        { id: 'pt-1003', mrn: 'MH-1003', name: 'Faith Akinyi', facilityId: 'fac-maternity' }
+      ],
+      encounters: [
+        { id: 'enc-001', encounterNumber: 'ENC-1001', patientId: 'pt-1001', patientName: 'Amina Noor' },
+        { id: 'enc-002', encounterNumber: 'ENC-1002', patientId: 'pt-1002', patientName: 'Peter Mwangi' }
+      ],
+      claims: {
+        summary: { totalClaims: 3, submitted: 1, pendingAuthorization: 1, denialFollowUp: 1 },
+        claims: [
+          { id: 'clm-001', claimNumber: 'CLM-1001', patientName: 'Faith Akinyi', payer: 'Jubilee', amount: 18200, status: 'submitted', stage: 'claim-scrub-complete', denialRisk: 'low', facilityName: 'Community Maternity Centre' },
+          { id: 'clm-002', claimNumber: 'CLM-1002', patientName: 'David Kiptoo', payer: 'SHA', amount: 42800, status: 'pending-authorization', stage: 'waiting-supporting-documents', denialRisk: 'medium', facilityName: 'MediHub Main Hospital' },
+          { id: 'clm-003', claimNumber: 'CLM-1003', patientName: 'Mercy Njeri', payer: 'AAR', amount: 61400, status: 'partially-paid', stage: 'denial-follow-up', denialRisk: 'high', facilityName: 'MediHub Main Hospital' }
+        ]
+      },
+      staffing: {
+        rosterGaps: [
+          { department: 'Emergency', role: 'nurse', severity: 'high', details: 'Night shift short by one nurse', gap: 1 },
+          { department: 'Maternity', role: 'midwife', severity: 'medium', details: 'Night shift locum required', gap: 1 },
+          { department: 'Outpatient', role: 'clinical_officer', severity: 'medium', details: 'Weekend load exceeds current cover', gap: 1 }
+        ],
+        payrollSummary: { projectedPayrollKes: 4800000, overtimeExposureKes: 362000, expiringCredentials: 7 }
+      },
+      pharmacy: {
+        summary: { totalAlerts: 3, criticalAlerts: 1 },
+        stockAlerts: [
+          { title: 'Ceftriaxone 1g vial', status: 'high', details: 'Low stock, 3 days on hand' },
+          { title: 'Insulin cartridge', status: 'medium', details: 'Expiry risk in 24 days' },
+          { title: 'Controlled register variance', status: 'critical', details: 'Theatre opioid reconciliation pending sign-off' }
+        ],
+        controlledRegister: { pendingReconciliation: 1, lastVariance: 'Theatre opioid balance mismatch pending sign-off' }
+      },
+      staff: [
+        { id: 'stf-001', name: 'Dr. Leah Kimani', email: 'leah@medihub.com', role: 'doctor', employeeId: 'EMP-DR-001', department: 'Medicine', facilityName: 'MediHub Main Hospital', specialty: 'Internal Medicine', licenseNumber: 'KMPDC-443210', shiftPattern: 'day', isActive: true },
+        { id: 'stf-002', name: 'Kelvin Mutua', email: 'kelvin@medihub.com', role: 'clinical_officer', employeeId: 'EMP-CO-001', department: 'Outpatient', facilityName: 'MediHub Main Hospital', specialty: 'General Clinical Practice', licenseNumber: 'COC-11842', shiftPattern: 'day', isActive: true },
+        { id: 'stf-003', name: 'Agnes Muthoni', email: 'agnes@medihub.com', role: 'nurse', employeeId: 'EMP-NR-001', department: 'Ward Operations', facilityName: 'MediHub Main Hospital', specialty: 'Inpatient Nursing', licenseNumber: 'NCK-22015', shiftPattern: 'day', isActive: true },
+        { id: 'stf-004', name: 'Grace Naliaka', email: 'grace@medihub.com', role: 'finance', employeeId: 'EMP-FN-001', department: 'Claims and Billing', facilityName: 'MediHub Main Hospital', specialty: 'Revenue Cycle', licenseNumber: '', shiftPattern: 'day', isActive: true }
+      }
+    };
+
+    const execStatusEl = document.getElementById('exec-status');
+    const execStatsEl = document.getElementById('exec-stats');
+    const scorecardBodyEl = document.getElementById('facility-scorecard-body');
+    const prioritiesEl = document.getElementById('exec-priorities');
+    const revenueCycleEl = document.getElementById('revenue-cycle-stack');
+    const workforceEl = document.getElementById('workforce-stack');
+    const pharmacyEl = document.getElementById('pharmacy-stack');
+    const aiGovernanceEl = document.getElementById('ai-governance-grid');
+    const deliveryProgressEl = document.getElementById('delivery-progress');
+    const execSessionRoleEl = document.getElementById('exec-session-role');
+    const execSessionNameEl = document.getElementById('exec-session-name');
+    const execSessionSummaryEl = document.getElementById('exec-session-summary');
+    const execSessionStartEl = document.getElementById('exec-session-start');
+    const execSessionClearEl = document.getElementById('exec-session-clear');
+    const claimPatientEl = document.getElementById('claim-patient');
+    const claimEncounterEl = document.getElementById('claim-encounter');
+    const claimFacilityEl = document.getElementById('claim-facility');
+    const claimPayerEl = document.getElementById('claim-payer');
+    const claimAmountEl = document.getElementById('claim-amount');
+    const claimStatusEl = document.getElementById('claim-status');
+    const claimRiskEl = document.getElementById('claim-risk');
+    const claimNotesEl = document.getElementById('claim-notes');
+    const claimSubmitEl = document.getElementById('claim-submit');
+    const claimMessageEl = document.getElementById('claim-form-message');
+    const claimUpdateIdEl = document.getElementById('claim-update-id');
+    const claimUpdateStatusEl = document.getElementById('claim-update-status');
+    const claimUpdateStageEl = document.getElementById('claim-update-stage');
+    const claimUpdateRiskEl = document.getElementById('claim-update-risk');
+    const claimUpdateNotesEl = document.getElementById('claim-update-notes');
+    const claimUpdateSubmitEl = document.getElementById('claim-update-submit');
+    const claimUpdateMessageEl = document.getElementById('claim-update-message');
+    const facilityDetailIdEl = document.getElementById('facility-detail-id');
+    const facilityNameEl = document.getElementById('facility-name');
+    const facilityCodeEl = document.getElementById('facility-code');
+    const facilityTypeEl = document.getElementById('facility-type');
+    const facilityCityEl = document.getElementById('facility-city');
+    const facilityCountyEl = document.getElementById('facility-county');
+    const facilityBedsEl = document.getElementById('facility-beds');
+    const facilityOccupiedEl = document.getElementById('facility-occupied');
+    const facilityPatientsTodayEl = document.getElementById('facility-patients-today');
+    const facilityClaimsRateEl = document.getElementById('facility-claims-rate');
+    const facilityPayrollEl = document.getElementById('facility-payroll');
+    const facilityOvertimeEl = document.getElementById('facility-overtime');
+    const facilityDepartmentsEl = document.getElementById('facility-departments');
+    const facilityServicesEl = document.getElementById('facility-services');
+    const facilityCreateSubmitEl = document.getElementById('facility-create-submit');
+    const facilityUpdateSubmitEl = document.getElementById('facility-update-submit');
+    const facilityMessageEl = document.getElementById('facility-form-message');
+    const claimFilterStatusEl = document.getElementById('claim-filter-status');
+    const claimFilterRiskEl = document.getElementById('claim-filter-risk');
+    const claimFilterPayerEl = document.getElementById('claim-filter-payer');
+    const claimFilterQueryEl = document.getElementById('claim-filter-query');
+    const claimFilterApplyEl = document.getElementById('claim-filter-apply');
+    const claimFilterResetEl = document.getElementById('claim-filter-reset');
+    const claimFilterMessageEl = document.getElementById('claim-filter-message');
+    const claimLifecycleListEl = document.getElementById('claim-lifecycle-list');
+    const staffDetailIdEl = document.getElementById('staff-detail-id');
+    const staffNameEl = document.getElementById('staff-name');
+    const staffEmailEl = document.getElementById('staff-email');
+    const staffPhoneEl = document.getElementById('staff-phone');
+    const staffRoleEl = document.getElementById('staff-role');
+    const staffFacilityNameEl = document.getElementById('staff-facility-name');
+    const staffDepartmentEl = document.getElementById('staff-department');
+    const staffSpecialtyEl = document.getElementById('staff-specialty');
+    const staffLicenseEl = document.getElementById('staff-license');
+    const staffEmployeeIdEl = document.getElementById('staff-employee-id');
+    const staffShiftEl = document.getElementById('staff-shift');
+    const staffActiveEl = document.getElementById('staff-active');
+    const staffCreateSubmitEl = document.getElementById('staff-create-submit');
+    const staffUpdateSubmitEl = document.getElementById('staff-update-submit');
+    const staffMessageEl = document.getElementById('staff-form-message');
+    const staffFilterRoleEl = document.getElementById('staff-filter-role');
+    const staffFilterDepartmentEl = document.getElementById('staff-filter-department');
+    const staffFilterShiftEl = document.getElementById('staff-filter-shift');
+    const staffFilterQueryEl = document.getElementById('staff-filter-query');
+    const staffFilterApplyEl = document.getElementById('staff-filter-apply');
+    const staffFilterResetEl = document.getElementById('staff-filter-reset');
+    const staffFilterMessageEl = document.getElementById('staff-filter-message');
+    const staffRosterListEl = document.getElementById('staff-roster-list');
+
+    let currentHospitalData = JSON.parse(JSON.stringify(fallbackData));
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatPercent(value) {
+      return `${Math.round(Number(value || 0) * 100)}%`;
+    }
+
+    function formatCurrency(value) {
+      return `KSh ${Number(value || 0).toLocaleString()}`;
+    }
+
+    function severityClass(value) {
+      const normalized = String(value || '').toLowerCase();
+      if (['critical', 'high', 'denied'].includes(normalized)) return 'red';
+      if (['medium', 'pending-authorization', 'partially-paid'].includes(normalized)) return 'amber';
+      return 'green';
+    }
+
+    function getStoredProfile() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_PROFILE_KEY) || 'null');
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function getStoredToken() {
+      return localStorage.getItem(STORAGE_TOKEN_KEY) || '';
+    }
+
+    function persistSession(token, profile) {
+      localStorage.setItem(STORAGE_TOKEN_KEY, token);
+      localStorage.setItem(STORAGE_PROFILE_KEY, JSON.stringify(profile));
+      syncSessionUi();
+    }
+
+    function clearSession() {
+      localStorage.removeItem(STORAGE_TOKEN_KEY);
+      localStorage.removeItem(STORAGE_PROFILE_KEY);
+      syncSessionUi();
+    }
+
+    function syncSessionUi() {
+      const profile = getStoredProfile();
+      if (profile) {
+        execSessionSummaryEl.textContent = `Authenticated as ${profile.name} (${String(profile.role).replace(/_/g, ' ')}). Claims write actions are enabled.`;
+      } else {
+        execSessionSummaryEl.textContent = 'No authenticated executive write session yet.';
+      }
+    }
+
+    async function fetchJson(path) {
+      const response = await fetch(`${API_URL}${path}`);
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || `Failed to load ${path}`);
+      }
+      return data;
+    }
+
+    async function fetchAuthorizedJson(path, options = {}) {
+      const token = getStoredToken();
+      if (!token) {
+        throw new Error('Start a finance or admin demo session before submitting write actions.');
+      }
+
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        ...(options.headers || {})
+      };
+      const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || `Failed to submit ${path}`);
+      }
+      return data;
+    }
+
+    function setExecStatus(message, isFallback = false) {
+      execStatusEl.textContent = isFallback ? `${message} Showing local fallback view.` : message;
+    }
+
+    function setFormMessage(element, message, isError = false) {
+      element.textContent = message;
+      element.style.color = isError ? '#b91c1c' : '';
+    }
+
+    function fillSelect(element, items, valueGetter, labelGetter, placeholder = 'Select an option') {
+      const previousValue = element.value;
+      element.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + items.map((item) => `
+        <option value="${escapeHtml(valueGetter(item))}">${escapeHtml(labelGetter(item))}</option>
+      `).join('');
+      if (previousValue && items.some((item) => String(valueGetter(item)) === String(previousValue))) {
+        element.value = previousValue;
+      }
+    }
+
+    function renderStats(data) {
+      const cards = [
+        ['green', 'Occupancy', formatPercent(data.overview.kpis.occupancyRate), 'Average occupancy across connected facilities.'],
+        ['blue', 'Patient volume', data.overview.kpis.totalPatientsToday, 'Patients seen today across the hospital network.'],
+        ['amber', 'Claims acceptance', formatPercent(data.overview.kpis.claimsAcceptanceRate), 'Current first-pass acceptance trend from submitted claims.'],
+        ['red', 'Roster gaps', data.staffing.rosterGaps.length, 'Coverage pressure requiring HR or operational intervention.'],
+        ['purple', 'Payroll exposure', formatCurrency(data.staffing.payrollSummary.projectedPayrollKes), 'Projected payroll including overtime and current pressure.'],
+        ['amber', 'Stock alerts', data.pharmacy.summary.totalAlerts || data.overview.kpis.criticalStockAlerts, 'Pharmacy or stores issues needing executive visibility.']
+      ];
+
+      execStatsEl.innerHTML = cards.map(([color, label, value, note]) => `
+        <article class="card stat">
+          <span class="label ${color}">${escapeHtml(label)}</span>
+          <strong>${escapeHtml(value)}</strong>
+          <span>${escapeHtml(note)}</span>
+        </article>
+      `).join('');
+    }
+
+    function renderScorecard(data) {
+      if (!data.facilities.length) {
+        scorecardBodyEl.innerHTML = `<tr><td colspan="5" class="empty-state">No facilities returned by the hospital API.</td></tr>`;
+        return;
+      }
+
+      scorecardBodyEl.innerHTML = data.facilities.map((facility) => {
+        const staffingAlerts = Array.isArray(facility.staffingAlerts) ? facility.staffingAlerts.length : Number(facility.staffingAlerts || 0);
+        const occupancy = facility.occupancyRate != null
+          ? formatPercent(facility.occupancyRate)
+          : (facility.totalBeds ? formatPercent((facility.occupiedBeds || 0) / facility.totalBeds) : '0%');
+        const claims = facility.claimsAcceptanceRate != null
+          ? formatPercent(facility.claimsAcceptanceRate)
+          : formatPercent(data.overview.kpis.claimsAcceptanceRate);
+        const staffingState = staffingAlerts > 0 ? 'Tight' : 'Stable';
+        const priority = facility.priority || facility.executiveAlerts?.[0]?.details || 'Monitor current performance';
+        return `
+          <tr>
+            <td>
+              <span class="branch-name">${escapeHtml(facility.name)}</span>
+              <span class="muted">${escapeHtml((facility.services || []).slice(0, 4).join(', ') || facility.type || 'Healthcare facility')}</span>
+            </td>
+            <td>${escapeHtml(occupancy)} · ${escapeHtml(facility.patientsToday || facility.beds || 0)} load</td>
+            <td><span class="chip ${severityClass(claims === '0%' ? 'medium' : 'green')}">${escapeHtml(claims)} accepted</span></td>
+            <td><span class="chip ${staffingAlerts > 0 ? 'amber' : 'green'}">${escapeHtml(staffingState)}</span></td>
+            <td class="muted">${escapeHtml(priority)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderStack(container, items, includeBar = false) {
+      container.innerHTML = items.map((item) => `
+        <div class="item">
+          <strong>${escapeHtml(item.title)}</strong>
+          <p class="muted">${escapeHtml(item.description)}</p>
+          ${includeBar ? `<div class="bar"><span style="width: ${escapeHtml(item.percent || 0)}%;"></span></div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderPriorities(data) {
+      const highRiskClaim = data.claims.claims.find((claim) => claim.denialRisk === 'high');
+      const criticalStock = data.pharmacy.stockAlerts.find((alert) => ['critical', 'high'].includes(String(alert.status).toLowerCase()));
+      const highGap = data.staffing.rosterGaps.find((gap) => String(gap.severity).toLowerCase() === 'high');
+      renderStack(prioritiesEl, [
+        {
+          title: `${data.claims.summary.denialFollowUp || 0} denial follow-up issues need finance attention`,
+          description: highRiskClaim ? `Highest-risk payer currently flagged: ${highRiskClaim.payer}.` : 'No high-risk claim is currently marked by the API.'
+        },
+        {
+          title: `${data.staffing.rosterGaps.length} staffing gaps are affecting service resilience`,
+          description: highGap ? `${highGap.department} has the most urgent current coverage risk.` : 'No severe staffing gap was returned by the backend.'
+        },
+        {
+          title: `${data.pharmacy.summary.totalAlerts || 0} pharmacy or stock alerts are open`,
+          description: criticalStock ? `${criticalStock.title} is the top current supply-chain concern.` : 'No critical medicine alert was returned.'
+        },
+        {
+          title: 'AI governance remains an executive oversight topic',
+          description: 'Approved use cases are visible below and should remain subject to audit, human review, and policy control.'
+        }
+      ]);
+    }
+
+    function renderRevenueCycle(data) {
+      const submitted = data.claims.summary.submitted || data.claims.claims.filter((claim) => claim.status === 'submitted').length;
+      renderStack(revenueCycleEl, [
+        {
+          title: `${data.claims.summary.pendingAuthorization || 0} claims pending authorization`,
+          description: 'Authorization and support-document queues should be monitored before they become denial risk.'
+        },
+        {
+          title: `${formatPercent(data.overview.kpis.claimsAcceptanceRate)} current claims acceptance`,
+          description: `${submitted} claims are already in a submitted or beyond-submission stage.`
+        },
+        {
+          title: `${data.claims.summary.denialFollowUp || 0} claims in denial follow-up`,
+          description: 'These should be reviewed against documentation, payer policy, and appeal readiness.'
+        }
+      ]);
+    }
+
+    function renderWorkforce(data) {
+      const payroll = data.staffing.payrollSummary;
+      const rosterPressure = Math.min(95, 30 + (data.staffing.rosterGaps.length * 18));
+      const overtimePressure = Math.min(95, 25 + Math.round((payroll.overtimeExposureKes || 0) / 10000));
+      const credentialPressure = Math.min(95, 20 + ((payroll.expiringCredentials || 0) * 8));
+      renderStack(workforceEl, [
+        {
+          title: 'Roster gap pressure',
+          description: `${data.staffing.rosterGaps.length} active gaps require coverage action or workload balancing.`,
+          percent: rosterPressure
+        },
+        {
+          title: 'Overtime exposure',
+          description: `${formatCurrency(payroll.overtimeExposureKes)} is currently exposed to overtime cost pressure.`,
+          percent: overtimePressure
+        },
+        {
+          title: 'Credential expiry watch',
+          description: `${payroll.expiringCredentials || 0} active credentialed staff records need monitoring.`,
+          percent: credentialPressure
+        }
+      ], true);
+    }
+
+    function renderPharmacy(data) {
+      renderStack(pharmacyEl, (data.pharmacy.stockAlerts || []).slice(0, 3).map((alert) => ({
+        title: `${alert.title || alert.item} · ${String(alert.status).replace(/-/g, ' ')}`,
+        description: alert.details || (alert.daysOnHand ? `${alert.daysOnHand} days on hand.` : (alert.daysToExpiry ? `${alert.daysToExpiry} days to expiry.` : 'Executive review required.'))
+      })));
+    }
+
+    function renderAi(data) {
+      aiGovernanceEl.innerHTML = (data.overview.aiGovernance.approvedUseCases || []).map((useCase) => `
+        <div class="risk">
+          <strong>${escapeHtml(String(useCase).replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()))}</strong>
+          <p>Approved as a human-reviewed AI support workflow inside MediHub HMS.</p>
+        </div>
+      `).join('');
+    }
+
+    function renderDeliveryProgress(liveConnected) {
+      renderStack(deliveryProgressEl, [
+        {
+          title: liveConnected ? 'Phase 4 dashboard integration connected' : 'Phase 4 dashboard integration prepared',
+          description: liveConnected
+            ? 'Executive and staff dashboards are consuming the hospital API in this environment.'
+            : 'Dashboard pages include backend wiring and local fallback rendering.'
+        },
+        {
+          title: 'Phase 3 hospital models completed',
+          description: 'Facilities, patients, encounters, and claims now exist as real backend models.'
+        },
+        {
+          title: 'Demo-mode compatibility retained',
+          description: 'The same pages continue to work when MongoDB is not configured by using the hospital demo route set.'
+        },
+        {
+          title: 'Next target: deeper CRUD and permissions',
+          description: 'The next strongest phase is editing workflows, authorization rules, and richer staff-facing interaction.'
+        }
+      ]);
+    }
+
+    function populateClaimForms(data) {
+      fillSelect(claimFacilityEl, data.facilities || [], (facility) => facility.id, (facility) => facility.name, 'Choose facility');
+      fillSelect(claimPatientEl, data.patients || [], (patient) => patient.id, (patient) => `${patient.name} (${patient.mrn || 'No MRN'})`, 'Choose patient');
+      fillSelect(claimEncounterEl, data.encounters || [], (encounter) => encounter.id, (encounter) => `${encounter.encounterNumber || encounter.id} · ${encounter.patientName || 'Patient'}`, 'No encounter selected');
+      fillSelect(claimUpdateIdEl, data.claims.claims || [], (claim) => claim.id, (claim) => `${claim.claimNumber || claim.id} · ${claim.payer} · ${claim.status}`, 'Choose claim');
+      fillSelect(facilityDetailIdEl, data.facilities || [], (facility) => facility.id, (facility) => `${facility.name} (${facility.code || facility.type || 'facility'})`, 'Choose facility');
+
+      if (!claimFacilityEl.value && data.facilities?.[0]) claimFacilityEl.value = data.facilities[0].id;
+      if (!facilityDetailIdEl.value && data.facilities?.[0]) facilityDetailIdEl.value = data.facilities[0].id;
+    }
+
+    function fallbackFacilityDetail(facilityId) {
+      return currentHospitalData.facilities.find((item) => item.id === facilityId) || null;
+    }
+
+    function fallbackStaffDetail(staffId) {
+      return currentHospitalData.staff.find((item) => item.id === staffId) || null;
+    }
+
+    function renderClaimLifecycle(claims) {
+      if (!claims.length) {
+        claimLifecycleListEl.innerHTML = `<div class="empty-state">No claims match the current filters.</div>`;
+        return;
+      }
+
+      renderStack(claimLifecycleListEl, claims.map((claim) => ({
+        title: `${claim.claimNumber || claim.id || 'Claim'} · ${claim.payer} · ${claim.status}`,
+        description: `${claim.patientName || 'Patient unavailable'} · ${formatCurrency(claim.amount || 0)} · ${claim.stage || 'stage pending'} · Risk: ${claim.denialRisk || 'unknown'}`
+      })));
+    }
+
+    function renderStaffRoster(staff) {
+      if (!staff.length) {
+        staffRosterListEl.innerHTML = `<div class="empty-state">No staff members match the current filters.</div>`;
+        return;
+      }
+
+      renderStack(staffRosterListEl, staff.map((member) => ({
+        title: `${member.name} · ${String(member.role || '').replace(/_/g, ' ')} · ${member.shiftPattern || 'unscheduled'}`,
+        description: `${member.department || 'No department'} · ${member.facilityName || 'No facility'} · ${member.employeeId || 'No employee ID'} · ${member.isActive === false ? 'Inactive' : 'Active'}`
+      })));
+    }
+
+    async function loadFacilityDetail() {
+      const facilityId = facilityDetailIdEl.value;
+      if (!facilityId) return;
+
+      let facility = null;
+      try {
+        const data = await fetchJson(`/hospital/facilities/${facilityId}`);
+        facility = data.facility;
+      } catch (error) {
+        facility = fallbackFacilityDetail(facilityId);
+      }
+
+      if (!facility) return;
+      facilityNameEl.value = facility.name || '';
+      facilityCodeEl.value = facility.code || '';
+      facilityTypeEl.value = facility.type || 'hospital';
+      facilityCityEl.value = facility.location || facility.city || '';
+      facilityCountyEl.value = facility.county || '';
+      facilityBedsEl.value = facility.totalBeds ?? facility.beds ?? 0;
+      facilityOccupiedEl.value = facility.occupiedBeds ?? Math.round((facility.occupancyRate || 0) * Number(facility.totalBeds || facility.beds || 0));
+      facilityPatientsTodayEl.value = facility.patientsToday || 0;
+      facilityClaimsRateEl.value = facility.claimsAcceptanceRate ?? 0;
+      facilityPayrollEl.value = facility.projectedPayrollKes || 0;
+      facilityOvertimeEl.value = facility.overtimeExposureKes || 0;
+      facilityDepartmentsEl.value = (facility.departments || []).join(', ');
+      facilityServicesEl.value = (facility.services || []).join(', ');
+      setFormMessage(facilityMessageEl, '');
+    }
+
+    async function loadStaffDetail() {
+      const staffId = staffDetailIdEl.value;
+      if (!staffId) return;
+
+      let member = null;
+      try {
+        const data = await fetchJson(`/hospital/staff/${staffId}`);
+        member = data.staff;
+      } catch (error) {
+        member = fallbackStaffDetail(staffId);
+      }
+
+      if (!member) return;
+      staffNameEl.value = member.name || '';
+      staffEmailEl.value = member.email || '';
+      staffPhoneEl.value = member.phone || '';
+      staffRoleEl.value = member.role || 'doctor';
+      staffFacilityNameEl.value = member.facilityName || '';
+      staffDepartmentEl.value = member.department || '';
+      staffSpecialtyEl.value = member.specialty || '';
+      staffLicenseEl.value = member.licenseNumber || '';
+      staffEmployeeIdEl.value = member.employeeId || '';
+      staffShiftEl.value = member.shiftPattern || 'day';
+      staffActiveEl.value = member.isActive === false ? 'false' : 'true';
+      setFormMessage(staffMessageEl, '');
+    }
+
+    function renderDashboard(data, liveConnected) {
+      currentHospitalData = data;
+      renderStats(data);
+      renderScorecard(data);
+      renderPriorities(data);
+      renderRevenueCycle(data);
+      renderWorkforce(data);
+      renderPharmacy(data);
+      renderAi(data);
+      renderDeliveryProgress(liveConnected);
+      populateClaimForms(data);
+      loadFacilityDetail();
+      renderClaimLifecycle(data.claims.claims || []);
+      fillSelect(staffDetailIdEl, data.staff || [], (member) => member.id, (member) => `${member.name} (${member.role})`, 'Choose staff member');
+      if (!staffDetailIdEl.value && data.staff?.[0]) staffDetailIdEl.value = data.staff[0].id;
+      loadStaffDetail();
+      renderStaffRoster(data.staff || []);
+    }
+
+    async function startDemoSession() {
+      execSessionStartEl.disabled = true;
+      try {
+        const role = execSessionRoleEl.value;
+        const name = execSessionNameEl.value.trim() || 'Executive User';
+        const email = `${role}.${name.toLowerCase().replace(/[^a-z0-9]+/g, '.')}@demo.local`;
+        const response = await fetch(`${API_URL}/auth/demo-login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name, role, password: 'demo123', remember: true })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || 'Failed to start demo session.');
+        persistSession(data.token, data.profile);
+      } catch (error) {
+        execSessionSummaryEl.textContent = error.message || 'Unable to start demo session.';
+      } finally {
+        execSessionStartEl.disabled = false;
+      }
+    }
+
+    async function submitClaim() {
+      claimSubmitEl.disabled = true;
+      setFormMessage(claimMessageEl, 'Creating claim...');
+      try {
+        const data = await fetchAuthorizedJson('/hospital/claims', {
+          method: 'POST',
+          body: JSON.stringify({
+            patientId: claimPatientEl.value,
+            encounterId: claimEncounterEl.value || undefined,
+            facilityId: claimFacilityEl.value,
+            payer: claimPayerEl.value.trim(),
+            amount: Number(claimAmountEl.value || 0),
+            status: claimStatusEl.value,
+            denialRisk: claimRiskEl.value,
+            notes: claimNotesEl.value.trim()
+          })
+        });
+        setFormMessage(claimMessageEl, `Claim ${data.claim.claimNumber || ''} created successfully.`);
+        await loadExecutiveDashboard();
+      } catch (error) {
+        setFormMessage(claimMessageEl, error.message || 'Failed to create claim.', true);
+      } finally {
+        claimSubmitEl.disabled = false;
+      }
+    }
+
+    async function updateClaim() {
+      claimUpdateSubmitEl.disabled = true;
+      setFormMessage(claimUpdateMessageEl, 'Updating claim...');
+      try {
+        const claimId = claimUpdateIdEl.value;
+        if (!claimId) throw new Error('Choose a claim to update.');
+        const data = await fetchAuthorizedJson(`/hospital/claims/${claimId}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            status: claimUpdateStatusEl.value,
+            stage: claimUpdateStageEl.value,
+            denialRisk: claimUpdateRiskEl.value,
+            notes: claimUpdateNotesEl.value.trim()
+          })
+        });
+        setFormMessage(claimUpdateMessageEl, `Claim ${data.claim.claimNumber || ''} updated to ${data.claim.status}.`);
+        await loadExecutiveDashboard();
+      } catch (error) {
+        setFormMessage(claimUpdateMessageEl, error.message || 'Failed to update claim.', true);
+      } finally {
+        claimUpdateSubmitEl.disabled = false;
+      }
+    }
+
+    async function createFacility() {
+      facilityCreateSubmitEl.disabled = true;
+      setFormMessage(facilityMessageEl, 'Creating facility...');
+      try {
+        const data = await fetchAuthorizedJson('/hospital/facilities', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: facilityNameEl.value.trim(),
+            code: facilityCodeEl.value.trim(),
+            type: facilityTypeEl.value,
+            city: facilityCityEl.value.trim(),
+            county: facilityCountyEl.value.trim(),
+            totalBeds: Number(facilityBedsEl.value || 0),
+            occupiedBeds: Number(facilityOccupiedEl.value || 0),
+            departments: facilityDepartmentsEl.value.trim(),
+            services: facilityServicesEl.value.trim(),
+            patientsToday: Number(facilityPatientsTodayEl.value || 0),
+            claimsAcceptanceRate: Number(facilityClaimsRateEl.value || 0),
+            projectedPayrollKes: Number(facilityPayrollEl.value || 0),
+            overtimeExposureKes: Number(facilityOvertimeEl.value || 0)
+          })
+        });
+        setFormMessage(facilityMessageEl, `Facility ${data.facility.name} created successfully.`);
+        await loadExecutiveDashboard();
+        facilityDetailIdEl.value = data.facility.id;
+        await loadFacilityDetail();
+      } catch (error) {
+        setFormMessage(facilityMessageEl, error.message || 'Failed to create facility.', true);
+      } finally {
+        facilityCreateSubmitEl.disabled = false;
+      }
+    }
+
+    async function updateFacility() {
+      facilityUpdateSubmitEl.disabled = true;
+      setFormMessage(facilityMessageEl, 'Updating facility...');
+      try {
+        const facilityId = facilityDetailIdEl.value;
+        if (!facilityId) throw new Error('Choose a facility to update.');
+        const data = await fetchAuthorizedJson(`/hospital/facilities/${facilityId}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            name: facilityNameEl.value.trim(),
+            code: facilityCodeEl.value.trim(),
+            type: facilityTypeEl.value,
+            city: facilityCityEl.value.trim(),
+            county: facilityCountyEl.value.trim(),
+            totalBeds: Number(facilityBedsEl.value || 0),
+            occupiedBeds: Number(facilityOccupiedEl.value || 0),
+            departments: facilityDepartmentsEl.value.trim(),
+            services: facilityServicesEl.value.trim(),
+            patientsToday: Number(facilityPatientsTodayEl.value || 0),
+            claimsAcceptanceRate: Number(facilityClaimsRateEl.value || 0),
+            projectedPayrollKes: Number(facilityPayrollEl.value || 0),
+            overtimeExposureKes: Number(facilityOvertimeEl.value || 0)
+          })
+        });
+        setFormMessage(facilityMessageEl, `Facility ${data.facility.name} updated successfully.`);
+        await loadExecutiveDashboard();
+        facilityDetailIdEl.value = data.facility.id;
+        await loadFacilityDetail();
+      } catch (error) {
+        setFormMessage(facilityMessageEl, error.message || 'Failed to update facility.', true);
+      } finally {
+        facilityUpdateSubmitEl.disabled = false;
+      }
+    }
+
+    async function applyClaimFilters() {
+      claimFilterApplyEl.disabled = true;
+      setFormMessage(claimFilterMessageEl, 'Applying claim filters...');
+      try {
+        const params = new URLSearchParams();
+        if (claimFilterStatusEl.value) params.set('status', claimFilterStatusEl.value);
+        if (claimFilterRiskEl.value) params.set('denialRisk', claimFilterRiskEl.value);
+        if (claimFilterPayerEl.value.trim()) params.set('payer', claimFilterPayerEl.value.trim());
+        if (claimFilterQueryEl.value.trim()) params.set('q', claimFilterQueryEl.value.trim());
+
+        let claimsPayload = null;
+        try {
+          const data = await fetchJson(`/hospital/claims${params.toString() ? `?${params.toString()}` : ''}`);
+          claimsPayload = data.claims || [];
+          setFormMessage(claimFilterMessageEl, `Showing ${claimsPayload.length} claims from the hospital API.`);
+        } catch (error) {
+          claimsPayload = (currentHospitalData.claims.claims || []).filter((claim) => {
+            const matchesStatus = !claimFilterStatusEl.value || claim.status === claimFilterStatusEl.value;
+            const matchesRisk = !claimFilterRiskEl.value || claim.denialRisk === claimFilterRiskEl.value;
+            const matchesPayer = !claimFilterPayerEl.value.trim() || String(claim.payer || '').toLowerCase() === claimFilterPayerEl.value.trim().toLowerCase();
+            const term = claimFilterQueryEl.value.trim().toLowerCase();
+            const matchesQuery = !term
+              || String(claim.patientName || '').toLowerCase().includes(term)
+              || String(claim.payer || '').toLowerCase().includes(term)
+              || String(claim.claimNumber || claim.id || '').toLowerCase().includes(term);
+            return matchesStatus && matchesRisk && matchesPayer && matchesQuery;
+          });
+          setFormMessage(claimFilterMessageEl, `Backend filter unavailable. Showing ${claimsPayload.length} locally filtered claims.`);
         }
 
-        /* ── Modals & Actions ── */
-        function openModal(id) { document.getElementById(id).classList.add('active') }
-        function closeModal(id) { document.getElementById(id).classList.remove('active') }
-        function openStatusModal(id, status, plan) { document.getElementById('s-tenant-id').value = id; document.getElementById('s-status').value = status; document.getElementById('s-plan').value = plan; openModal('statusModal') }
-        function openDomainModal(id, sub, custom) { document.getElementById('d-tenant-id').value = id; document.getElementById('d-sub').value = sub; document.getElementById('d-custom').value = custom; openModal('domainModal') }
-        function saveStatusPlan() { closeModal('statusModal'); renderTenants() }
-        function saveDomains() { closeModal('domainModal'); renderDomains() }
-        function approveTenant(id) { const t = DEMO.tenants.find(x => x.id === id); if (t) { t.status = 'verified'; renderTenants(); renderDashboard() } }
-        function logout() { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = 'index.html' }
+        renderClaimLifecycle(claimsPayload);
+      } catch (error) {
+        setFormMessage(claimFilterMessageEl, error.message || 'Failed to apply claim filters.', true);
+      } finally {
+        claimFilterApplyEl.disabled = false;
+      }
+    }
 
-        /* ── Init ── */
-        renderDashboard(); renderTenants(); renderAnalytics(); renderRevenue(); renderDomains(); renderCompliance(); renderNotifications(); renderSettings();
-    </script>
+    async function createStaffMember() {
+      staffCreateSubmitEl.disabled = true;
+      setFormMessage(staffMessageEl, 'Creating staff member...');
+      try {
+        const data = await fetchAuthorizedJson('/hospital/staff', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: staffNameEl.value.trim(),
+            email: staffEmailEl.value.trim(),
+            phone: staffPhoneEl.value.trim(),
+            role: staffRoleEl.value,
+            employeeId: staffEmployeeIdEl.value.trim(),
+            department: staffDepartmentEl.value.trim(),
+            facilityName: staffFacilityNameEl.value.trim(),
+            specialty: staffSpecialtyEl.value.trim(),
+            licenseNumber: staffLicenseEl.value.trim(),
+            shiftPattern: staffShiftEl.value
+          })
+        });
+        setFormMessage(staffMessageEl, `Staff member ${data.staff.name} created successfully.`);
+        await loadExecutiveDashboard();
+        staffDetailIdEl.value = data.staff.id;
+        await loadStaffDetail();
+      } catch (error) {
+        setFormMessage(staffMessageEl, error.message || 'Failed to create staff member.', true);
+      } finally {
+        staffCreateSubmitEl.disabled = false;
+      }
+    }
+
+    async function updateStaffMember() {
+      staffUpdateSubmitEl.disabled = true;
+      setFormMessage(staffMessageEl, 'Updating staff member...');
+      try {
+        const staffId = staffDetailIdEl.value;
+        if (!staffId) throw new Error('Choose a staff member to update.');
+        const data = await fetchAuthorizedJson(`/hospital/staff/${staffId}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            name: staffNameEl.value.trim(),
+            email: staffEmailEl.value.trim(),
+            phone: staffPhoneEl.value.trim(),
+            role: staffRoleEl.value,
+            isActive: staffActiveEl.value === 'true',
+            employeeId: staffEmployeeIdEl.value.trim(),
+            department: staffDepartmentEl.value.trim(),
+            facilityName: staffFacilityNameEl.value.trim(),
+            specialty: staffSpecialtyEl.value.trim(),
+            licenseNumber: staffLicenseEl.value.trim(),
+            shiftPattern: staffShiftEl.value
+          })
+        });
+        setFormMessage(staffMessageEl, `Staff member ${data.staff.name} updated successfully.`);
+        await loadExecutiveDashboard();
+        staffDetailIdEl.value = data.staff.id;
+        await loadStaffDetail();
+      } catch (error) {
+        setFormMessage(staffMessageEl, error.message || 'Failed to update staff member.', true);
+      } finally {
+        staffUpdateSubmitEl.disabled = false;
+      }
+    }
+
+    async function applyStaffFilters() {
+      staffFilterApplyEl.disabled = true;
+      setFormMessage(staffFilterMessageEl, 'Applying staff filters...');
+      try {
+        const params = new URLSearchParams();
+        if (staffFilterRoleEl.value) params.set('role', staffFilterRoleEl.value);
+        if (staffFilterDepartmentEl.value.trim()) params.set('department', staffFilterDepartmentEl.value.trim());
+        if (staffFilterShiftEl.value) params.set('shiftPattern', staffFilterShiftEl.value);
+        if (staffFilterQueryEl.value.trim()) params.set('q', staffFilterQueryEl.value.trim());
+
+        let staffList = null;
+        try {
+          const data = await fetchJson(`/hospital/staff${params.toString() ? `?${params.toString()}` : ''}`);
+          staffList = data.staff || [];
+          setFormMessage(staffFilterMessageEl, `Showing ${staffList.length} staff members from the hospital API.`);
+        } catch (error) {
+          const term = staffFilterQueryEl.value.trim().toLowerCase();
+          staffList = (currentHospitalData.staff || []).filter((member) => {
+            const matchesRole = !staffFilterRoleEl.value || member.role === staffFilterRoleEl.value;
+            const matchesDepartment = !staffFilterDepartmentEl.value.trim() || String(member.department || '').toLowerCase().includes(staffFilterDepartmentEl.value.trim().toLowerCase());
+            const matchesShift = !staffFilterShiftEl.value || String(member.shiftPattern || '').toLowerCase() === staffFilterShiftEl.value.toLowerCase();
+            const matchesQuery = !term
+              || String(member.name || '').toLowerCase().includes(term)
+              || String(member.employeeId || '').toLowerCase().includes(term)
+              || String(member.specialty || '').toLowerCase().includes(term);
+            return matchesRole && matchesDepartment && matchesShift && matchesQuery;
+          });
+          setFormMessage(staffFilterMessageEl, `Backend filter unavailable. Showing ${staffList.length} locally filtered staff members.`);
+        }
+
+        renderStaffRoster(staffList);
+      } catch (error) {
+        setFormMessage(staffFilterMessageEl, error.message || 'Failed to apply staff filters.', true);
+      } finally {
+        staffFilterApplyEl.disabled = false;
+      }
+    }
+
+    function resetStaffFilters() {
+      staffFilterRoleEl.value = '';
+      staffFilterDepartmentEl.value = '';
+      staffFilterShiftEl.value = '';
+      staffFilterQueryEl.value = '';
+      renderStaffRoster(currentHospitalData.staff || []);
+      setFormMessage(staffFilterMessageEl, 'Staff filters cleared.');
+    }
+
+    function resetClaimFilters() {
+      claimFilterStatusEl.value = '';
+      claimFilterRiskEl.value = '';
+      claimFilterPayerEl.value = '';
+      claimFilterQueryEl.value = '';
+      renderClaimLifecycle(currentHospitalData.claims.claims || []);
+      setFormMessage(claimFilterMessageEl, 'Filters cleared.');
+    }
+
+    async function loadExecutiveDashboard() {
+      renderDashboard(fallbackData, false);
+      setExecStatus('Unable to confirm backend yet.', true);
+
+      try {
+        const [overviewRes, facilitiesRes, patientsRes, encountersRes, claimsRes, staffingRes, pharmacyRes, staffRes] = await Promise.all([
+          fetchJson('/hospital/overview'),
+          fetchJson('/hospital/facilities'),
+          fetchJson('/hospital/patients'),
+          fetchJson('/hospital/encounters'),
+          fetchJson('/hospital/claims'),
+          fetchJson('/hospital/staffing'),
+          fetchJson('/hospital/pharmacy'),
+          fetchJson('/hospital/staff')
+        ]);
+
+        renderDashboard({
+          overview: overviewRes.overview || fallbackData.overview,
+          facilities: facilitiesRes.facilities || fallbackData.facilities,
+          patients: patientsRes.patients || fallbackData.patients,
+          encounters: encountersRes.encounters || fallbackData.encounters,
+          claims: {
+            summary: claimsRes.summary || fallbackData.claims.summary,
+            claims: claimsRes.claims || fallbackData.claims.claims
+          },
+          staffing: staffingRes.staffing || fallbackData.staffing,
+          pharmacy: pharmacyRes.pharmacy || fallbackData.pharmacy,
+          staff: staffRes.staff || fallbackData.staff
+        }, true);
+
+        setExecStatus('Live hospital API connected. Occupancy, facility, claims, staffing, and pharmacy signals are now being read from the backend.');
+      } catch (error) {
+        setExecStatus(error.message || 'Hospital API unavailable.', true);
+      }
+    }
+
+    execSessionStartEl.addEventListener('click', startDemoSession);
+    execSessionClearEl.addEventListener('click', clearSession);
+    claimSubmitEl.addEventListener('click', submitClaim);
+    claimUpdateSubmitEl.addEventListener('click', updateClaim);
+    facilityDetailIdEl.addEventListener('change', loadFacilityDetail);
+    facilityCreateSubmitEl.addEventListener('click', createFacility);
+    facilityUpdateSubmitEl.addEventListener('click', updateFacility);
+    claimFilterApplyEl.addEventListener('click', applyClaimFilters);
+    claimFilterResetEl.addEventListener('click', resetClaimFilters);
+    staffDetailIdEl.addEventListener('change', loadStaffDetail);
+    staffCreateSubmitEl.addEventListener('click', createStaffMember);
+    staffUpdateSubmitEl.addEventListener('click', updateStaffMember);
+    staffFilterApplyEl.addEventListener('click', applyStaffFilters);
+    staffFilterResetEl.addEventListener('click', resetStaffFilters);
+    syncSessionUi();
+    loadExecutiveDashboard();
+  </script>
 </body>
-
 </html>

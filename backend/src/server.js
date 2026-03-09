@@ -15,6 +15,8 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const pharmacistRoutes = require('./routes/pharmacists');
 const pharmacistDemoRoutes = require('./routes/pharmacists.demo');
+const hospitalRoutes = require('./routes/hospital');
+const hospitalDemoRoutes = require('./routes/hospital.demo');
 const aiRoutes = require('./routes/ai');
 const prescriptionRoutes = require('./routes/prescriptions');
 const paymentRoutes = require('./routes/payments');
@@ -38,7 +40,7 @@ app.use(cors({
   origin: process.env.CLIENT_URL || '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-tenant-domain', 'X-Tenant-Domain']
 }));
 
 // ─── Rate Limiting ───
@@ -75,7 +77,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'MediHub API is running',
+    message: 'MediHub HMS API is running',
     version: '1.0.0',
     environment: process.env.NODE_ENV,
     timestamp: new Date().toISOString(),
@@ -97,6 +99,11 @@ app.get('/api/store', (req, res) => {
 // ─── API Routes ───
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+if (process.env.MONGODB_URI) {
+  app.use('/api/hospital', hospitalRoutes);
+} else {
+  app.use('/api/hospital', hospitalDemoRoutes);
+}
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 // Mount pharmacists routes; prefer real routes when DB is configured, otherwise use demo router
@@ -129,7 +136,7 @@ app.use((err, req, res, next) => {
 // ─── Start Server ───
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`\n🚀 MediHub Backend running on port ${PORT}`);
+  console.log(`\n🚀 MediHub HMS Backend running on port ${PORT}`);
   console.log(`📦 Environment: ${process.env.NODE_ENV}`);
   console.log(`🌐 API Base: http://localhost:${PORT}/api\n`);
 });
