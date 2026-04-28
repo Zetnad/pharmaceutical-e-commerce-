@@ -31,6 +31,11 @@ This document lists the remaining tasks required to make the MediHub system full
 - Make sure the cart persists properly in `localStorage` and that quantity updates/removals work.
 - Add UI feedback for Stripe card errors, M-Pesa confirmation, and order creation failures.
 
+## Responsive UI Audit
+
+- Mobile layout check: the home page and AI page are now fitting inside the narrow preview viewport without horizontal overflow.
+- Desktop layout check: the responsive breakpoints are present in `index.html`, but the integrated browser preview in this environment does not expose a true wide-screen viewport, so a final full-width browser spot-check is still recommended.
+
 ## Deployment and Environment
 
 - Provide a working `.env` file or documentation for required environment variables.
