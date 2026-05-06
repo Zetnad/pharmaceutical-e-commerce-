@@ -998,7 +998,11 @@
   </main>
 
   <script>
-    const API_URL = `${window.location.protocol}//${window.location.hostname || "localhost"}:5000/api`;
+    const API_URL = (() => {
+      const protocol = window.location.protocol === "https:" ? "https:" : "http:";
+      const hostname = window.location.hostname || "localhost";
+      return `${protocol}//${hostname}:5000/api`;
+    })();
     const STORAGE_TOKEN_KEY = 'medihubHospitalDemoToken';
     const STORAGE_PROFILE_KEY = 'medihubHospitalDemoProfile';
 

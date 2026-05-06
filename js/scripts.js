@@ -267,7 +267,43 @@ document.addEventListener('click', (e) => {
 });
 
 // ==== backend integration script ====
-const API_URL = 'http://localhost:5000/api';
+const API_URL = (() => {
+  const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+  const hostname = window.location.hostname || 'localhost';
+  return `${protocol}//${hostname}:5000/api`;
+})();
+
+const PRODUCT_CATEGORY_BY_LABEL = {
+  'pain relief': 'pain-relief',
+  'cold flu': 'cold-flu',
+  'cold & flu': 'cold-flu',
+  cardiovascular: 'cardiovascular',
+  dermatology: 'dermatology',
+  'mother baby': 'mother-baby',
+  'mother & baby': 'mother-baby',
+  vitamins: 'vitamins',
+  'mental health': 'mental-health',
+  antibiotics: 'antibiotics',
+  diabetes: 'diabetes',
+  respiratory: 'respiratory',
+  digestive: 'digestive'
+};
+
+function normalizeProductCategory(label) {
+  const normalized = String(label || '')
+    .replace(/[^\w\s&-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+  return PRODUCT_CATEGORY_BY_LABEL[normalized] || normalized.replace(/\s+/g, '-');
+}
+
+function normalizeProductPayload(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.products)) return payload.products;
+  if (Array.isArray(payload?.data?.products)) return payload.data.products;
+  return [];
+}
 
 // update tab behaviour to trigger product load
 document.querySelectorAll('.ftab').forEach(t => {
@@ -295,14 +331,26 @@ async function loadProducts() {
     category = activeTab.textContent.replace(/[💊🤧🫀🧴🍼💉🧠]/g,'').trim().toLowerCase();
   }
   if (category) {
+    category = normalizeProductCategory(category);
     params.set('category', category);
   }
   const suffix = params.toString() ? `?${params.toString()}` : '';
   try {
     const res = await fetch(`${API_URL}/products${suffix}`);
-    const products = await res.json();
+    const data = await res.json();
+    if (!res.ok || data.success === false) {
+      throw new Error(data.message || 'Failed to load products');
+    }
+    const products = normalizeProductPayload(data);
     grid.innerHTML = '';
+    if (!products.length) {
+      grid.innerHTML = '<p style="color:#64748b;">No products match the current filters.</p>';
+      return;
+    }
     products.forEach(p => {
+      const pharmacistName = p.pharmacistName || p.pharmacist?.pharmacyName || 'Unknown';
+      p.pharmacistName = pharmacistName;
+      p.rating = p.rating || p.pharmacist?.rating;
       const card = document.createElement('div');
       card.className='product-card';
       card.innerHTML = `

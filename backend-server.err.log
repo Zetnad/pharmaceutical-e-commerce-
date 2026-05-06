@@ -1,0 +1,5 @@
+⚠️ MONGODB_URI not set — running in demo mode for pharmacists routes
+(node:11240) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Error: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+Error: Expected property name or '}' in JSON at position 1 (line 1 column 2)

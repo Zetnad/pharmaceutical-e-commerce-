@@ -1255,7 +1255,11 @@
   </footer>
 
   <script>
-    const API_URL = `${window.location.protocol}//${window.location.hostname || "localhost"}:5000/api`;
+    const API_URL = (() => {
+      const protocol = window.location.protocol === "https:" ? "https:" : "http:";
+      const hostname = window.location.hostname || "localhost";
+      return `${protocol}//${hostname}:5000/api`;
+    })();
 
     const input = document.getElementById("symptoms-input");
     const button = document.getElementById("analyze-btn");

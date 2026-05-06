@@ -12,6 +12,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const productRoutes = require('./routes/products');
+const productDemoRoutes = require('./routes/products.demo');
 const orderRoutes = require('./routes/orders');
 const pharmacistRoutes = require('./routes/pharmacists');
 const pharmacistDemoRoutes = require('./routes/pharmacists.demo');
@@ -36,10 +37,20 @@ if (process.env.MONGODB_URI) {
 app.use(helmet());
 
 // ─── CORS ───
+const configuredOrigins = (process.env.CLIENT_URL || '*')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || '*',
+  origin(origin, callback) {
+    if (!origin || configuredOrigins.includes('*') || configuredOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-tenant-domain', 'X-Tenant-Domain']
 }));
 
@@ -104,7 +115,11 @@ if (process.env.MONGODB_URI) {
 } else {
   app.use('/api/hospital', hospitalDemoRoutes);
 }
-app.use('/api/products', productRoutes);
+if (process.env.MONGODB_URI) {
+  app.use('/api/products', productRoutes);
+} else {
+  app.use('/api/products', productDemoRoutes);
+}
 app.use('/api/orders', orderRoutes);
 // Mount pharmacists routes; prefer real routes when DB is configured, otherwise use demo router
 if (process.env.MONGODB_URI) {

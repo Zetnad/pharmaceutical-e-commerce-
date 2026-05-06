@@ -1,9 +1,15 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? require('stripe')(process.env.STRIPE_SECRET_KEY)
+  : null;
 const Order = require('../models/Order');
 const { asyncHandler, sendSuccess, sendError } = require('../middleware/errorHandler');
 
 // @route  POST /api/payments/create-intent
 exports.createPaymentIntent = asyncHandler(async (req, res) => {
+  if (!stripe) {
+    return sendError(res, 503, 'Stripe payments are not configured on this server.');
+  }
+
   const { orderId } = req.body;
   const order = await Order.findOne({ _id: orderId, user: req.user._id });
   if (!order) return sendError(res, 404, 'Order not found.');
@@ -23,6 +29,10 @@ exports.createPaymentIntent = asyncHandler(async (req, res) => {
 
 // @route  POST /api/payments/webhook (Stripe webhook)
 exports.stripeWebhook = asyncHandler(async (req, res) => {
+  if (!stripe || !process.env.STRIPE_WEBHOOK_SECRET) {
+    return res.status(503).json({ success: false, message: 'Stripe webhook handling is not configured on this server.' });
+  }
+
   const sig = req.headers['stripe-signature'];
   let event;
 

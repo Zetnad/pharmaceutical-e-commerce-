@@ -1,0 +1,12 @@
+
+> medihub-backend@1.0.0 start
+> node src/server.js
+
+[demoAuth] loaded 0 tokens from disk
+
+🚀 MediHub HMS Backend running on port 5000
+📦 Environment: undefined
+🌐 API Base: http://localhost:5000/api
+
+[demoAuth] issued nurse token for nurse.verify@demo.local expiresAt=2026-05-13T03:30:23.275Z
+[demoAuth] issued finance token for finance.verify@demo.local expiresAt=2026-05-13T03:30:46.629Z

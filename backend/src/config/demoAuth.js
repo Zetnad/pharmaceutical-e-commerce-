@@ -4,11 +4,16 @@ const path = require('path');
 
 const DATA_DIR = path.join(__dirname, '..', '..', 'backend_data');
 const TOKEN_FILE = path.join(DATA_DIR, 'demoTokens.json');
+const USE_DISK_STORE = process.env.NODE_ENV !== 'test' && process.env.DEMO_AUTH_PERSIST !== 'false';
 
 // In-memory map of token -> meta
 const store = new Map();
 
 function loadFromDisk() {
+  if (!USE_DISK_STORE) {
+    console.log('[demoAuth] using in-memory token store');
+    return;
+  }
   try {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
     if (!fs.existsSync(TOKEN_FILE)) {
@@ -25,6 +30,7 @@ function loadFromDisk() {
 }
 
 function saveToDisk() {
+  if (!USE_DISK_STORE) return;
   try {
     const obj = {};
     for (const [t, meta] of store.entries()) obj[t] = meta;
